@@ -15,6 +15,7 @@ import { ProjectsSection } from '../components/ProjectsSection';
 import { CostCalculator } from '../components/CostCalculator';
 import { TestimonialsSection } from '../components/TestimonialsSection';
 import { ContactSection } from '../components/ContactSection';
+import { TestimonialLaserRig } from '../components/TestimonialLaserRig';
 import { useNavigate } from 'react-router-dom';
 import { motion, type Variants } from 'framer-motion';
 
@@ -158,6 +159,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenConsultation }) => {
       >
         <CostCalculator onOpenConsultation={onOpenConsultation} theme="white" />
       </motion.div>
+
+      {/* Dual Perimeter Optical Laser Audit Rig (Spans Section 12 to Section 13) */}
+      <TestimonialLaserRig />
 
       {/* SECTION 12: Testimonials Showcase */}
       <motion.div 
