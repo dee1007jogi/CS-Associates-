@@ -315,8 +315,8 @@ export const ConstructionHero3D: React.FC<ConstructionHero3DProps> = ({
           })}
         </div>
 
-        {/* Mobile Action Buttons: Call & Consult (Elevated higher near middle) */}
-        <div className="pointer-events-auto flex sm:hidden items-center justify-center gap-2.5 w-full max-w-xs mb-14">
+        {/* Mobile Action Buttons: Call & Consult (Positioned higher above the trees) */}
+        <div className="pointer-events-auto flex sm:hidden items-center justify-center gap-2.5 w-full max-w-xs mb-44 sm:mb-0">
           <a
             href="tel:8296266389"
             className="flex-1 py-2.5 px-3.5 rounded-xl bg-neutral-900/95 backdrop-blur-xl text-white font-bold text-xs flex items-center justify-center gap-1.5 border border-neutral-700/80 shadow-2xl shadow-black/60 active:scale-95 transition-all"
