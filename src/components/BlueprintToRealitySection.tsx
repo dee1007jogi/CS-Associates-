@@ -30,9 +30,31 @@ export const BlueprintToRealitySection: React.FC<BlueprintToRealitySectionProps>
       { threshold: 0.01 }
     );
 
+    const handleMouseEnter = () => {
+      iframeRef.current?.contentWindow?.focus();
+    };
+
+    const handleWheel = (e: WheelEvent) => {
+      if (iframeRef.current && iframeRef.current.contentWindow) {
+        iframeRef.current.contentWindow.postMessage(
+          {
+            type: 'SCROLL_DELTA',
+            deltaY: e.deltaY * 2.2
+          },
+          '*'
+        );
+      }
+    };
+
+    el.addEventListener('mouseenter', handleMouseEnter);
+    el.addEventListener('wheel', handleWheel, { passive: true });
     observer.observe(el);
 
-    return () => observer.disconnect();
+    return () => {
+      el.removeEventListener('mouseenter', handleMouseEnter);
+      el.removeEventListener('wheel', handleWheel);
+      observer.disconnect();
+    };
   }, []);
 
   return (
