@@ -167,8 +167,8 @@ export const TestimonialsSection: React.FC = () => {
           </button>
 
           {/* Center Testimonial Card */}
-          <div className="w-full mx-10 sm:mx-12">
-            <div className="relative bg-white/5 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-7 shadow-[0_16px_40px_-8px_rgba(0,0,0,0.55)] border border-white/10 backdrop-blur-xl overflow-hidden">
+          <div className="w-full mx-10 sm:mx-12 relative z-20">
+            <div className="relative bg-[#161617] rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-7 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.92)] border border-neutral-800/90 overflow-hidden z-20">
               {/* Inner glow top-left corner */}
               <div aria-hidden="true" className="absolute -top-16 -left-16 w-48 h-48 rounded-full bg-orange-500/10 blur-3xl pointer-events-none" />
               <div aria-hidden="true" className="absolute -bottom-16 -right-16 w-48 h-48 rounded-full bg-orange-500/8 blur-3xl pointer-events-none" />

@@ -114,7 +114,9 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }
         {/* ======================================================== */}
         {/* MAIN UNIFIED CARD CONTAINER                               */}
         {/* ======================================================== */}
-        <div className={`w-full rounded-[2.5rem] overflow-hidden transition-all duration-300 ${
+        <div 
+          id="consultationCard"
+          className={`w-full rounded-[2.5rem] overflow-hidden transition-all duration-300 relative z-20 ${
           isDark 
             ? 'bg-neutral-900/95 shadow-[0_25px_70px_-15px_rgba(0,0,0,0.85)] border border-neutral-800' 
             : 'bg-white shadow-[0_25px_70px_-15px_rgba(0,0,0,0.08)] border border-neutral-200'
