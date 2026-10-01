@@ -2193,15 +2193,14 @@
     let isSceneVisible = true;
     let clock = new THREE.Clock();
 
-    // IntersectionObserver to pause rendering when off-screen
-    if ('IntersectionObserver' in window) {
+    // IntersectionObserver to pause rendering when canvas is completely scrolled off-screen
+    if ('IntersectionObserver' in window && canvas) {
       const canvasObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           isSceneVisible = entry.isIntersecting;
         });
       }, { threshold: 0.01 });
-      const c = document.getElementById('c') || document.querySelector('canvas');
-      if (c) canvasObserver.observe(c);
+      canvasObserver.observe(canvas);
     }
 
     document.addEventListener('visibilitychange', () => {
@@ -2638,7 +2637,6 @@
           applyCameraStageProgress(progress);
         } else if (event.data.type === 'SET_VISIBILITY') {
           isSceneVisible = Boolean(event.data.isVisible);
-        }
         }
       }
     });
