@@ -51,49 +51,7 @@
       background-size: 26px 26px;
     }
 
-    /* Static Ambient Centerline Guide */
-    .vertical-guide-ambient {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 50%;
-      width: 2px;
-      transform: translateX(-50%);
-      background: linear-gradient(180deg, 
-        rgba(255, 85, 0, 0.5) 0%, 
-        rgba(255, 85, 0, 0.18) 15%, 
-        rgba(255, 85, 0, 0.3) 50%, 
-        rgba(255, 85, 0, 0.12) 85%, 
-        transparent 100%
-      );
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    /* Full-page SVG Canvas:
-       Layered at z-20: Sits cleanly ABOVE the section background layers (z-0),
-       and BEHIND the cards/headers (z-30) so the laser is 100% VISIBLE across both dark & light sections! */
-    #laserCanvasOverlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      pointer-events: none;
-      z-index: 20;
-      overflow: visible;
-    }
-
-    .laser-glow {
-      filter: drop-shadow(0 0 6px rgba(255, 85, 0, 0.95)) 
-              drop-shadow(0 0 16px rgba(255, 85, 0, 0.6)) 
-              drop-shadow(0 0 28px rgba(255, 106, 0, 0.35));
-    }
-
-    .laser-head-node {
-      filter: drop-shadow(0 0 8px #ffffff) drop-shadow(0 0 18px #ff5500) drop-shadow(0 0 30px #ff6a00);
-    }
-
-    /* Solid opaque testimonial card that conceals the laser on its backside */
+    /* Solid opaque testimonial card */
     .testimonial-solid-card {
       background-color: #161617;
       box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.95),
@@ -102,21 +60,6 @@
 
     .slide-fade {
       transition: opacity 0.28s ease, transform 0.28s ease;
-    }
-
-    /* Pulse animation for prism splitter */
-    @keyframes prismPulse {
-      0%, 100% {
-        transform: translate(-50%, -50%) scale(1) rotate(45deg);
-        filter: drop-shadow(0 0 8px #ff5500);
-      }
-      50% {
-        transform: translate(-50%, -50%) scale(1.15) rotate(45deg);
-        filter: drop-shadow(0 0 22px #ff6a00);
-      }
-    }
-    .prism-active {
-      animation: prismPulse 2.4s ease-in-out infinite;
     }
   </style>
 </head>
@@ -131,108 +74,19 @@
       ↓ Site Consultation
     </a>
     <span class="text-neutral-600">|</span>
-    <span id="laserStatusIndicator" class="text-[11px] text-orange-400 font-mono flex items-center gap-1.5">
-      <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
-      Laser Audit: Active
+    <span class="text-[11px] text-orange-400 font-mono flex items-center gap-1.5">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+      CS Associates PMC
     </span>
   </aside>
-
-  <!-- ================= SCROLL-ANIMATED LASER CANVAS ================= -->
-  <!-- Positioned at z-20: Always visible over both dark & white section backgrounds,
-       while running cleanly behind cards and headers (which are at z-30) -->
-  <svg id="laserCanvasOverlay" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <!-- Intense ambient glow filter -->
-      <filter id="ambientLaserGlow" x="-50%" y="-50%" width="200%" height="200%">
-        <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur1"/>
-        <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur2"/>
-        <feMerge>
-          <feMergeNode in="blur2"/>
-          <feMergeNode in="blur1"/>
-          <feMergeNode in="SourceGraphic"/>
-        </feMerge>
-      </filter>
-    </defs>
-
-    <!-- 1. Central Vertical Trunk: Starts at Top Aperture -> Travels down behind testimonial -> Stops at Optical Beam Splitter -->
-    <path id="trunkAura" fill="none" stroke="#ff5500" stroke-width="12" opacity="0.3" stroke-linecap="round" filter="url(#ambientLaserGlow)" />
-    <path id="trunkGlow" fill="none" stroke="#ff5500" stroke-width="6" opacity="0.75" stroke-linecap="round" />
-    <path id="trunkCore" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" class="laser-glow" />
-
-    <!-- 2. Left Branch: From Splitter -> Travels Left with Fillet Curve -> Runs down along Left Edge of Consultation Card -->
-    <path id="leftBranchAura" fill="none" stroke="#ff5500" stroke-width="12" opacity="0.3" stroke-linecap="round" filter="url(#ambientLaserGlow)" />
-    <path id="leftBranchGlow" fill="none" stroke="#ff5500" stroke-width="6" opacity="0.75" stroke-linecap="round" />
-    <path id="leftBranchCore" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" class="laser-glow" />
-
-    <!-- 3. Right Branch: From Splitter -> Travels Right with Fillet Curve -> Runs down along Right Edge of Consultation Card -->
-    <path id="rightBranchAura" fill="none" stroke="#ff5500" stroke-width="12" opacity="0.3" stroke-linecap="round" filter="url(#ambientLaserGlow)" />
-    <path id="rightBranchGlow" fill="none" stroke="#ff5500" stroke-width="6" opacity="0.75" stroke-linecap="round" />
-    <path id="rightBranchCore" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" class="laser-glow" />
-
-    <!-- Leading Glowing Spark Nodes with Multi-Ring Plasma Radiance -->
-    <g id="trunkTipGroup" class="opacity-0 transition-opacity duration-200">
-      <circle id="trunkTipAura" r="16" fill="#ff5500" opacity="0.35" filter="url(#ambientLaserGlow)" />
-      <circle id="trunkTipMid" r="8" fill="#ff6a00" opacity="0.85" />
-      <circle id="trunkTip" r="4" fill="#ffffff" class="laser-head-node" />
-    </g>
-
-    <g id="leftTipGroup" class="opacity-0 transition-opacity duration-200">
-      <circle id="leftTipAura" r="16" fill="#ff5500" opacity="0.35" filter="url(#ambientLaserGlow)" />
-      <circle id="leftTipMid" r="8" fill="#ff6a00" opacity="0.85" />
-      <circle id="leftTip" r="4" fill="#ffffff" class="laser-head-node" />
-    </g>
-
-    <g id="rightTipGroup" class="opacity-0 transition-opacity duration-200">
-      <circle id="rightTipAura" r="16" fill="#ff5500" opacity="0.35" filter="url(#ambientLaserGlow)" />
-      <circle id="rightTipMid" r="8" fill="#ff6a00" opacity="0.85" />
-      <circle id="rightTip" r="4" fill="#ffffff" class="laser-head-node" />
-    </g>
-  </svg>
-
-  <!-- Laser Hardware Elements (Prism & Ground Nodes) positioned in absolute page coordinates at z-25 -->
-  <div id="laserHardwareOverlay" class="absolute inset-0 pointer-events-none z-25 overflow-visible" style="height: 100%;">
-    <!-- Optical Beam Splitter Prism (Positioned dynamically above the card by JS) -->
-    <div id="beamSplitterNode" class="absolute left-1/2 -translate-x-1/2 pointer-events-none opacity-0 transition-opacity duration-300 flex flex-col items-center" style="top: 0px;">
-      <div class="w-8 h-8 rounded-lg bg-neutral-950 border-2 border-orange-500 shadow-[0_0_24px_#ff5500] flex items-center justify-center prism-active">
-        <div class="w-2.5 h-2.5 bg-white rounded-sm shadow-[0_0_10px_#ffffff]"></div>
-      </div>
-      <div class="text-[9px] font-mono font-extrabold uppercase tracking-widest text-orange-600 bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-full border border-orange-400 shadow-md mt-2 whitespace-nowrap">
-        BEAM SPLITTER // DUAL AUDIT
-      </div>
-    </div>
-
-    <!-- Terminal Ground Nodes (Left & Right Bottom of Consultation Card) -->
-    <div id="leftGroundNode" class="absolute pointer-events-none opacity-0 transition-opacity duration-300 flex items-center gap-1.5" style="top: 0px; left: 0px;">
-      <div class="w-5 h-5 rounded-full bg-neutral-950 border-2 border-orange-500 flex items-center justify-center shadow-[0_0_16px_#ff5500]">
-        <div class="w-2 h-2 rounded-full bg-white shadow-[0_0_8px_#ffffff]"></div>
-      </div>
-    </div>
-    <div id="rightGroundNode" class="absolute pointer-events-none opacity-0 transition-opacity duration-300 flex items-center gap-1.5" style="top: 0px; left: 0px;">
-      <div class="w-5 h-5 rounded-full bg-neutral-950 border-2 border-orange-500 flex items-center justify-center shadow-[0_0_16px_#ff5500]">
-        <div class="w-2 h-2 rounded-full bg-white shadow-[0_0_8px_#ffffff]"></div>
-      </div>
-    </div>
-  </div>
 
   <!-- ================= SECTION 1: WHAT OUR CLIENTS SAY ================= -->
   <section id="testimonials-section" class="min-h-screen relative flex flex-col justify-between bg-dot-matrix-dark pb-12 pt-6">
     
-    <!-- Top Ceiling Laser Emitter Pod -->
-    <div class="absolute top-0 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center pointer-events-none">
-      <div class="w-12 h-3.5 bg-neutral-900 border-x border-b border-orange-500/60 rounded-b-lg shadow-lg flex items-center justify-center">
-        <div class="w-4 h-1.5 rounded-full bg-orange-500 animate-pulse shadow-[0_0_8px_#ff5500]"></div>
-      </div>
-      <div class="w-1.5 h-1 bg-gradient-to-b from-orange-500 to-transparent"></div>
-    </div>
-
     <!-- Ambient Radial Light at the top -->
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[720px] h-[340px] bg-orange-600/15 blur-[140px] rounded-full pointer-events-none z-0"></div>
 
-    <!-- Static Background Guide Line -->
-    <div class="vertical-guide-ambient"></div>
-
-    <!-- Section Header Protected with Dark Optical Shield Backdrop:
-         Laser passes BEHIND this plate so it NEVER cuts through the text! -->
+    <!-- Section Header -->
     <header class="relative z-30 pt-16 md:pt-20 pb-4 text-center px-4 max-w-4xl mx-auto pointer-events-auto">
       <div class="inline-block px-6 sm:px-10 py-5 rounded-3xl bg-[#0b0b0c]/95 backdrop-blur-md border border-neutral-800/90 shadow-2xl shadow-black/80">
         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/30 text-orange-500 text-xs font-mono font-bold uppercase tracking-wider mb-3">
@@ -248,7 +102,7 @@
       </div>
     </header>
 
-    <!-- Main Carousel Card Wrapper (Layered at z-30) -->
+    <!-- Main Carousel Card Wrapper -->
     <main class="relative z-30 flex-1 flex flex-col items-center justify-center px-4 sm:px-6 my-auto py-4">
       <div class="relative w-full max-w-4xl flex items-center justify-center">
 
@@ -270,7 +124,7 @@
           <i data-lucide="chevron-right" class="w-6 h-6 stroke-[2.5]"></i>
         </button>
 
-        <!-- Testimonial Dark Card (Fully opaque background covering laser on the back) -->
+        <!-- Testimonial Dark Card -->
         <div class="w-full rounded-2xl border border-neutral-800/90 p-5 sm:p-7 md:p-8 testimonial-solid-card relative z-30">
           
           <div id="slideContent" class="slide-fade grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 items-center">
@@ -342,14 +196,8 @@
 
       </div>
 
-      <!-- Crosshair Accent & Pagination Dots -->
+      <!-- Pagination Dots -->
       <div class="relative z-30 flex flex-col items-center mt-6">
-        <!-- Precision Laser Reticle Indicator -->
-        <div class="relative flex items-center justify-center my-2">
-          <div class="w-8 h-[2px] bg-[#ff5500] shadow-[0_0_12px_#ff5500]"></div>
-          <div class="absolute w-2 h-2 rounded-full border border-orange-400 bg-white shadow-[0_0_8px_#ff5500]"></div>
-        </div>
-
         <div id="dotsContainer" class="flex items-center space-x-2.5 mt-2">
           <!-- Rendered via JS -->
         </div>
@@ -366,16 +214,11 @@
   </section>
 
   <!-- ================= SECTION 2: LET'S BUILD WITH QUALITY & TRUST ================= -->
-  <!-- Layered Architecture: Background is at z-0, while Content is at z-30.
-       This allows the Laser Canvas at z-20 to be 100% VISIBLE over the white section without obstruction! -->
-  <section id="consultation-section" class="text-neutral-900 py-16 md:py-24 px-4 sm:px-6 relative border-t border-neutral-300">
+  <section id="consultation-section" class="text-neutral-900 py-16 md:py-24 px-4 sm:px-6 relative border-t border-neutral-300 bg-dot-matrix-light">
     
-    <!-- Background Layer (Kept at z-0 so laser at z-20 sits ABOVE it) -->
-    <div class="absolute inset-0 bg-dot-matrix-light pointer-events-none z-0"></div>
-
     <div class="max-w-6xl mx-auto relative z-30">
       
-      <!-- Section Header with Optical Shield Backdrop (Laser passes cleanly behind) -->
+      <!-- Section Header -->
       <div class="text-center mb-10 md:mb-14 relative z-30">
         <div class="inline-block px-6 sm:px-10 py-5 rounded-3xl bg-white/95 backdrop-blur-md border border-neutral-200/90 shadow-xl shadow-black/5">
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 border border-orange-300 text-orange-700 text-xs font-mono font-bold uppercase tracking-wider mb-3">
@@ -391,7 +234,7 @@
         </div>
       </div>
 
-      <!-- Main Dual-Pane Consultation Card (Elevated to z-30) -->
+      <!-- Main Dual-Pane Consultation Card -->
       <div id="consultationCard" class="bg-white rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.18)] border border-neutral-300/80 overflow-hidden grid grid-cols-1 lg:grid-cols-12 items-stretch relative z-30">
         
         <!-- Left Column: Architectural Visual & Trust Proof -->
@@ -775,251 +618,6 @@
       if (touchEndX > touchStartX + 40) updateSlide(currentIndex - 1);
     }, { passive: true });
 
-    // ================= DYNAMIC LASER ANIMATION ENGINE =================
-    const overlaySvg = document.getElementById("laserCanvasOverlay");
-    
-    // Central Trunk Paths
-    const trunkCore = document.getElementById("trunkCore");
-    const trunkGlow = document.getElementById("trunkGlow");
-    const trunkAura = document.getElementById("trunkAura");
-    
-    // Left Branch Paths
-    const leftBranchCore = document.getElementById("leftBranchCore");
-    const leftBranchGlow = document.getElementById("leftBranchGlow");
-    const leftBranchAura = document.getElementById("leftBranchAura");
-    
-    // Right Branch Paths
-    const rightBranchCore = document.getElementById("rightBranchCore");
-    const rightBranchGlow = document.getElementById("rightBranchGlow");
-    const rightBranchAura = document.getElementById("rightBranchAura");
-
-    // Tip Node Groups
-    const trunkTipGroup = document.getElementById("trunkTipGroup");
-    const leftTipGroup = document.getElementById("leftTipGroup");
-    const rightTipGroup = document.getElementById("rightTipGroup");
-
-    // DOM Nodes
-    const consultationCard = document.getElementById("consultationCard");
-    const beamSplitterNode = document.getElementById("beamSplitterNode");
-    const leftGroundNode = document.getElementById("leftGroundNode");
-    const rightGroundNode = document.getElementById("rightGroundNode");
-    const laserStatusIndicator = document.getElementById("laserStatusIndicator");
-
-    let trunkLength = 0;
-    let branchLengthLeft = 0;
-    let branchLengthRight = 0;
-
-    let currentScroll = 0;
-    let targetScroll = 0;
-    const cornerRadius = 26;
-    const splitMarginAboveCard = 48;
-    const cardBorderOffset = 12; // Precise 12px neon halo offset framing the card
-
-    let lastCalculatedTop = -1;
-    let lastCalculatedHeight = -1;
-    let lastClientWidth = -1;
-
-    function recalculateLaserGeometry() {
-      if (!consultationCard) return;
-
-      const clientWidth = document.documentElement.clientWidth;
-      const pageHeight = Math.max(
-        document.body.scrollHeight, 
-        document.documentElement.scrollHeight,
-        document.body.offsetHeight
-      );
-
-      overlaySvg.setAttribute("viewBox", `0 0 ${clientWidth} ${pageHeight}`);
-      overlaySvg.style.height = `${pageHeight}px`;
-
-      const cardRect = consultationCard.getBoundingClientRect();
-      const currentScrollY = window.scrollY || document.documentElement.scrollTop;
-      const cardAbsoluteTop = cardRect.top + currentScrollY;
-      const cardAbsoluteBottom = cardAbsoluteTop + cardRect.height;
-      const cardAbsoluteLeft = cardRect.left + (window.scrollX || document.documentElement.scrollLeft);
-      const cardAbsoluteRight = cardAbsoluteLeft + cardRect.width;
-
-      // True horizontal center matching CSS left: 50%
-      const centerX = clientWidth / 2;
-      const splitY = cardAbsoluteTop - splitMarginAboveCard;
-
-      const leftTargetX = Math.max(16, cardAbsoluteLeft - cardBorderOffset);
-      const rightTargetX = Math.min(clientWidth - 16, cardAbsoluteRight + cardBorderOffset);
-
-      lastCalculatedTop = cardAbsoluteTop;
-      lastCalculatedHeight = cardRect.height;
-      lastClientWidth = clientWidth;
-
-      // Position Optical Beam Splitter Prism (centered on splitY)
-      if (beamSplitterNode) {
-        beamSplitterNode.style.top = `${splitY - 16}px`;
-      }
-
-      // Position Ground Terminal Nodes (centered precisely on bottom branch endpoints)
-      if (leftGroundNode) {
-        leftGroundNode.style.top = `${cardAbsoluteBottom - 10}px`;
-        leftGroundNode.style.left = `${leftTargetX - 10}px`;
-      }
-      if (rightGroundNode) {
-        rightGroundNode.style.top = `${cardAbsoluteBottom - 10}px`;
-        rightGroundNode.style.left = `${rightTargetX - 10}px`;
-      }
-
-      // 1. Trunk Path: Starts at (centerX, 0) top of page -> travels straight down behind testimonial -> split point
-      const trunkD = `M ${centerX} 0 L ${centerX} ${splitY}`;
-      trunkCore.setAttribute("d", trunkD);
-      trunkGlow.setAttribute("d", trunkD);
-      trunkAura.setAttribute("d", trunkD);
-      trunkLength = trunkCore.getTotalLength();
-
-      trunkCore.style.strokeDasharray = trunkLength;
-      trunkGlow.style.strokeDasharray = trunkLength;
-      trunkAura.style.strokeDasharray = trunkLength;
-
-      // 2. Left Branch: From Splitter -> smooth fillet turn -> runs down along the left flank of Consultation Card
-      const leftTargetX_ = Math.max(16, cardAbsoluteLeft - cardBorderOffset);
-      const leftD = `M ${centerX} ${splitY} 
-                     L ${leftTargetX_ + cornerRadius} ${splitY} 
-                     A ${cornerRadius} ${cornerRadius} 0 0 0 ${leftTargetX_} ${splitY + cornerRadius} 
-                     L ${leftTargetX_} ${cardAbsoluteBottom}`;
-      leftBranchCore.setAttribute("d", leftD);
-      leftBranchGlow.setAttribute("d", leftD);
-      leftBranchAura.setAttribute("d", leftD);
-      branchLengthLeft = leftBranchCore.getTotalLength();
-
-      leftBranchCore.style.strokeDasharray = branchLengthLeft;
-      leftBranchGlow.style.strokeDasharray = branchLengthLeft;
-      leftBranchAura.style.strokeDasharray = branchLengthLeft;
-
-      // 3. Right Branch: From Splitter -> smooth fillet turn -> runs down along the right flank of Consultation Card
-      const rightTargetX_ = Math.min(clientWidth - 16, cardAbsoluteRight + cardBorderOffset);
-      const rightD = `M ${centerX} ${splitY} 
-                      L ${rightTargetX_ - cornerRadius} ${splitY} 
-                      A ${cornerRadius} ${cornerRadius} 0 0 1 ${rightTargetX_} ${splitY + cornerRadius} 
-                      L ${rightTargetX_} ${cardAbsoluteBottom}`;
-      rightBranchCore.setAttribute("d", rightD);
-      rightBranchGlow.setAttribute("d", rightD);
-      rightBranchAura.setAttribute("d", rightD);
-      branchLengthRight = rightBranchCore.getTotalLength();
-
-      rightBranchCore.style.strokeDasharray = branchLengthRight;
-      rightBranchGlow.style.strokeDasharray = branchLengthRight;
-      rightBranchAura.style.strokeDasharray = branchLengthRight;
-    }
-
-    // Scroll listener with immediate event capture
-    window.addEventListener("scroll", () => {
-      targetScroll = window.scrollY || document.documentElement.scrollTop;
-    }, { passive: true });
-
-    window.addEventListener("resize", () => {
-      recalculateLaserGeometry();
-    });
-
-    // Auto-recalculate if images or fonts alter the layout dynamically
-    if (window.ResizeObserver && consultationCard) {
-      new ResizeObserver(() => {
-        recalculateLaserGeometry();
-      }).observe(consultationCard);
-    }
-
-    // Render loop with buttery smooth damping lerp (0.075 for slow, silky tracking)
-    function renderLaserFrame() {
-      currentScroll += (targetScroll - currentScroll) * 0.085;
-
-      if (!consultationCard || trunkLength === 0) {
-        requestAnimationFrame(renderLaserFrame);
-        return;
-      }
-
-      // Check if layout shifted (e.g. image finished loading)
-      const currentScrollY = window.scrollY || document.documentElement.scrollTop;
-      const cardRect = consultationCard.getBoundingClientRect();
-      const currentCardAbsTop = cardRect.top + currentScrollY;
-      if (Math.abs(currentCardAbsTop - lastCalculatedTop) > 3 || Math.abs(cardRect.height - lastCalculatedHeight) > 3 || document.documentElement.clientWidth !== lastClientWidth) {
-        recalculateLaserGeometry();
-      }
-
-      const splitY = lastCalculatedTop - splitMarginAboveCard;
-
-      // Split threshold: when optical splitter is near upper center of viewport
-      const scrollSplitThreshold = Math.max(1, splitY - (window.innerHeight * 0.45));
-      const scrollEndThreshold = scrollSplitThreshold + lastCalculatedHeight * 0.85;
-
-      // Central Trunk progress: Starts from top of page (0) and advances proportionally
-      const trunkProgress = Math.min(Math.max(currentScroll / scrollSplitThreshold, 0.015), 1);
-
-      // Apply stroke dash offset to trunk layers
-      const trunkOffset = trunkLength * (1 - trunkProgress);
-      trunkCore.style.strokeDashoffset = trunkOffset;
-      trunkGlow.style.strokeDashoffset = trunkOffset;
-      trunkAura.style.strokeDashoffset = trunkOffset;
-
-      // Position trunk spark head
-      if (trunkProgress > 0.01 && trunkProgress < 0.995) {
-        trunkTipGroup.classList.remove("opacity-0");
-        const pt = trunkCore.getPointAtLength(trunkLength * trunkProgress);
-        trunkTipGroup.setAttribute("transform", `translate(${pt.x}, ${pt.y})`);
-      } else {
-        trunkTipGroup.classList.add("opacity-0");
-      }
-
-      // Branch Progress: Initiates as trunk reaches the Optical Splitter Node
-      let branchProgress = 0;
-      if (currentScroll > scrollSplitThreshold) {
-        branchProgress = Math.min(Math.max((currentScroll - scrollSplitThreshold) / (scrollEndThreshold - scrollSplitThreshold), 0), 1);
-        
-        // Illuminate beam splitter
-        if (beamSplitterNode) {
-          beamSplitterNode.classList.remove("opacity-0");
-        }
-      } else {
-        if (beamSplitterNode) {
-          beamSplitterNode.classList.add("opacity-0");
-        }
-      }
-
-      // Apply stroke dash offset to branch layers
-      const leftOffset = branchLengthLeft * (1 - branchProgress);
-      leftBranchCore.style.strokeDashoffset = leftOffset;
-      leftBranchGlow.style.strokeDashoffset = leftOffset;
-      leftBranchAura.style.strokeDashoffset = leftOffset;
-
-      const rightOffset = branchLengthRight * (1 - branchProgress);
-      rightBranchCore.style.strokeDashoffset = rightOffset;
-      rightBranchGlow.style.strokeDashoffset = rightOffset;
-      rightBranchAura.style.strokeDashoffset = rightOffset;
-
-      // Position branch tip sparks
-      if (branchProgress > 0.02 && branchProgress < 0.995) {
-        leftTipGroup.classList.remove("opacity-0");
-        rightTipGroup.classList.remove("opacity-0");
-
-        const leftPt = leftBranchCore.getPointAtLength(branchLengthLeft * branchProgress);
-        leftTipGroup.setAttribute("transform", `translate(${leftPt.x}, ${leftPt.y})`);
-
-        const rightPt = rightBranchCore.getPointAtLength(branchLengthRight * branchProgress);
-        rightTipGroup.setAttribute("transform", `translate(${rightPt.x}, ${rightPt.y})`);
-
-        laserStatusIndicator.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Dual Perimeter Laser Tracing`;
-      } else {
-        leftTipGroup.classList.add("opacity-0");
-        rightTipGroup.classList.add("opacity-0");
-
-        if (branchProgress >= 0.995) {
-          if (leftGroundNode) leftGroundNode.classList.remove("opacity-0");
-          if (rightGroundNode) rightGroundNode.classList.remove("opacity-0");
-          laserStatusIndicator.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span> Ground Anchored: Dual Circuit Closed`;
-        } else {
-          if (leftGroundNode) leftGroundNode.classList.add("opacity-0");
-          if (rightGroundNode) rightGroundNode.classList.add("opacity-0");
-          laserStatusIndicator.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span> Laser Audit: Active`;
-        }
-      }
-
-      requestAnimationFrame(renderLaserFrame);
-    }
-
     // Form submission feedback
     const consultationForm = document.getElementById("consultationForm");
     const toast = document.getElementById("toastNotification");
@@ -1041,16 +639,8 @@
 
     // Startup initialization
     window.addEventListener("DOMContentLoaded", () => {
-      targetScroll = window.scrollY || document.documentElement.scrollTop;
-      currentScroll = targetScroll;
       buildDots();
       lucide.createIcons();
-      recalculateLaserGeometry();
-      requestAnimationFrame(renderLaserFrame);
-    });
-
-    window.addEventListener("load", () => {
-      recalculateLaserGeometry();
     });
   </script>
 </body>
