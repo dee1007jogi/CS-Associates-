@@ -110,8 +110,15 @@ export const SevenStageProcess: React.FC<SevenStageProcessProps> = ({
             </div>
           </motion.div>
 
-          {/* Stage Details - Glassmorphism card */}
-          <div className="rounded-2xl bg-white/5 border border-white/10 p-6 sm:p-10 backdrop-blur-xl shadow-[0_24px_48px_-8px_rgba(0,0,0,0.5)]">
+          {/* Stage Details - Glassmorphism card (Landing Target for Hard Hat Rig) */}
+          <div id="process-stage-card" className="relative rounded-2xl bg-white/5 border border-white/10 p-6 sm:p-10 backdrop-blur-xl shadow-[0_24px_48px_-8px_rgba(0,0,0,0.5)]">
+            
+            {/* Landing Target Anchor for Fallen Hard Hat in Top Right Corner */}
+            <div id="helmetRestAnchor" className="absolute -top-10 -right-2 sm:-top-14 sm:-right-4 w-28 sm:w-32 h-28 pointer-events-none z-30 flex items-center justify-center">
+              {/* Expanding Shockwave Pulse on Touchdown */}
+              <div id="landingImpactPulse" className="absolute inset-0 rounded-full border-2 border-orange-500 bg-orange-500/20 scale-0 transition-all duration-1000 ease-out pointer-events-none" />
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
               
               {/* Left Column: Stage Details & Deliverables (ENTRANCE FROM LEFT) */}

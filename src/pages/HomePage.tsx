@@ -7,6 +7,7 @@ import { FounderSection } from '../components/FounderSection';
 import { BlueprintToRealitySection } from '../components/BlueprintToRealitySection';
 import { WhyCsAssociatesSection } from '../components/WhyCsAssociatesSection';
 import { WhiteThemeSection } from '../components/WhiteThemeSection';
+import { HangingHardHatRig } from '../components/HangingHardHatRig';
 import { Gallery3D } from '../components/Gallery3D';
 import { SevenStageProcess } from '../components/SevenStageProcess';
 import { ServicesSection } from '../components/ServicesSection';
@@ -97,6 +98,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenConsultation }) => {
       <div id="spatial-gallery" className="bg-neutral-950 border-t border-neutral-800 relative z-20">
         <Gallery3D />
       </div>
+
+      {/* Hanging Chain Rigging & 3D Hard Hat Physics (Spans Section 07 to Section 08) */}
+      <HangingHardHatRig />
 
       {/* SECTION 07: Quality Standard & Client Protection Matrix - WHITE THEME POSTER */}
       <motion.div
