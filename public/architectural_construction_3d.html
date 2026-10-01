@@ -901,9 +901,10 @@
       camera.position.set(16.5, 95.0, 142.0);
       updateCameraOffset();
 
+      const isMobileDevice = window.innerWidth < 768;
       renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false, powerPreference: "high-performance" });
       renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setPixelRatio(isMobileDevice ? Math.min(window.devicePixelRatio, 1.5) : Math.min(window.devicePixelRatio, 2));
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -929,8 +930,8 @@
       keyLight.target.position.set(18, 10, 0);
       scene.add(keyLight.target);
       keyLight.castShadow = true;
-      keyLight.shadow.mapSize.width = 2048;
-      keyLight.shadow.mapSize.height = 2048;
+      keyLight.shadow.mapSize.width = isMobileDevice ? 1024 : 1536;
+      keyLight.shadow.mapSize.height = isMobileDevice ? 1024 : 1536;
       keyLight.shadow.camera.near = 5;
       keyLight.shadow.camera.far = 160;
       keyLight.shadow.camera.left = -45;
@@ -2185,11 +2186,38 @@
       updateCameraOffset();
       camera.updateProjectionMatrix();
       renderer.setSize(width, height);
+      const isMobileDevice = width < 768;
+      renderer.setPixelRatio(isMobileDevice ? Math.min(window.devicePixelRatio, 1.5) : Math.min(window.devicePixelRatio, 2));
     }
 
+    let isSceneVisible = true;
     let clock = new THREE.Clock();
+
+    // IntersectionObserver to pause rendering when off-screen
+    if ('IntersectionObserver' in window) {
+      const canvasObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          isSceneVisible = entry.isIntersecting;
+        });
+      }, { threshold: 0.01 });
+      const c = document.getElementById('c') || document.querySelector('canvas');
+      if (c) canvasObserver.observe(c);
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        isSceneVisible = false;
+      }
+    });
+
     function animate() {
       requestAnimationFrame(animate);
+
+      // ONLY render Three.js if canvas is actually visible on screen
+      if (!isSceneVisible || document.hidden) {
+        clock.getDelta(); // keep delta clean without jumps when resumed
+        return;
+      }
 
       const delta = clock.getDelta();
       const elapsedTime = clock.getElapsedTime();
@@ -2608,6 +2636,9 @@
             controls.enabled = true;
           }
           applyCameraStageProgress(progress);
+        } else if (event.data.type === 'SET_VISIBILITY') {
+          isSceneVisible = Boolean(event.data.isVisible);
+        }
         }
       }
     });

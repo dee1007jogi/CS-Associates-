@@ -20,6 +20,10 @@ export const ConstructionHero3D: React.FC<ConstructionHero3DProps> = ({
   const animFrameRef = useRef<number | null>(null);
 
   const scrollToNextSection = useCallback(() => {
+    if (window.__lenis) {
+      window.__lenis.scrollTo('#' + nextSectionId, { duration: 1.2 });
+      return;
+    }
     const el = document.getElementById(nextSectionId);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -221,6 +225,34 @@ export const ConstructionHero3D: React.FC<ConstructionHero3DProps> = ({
       window.removeEventListener('touchmove', handleTouchMove);
     };
   }, [handleScrollDelta]);
+
+  // Pause 3D WebGL rendering when hero canvas is scrolled off-screen to free 100% GPU/CPU
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || !('IntersectionObserver' in window)) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const isVisible = entry.isIntersecting;
+          if (iframeRef.current && iframeRef.current.contentWindow) {
+            iframeRef.current.contentWindow.postMessage(
+              {
+                type: 'SET_VISIBILITY',
+                isVisible
+              },
+              '*'
+            );
+          }
+        });
+      },
+      { threshold: 0.01 }
+    );
+
+    observer.observe(el);
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div 

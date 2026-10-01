@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { ScrollToTop } from './components/ScrollToTop';
+import { SmoothScroll } from './components/SmoothScroll';
 import { Footer } from './components/Footer';
 import { ConsultationModal } from './components/ConsultationModal';
 
@@ -22,6 +23,9 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      {/* Lenis Smooth Virtual Scrolling Engine */}
+      <SmoothScroll />
+
       <div className="min-h-screen bg-neutral-950 text-neutral-100 flex flex-col font-sans selection:bg-orange-500 selection:text-white relative pb-20 md:pb-0">
         
         {/* Scroll to Top on Page Route Change */}

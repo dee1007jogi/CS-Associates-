@@ -464,9 +464,10 @@
     camera.position.set(24, 38, 42);
     camera.lookAt(2, 6, 0);
 
+    const isMobileDevice = window.innerWidth < 768;
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(isMobileDevice ? Math.min(window.devicePixelRatio, 1.5) : Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.30;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -481,8 +482,8 @@
     const sunLight = new THREE.DirectionalLight(0xffecd1, 1.8);
     sunLight.position.set(-28, 42, 28);
     sunLight.castShadow = true;
-    sunLight.shadow.mapSize.width = 2048;
-    sunLight.shadow.mapSize.height = 2048;
+    sunLight.shadow.mapSize.width = isMobileDevice ? 1024 : 1536;
+    sunLight.shadow.mapSize.height = isMobileDevice ? 1024 : 1536;
     sunLight.shadow.bias = -0.0001;
     scene.add(sunLight);
 
@@ -1493,7 +1494,32 @@
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      const isMobileDevice = window.innerWidth < 768;
+      renderer.setPixelRatio(isMobileDevice ? Math.min(window.devicePixelRatio, 1.5) : Math.min(window.devicePixelRatio, 2));
+    });
+
+    let isSceneVisible = true;
+
+    // IntersectionObserver to pause Three.js loop when off-screen
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          isSceneVisible = entry.isIntersecting;
+        });
+      }, { threshold: 0.01 });
+      observer.observe(container);
+    }
+
+    window.addEventListener('message', (event) => {
+      if (event.data && event.data.type === 'SET_VISIBILITY') {
+        isSceneVisible = Boolean(event.data.isVisible);
+      }
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        isSceneVisible = false;
+      }
     });
 
     /* ==========================================================================
@@ -1505,6 +1531,12 @@
 
     function animate() {
       requestAnimationFrame(animate);
+
+      // ONLY render Three.js if canvas is actually visible on screen
+      if (!isSceneVisible || document.hidden) {
+        clock.getDelta(); // flush delta
+        return;
+      }
 
       const delta = clock.getDelta();
       const elapsedTime = clock.getElapsedTime();
