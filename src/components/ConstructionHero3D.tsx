@@ -315,11 +315,11 @@ export const ConstructionHero3D: React.FC<ConstructionHero3DProps> = ({
           })}
         </div>
 
-        {/* Mobile Action Buttons: Call & Consult (Bottom Side) */}
-        <div className="pointer-events-auto flex sm:hidden items-center justify-center gap-2.5 w-full max-w-xs">
+        {/* Mobile Action Buttons: Call & Consult (Elevated higher near middle) */}
+        <div className="pointer-events-auto flex sm:hidden items-center justify-center gap-2.5 w-full max-w-xs mb-14">
           <a
             href="tel:8296266389"
-            className="flex-1 py-2.5 px-3.5 rounded-xl bg-neutral-900/95 backdrop-blur-md text-white font-bold text-xs flex items-center justify-center gap-1.5 border border-neutral-700/80 shadow-xl active:scale-95 transition-all"
+            className="flex-1 py-2.5 px-3.5 rounded-xl bg-neutral-900/95 backdrop-blur-xl text-white font-bold text-xs flex items-center justify-center gap-1.5 border border-neutral-700/80 shadow-2xl shadow-black/60 active:scale-95 transition-all"
             title="Call CS Associates Desk"
           >
             <Phone className="w-3.5 h-3.5 text-orange-400" />
@@ -327,7 +327,7 @@ export const ConstructionHero3D: React.FC<ConstructionHero3DProps> = ({
           </a>
           <button
             onClick={onOpenConsultation}
-            className="flex-1 py-2.5 px-3.5 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-xs flex items-center justify-center gap-1 shadow-xl shadow-orange-500/30 active:scale-95 transition-all cursor-pointer"
+            className="flex-1 py-2.5 px-3.5 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-xs flex items-center justify-center gap-1 shadow-2xl shadow-orange-500/40 active:scale-95 transition-all cursor-pointer"
             title="Schedule Consultation"
           >
             <span>Consult</span>
