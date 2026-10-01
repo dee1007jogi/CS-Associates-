@@ -4,6 +4,7 @@ import { Navbar } from './components/Navbar';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { ScrollToTop } from './components/ScrollToTop';
 import { SmoothScroll } from './components/SmoothScroll';
+import { BackToTop } from './components/BackToTop';
 import { Footer } from './components/Footer';
 import { ConsultationModal } from './components/ConsultationModal';
 
@@ -67,6 +68,9 @@ export default function App() {
             <span className="font-sans">Chat on WhatsApp</span>
           </a>
         </div>
+
+        {/* Global Floating Back To Top Button */}
+        <BackToTop />
 
         {/* Global Native Consultation Modal / Bottom Sheet */}
         <ConsultationModal
