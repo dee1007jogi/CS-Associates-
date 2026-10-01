@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Architectural Typology Evolution CAD Engine</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      background-color: #f0f4f8;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    #grid-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.55;
+      z-index: 1;
+      transition: opacity 0.4s ease;
+    }
+    .cad-panel {
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 20px 40px -15px rgba(15, 34, 58, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.9) inset;
+    }
+    input[type=range] {
+      -webkit-appearance: none;
+      background: rgba(30, 64, 100, 0.18);
+      height: 4px;
+      border-radius: 2px;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 14px;
+      width: 14px;
+      border-radius: 50%;
+      background: #0284c7;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(2, 132, 199, 0.5);
+      transition: transform 0.15s ease;
+    }
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.3);
+    }
+    .scroll-notch {
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .scroll-notch.active {
+      background-color: #0284c7;
+      color: #ffffff;
+      font-weight: 700;
+      box-shadow: 0 6px 16px rgba(2, 132, 199, 0.35);
+    }
+  </style>
+</head>
+<body class="relative w-screen h-screen overflow-hidden">
+
+  <div id="canvas-container" class="fixed inset-0 w-full h-full z-0"></div>
+  <canvas id="grid-bg"></canvas>
+
+  <!-- Top Navigation & Information Header -->
+  <header class="fixed top-4 left-4 right-4 pointer-events-none flex flex-wrap justify-between items-start gap-4 z-20">
+    <div class="pointer-events-auto bg-white/95 cad-panel rounded-2xl p-4 border border-slate-200/90 max-w-md transition-all duration-300">
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-cyan-600 animate-pulse"></span>
+          <h1 class="text-xs font-bold tracking-wider text-slate-900 uppercase font-mono">BIM // Neo-Architectural Morphology</h1>
+        </div>
+        <span id="badge-scale" class="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-100 text-cyan-800 font-semibold border border-cyan-300">STAGE 1 / 5</span>
+      </div>
+      <p id="typo-subtitle" class="text-xs text-slate-600 mt-1 font-medium leading-relaxed">Scroll wheel or drag scrubber to morph through latest architectural typologies.</p>
+      
+      <div class="mt-3 grid grid-cols-3 gap-2 text-[10px] font-mono border-t border-slate-200/80 pt-2 text-slate-600">
+        <div>ZONING: <strong class="text-slate-900 block font-semibold" id="hud-zoning">RESIDENTIAL R-1</strong></div>
+        <div>FOOTPRINT: <strong class="text-slate-900 block font-semibold" id="hud-footprint">180 m²</strong></div>
+        <div>HEIGHT: <strong class="text-slate-900 block font-semibold" id="hud-height">+4.80 m</strong></div>
+      </div>
+    </div>
+
+    <!-- Theme & Display Controls -->
+    <div class="pointer-events-auto flex flex-wrap gap-2 items-center bg-white/95 cad-panel p-2 rounded-2xl border border-slate-200/90 shadow-xl">
+      <button id="btn-theme-cad" class="px-3 py-1.5 rounded-xl text-xs font-mono font-medium transition-all bg-slate-900 text-white shadow-sm">
+        CAD Inking
+      </button>
+      <button id="btn-theme-holo" class="px-3 py-1.5 rounded-xl text-xs font-mono font-medium transition-all text-slate-600 hover:bg-slate-100">
+        Cyber Blueprint
+      </button>
+      <button id="btn-theme-clay" class="px-3 py-1.5 rounded-xl text-xs font-mono font-medium transition-all text-slate-600 hover:bg-slate-100">
+        Architectural PBR
+      </button>
+      <div class="h-4 w-px bg-slate-200 mx-1"></div>
+      <button id="btn-auto-rotate" class="px-2.5 py-1.5 rounded-xl text-xs font-mono text-slate-700 hover:bg-slate-100 transition-colors flex items-center gap-1.5" title="Toggle Turntable Rotation">
+        <svg class="w-3.5 h-3.5 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        <span>Turntable</span>
+      </button>
+      <button id="btn-reset-cam" class="px-2.5 py-1.5 rounded-xl text-xs font-mono text-slate-700 hover:bg-slate-100 transition-colors">
+        Reset View
+      </button>
+    </div>
+  </header>
+
+  <!-- Left Floating Typology Navigation Menu -->
+  <aside class="fixed left-5 top-1/2 -translate-y-1/2 z-20 hidden lg:flex flex-col gap-2 pointer-events-auto bg-white/95 cad-panel p-3 rounded-2xl border border-slate-200/90 shadow-2xl">
+    <div class="text-[10px] font-mono text-slate-400 font-bold tracking-wider uppercase px-2 mb-1">Architectural Series 2026</div>
+    <button data-stage="0" class="scroll-notch active text-left px-3 py-2 rounded-xl text-xs font-mono text-slate-700 hover:bg-slate-100 flex items-center justify-between gap-4">
+      <span>01. Minimalist Pavilion</span>
+      <span class="text-[10px] opacity-60">180m²</span>
+    </button>
+    <button data-stage="1" class="scroll-notch text-left px-3 py-2 rounded-xl text-xs font-mono text-slate-700 hover:bg-slate-100 flex items-center justify-between gap-4">
+      <span>02. Cantilever Pool Villa</span>
+      <span class="text-[10px] opacity-60">620m²</span>
+    </button>
+    <button data-stage="2" class="scroll-notch text-left px-3 py-2 rounded-xl text-xs font-mono text-slate-700 hover:bg-slate-100 flex items-center justify-between gap-4">
+      <span>03. Terraced Bio-Residence</span>
+      <span class="text-[10px] opacity-60">4,800m²</span>
+    </button>
+    <button data-stage="3" class="scroll-notch text-left px-3 py-2 rounded-xl text-xs font-mono text-slate-700 hover:bg-slate-100 flex items-center justify-between gap-4">
+      <span>04. Civic Medical Campus</span>
+      <span class="text-[10px] opacity-60">24,000m²</span>
+    </button>
+    <button data-stage="4" class="scroll-notch text-left px-3 py-2 rounded-xl text-xs font-mono text-slate-700 hover:bg-slate-100 flex items-center justify-between gap-4">
+      <span>05. Parametric Hyper-Tower</span>
+      <span class="text-[10px] opacity-60">110,000m²</span>
+    </button>
+  </aside>
+
+  <!-- Bottom Timeline & Explode Controls -->
+  <div class="fixed bottom-5 left-1/2 -translate-x-1/2 z-20 w-11/12 max-w-2xl pointer-events-auto">
+    <div class="bg-white/95 cad-panel rounded-2xl p-4 border border-slate-200/90 shadow-2xl flex flex-col gap-3">
+      
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-cyan-600 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+          <span class="text-xs font-mono font-bold text-slate-800 uppercase tracking-wider">Scroll-Driven Morphogenesis</span>
+        </div>
+        <span id="scroll-percentage" class="text-xs font-mono font-bold text-cyan-800 bg-cyan-50 px-2 py-0.5 rounded border border-cyan-200">0.0% // MINIMALIST PAVILION</span>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <span class="text-[10px] font-mono text-slate-400 font-bold">PAVILION</span>
+        <input id="slider-scroll" type="range" min="0" max="400" value="0" step="1" class="flex-1 cursor-pointer accent-cyan-600" />
+        <span class="text-[10px] font-mono text-slate-400 font-bold">HYPER-TOWER</span>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between pt-1 gap-2 border-t border-slate-200/70 text-xs font-mono">
+        <div class="flex items-center gap-2">
+          <span class="text-[11px] text-slate-600 font-semibold">STRUCTURAL DISASSEMBLY:</span>
+          <input id="slider-explode" type="range" min="0" max="100" value="25" class="w-28 cursor-pointer accent-slate-800" />
+          <span id="explode-val" class="text-[10px] font-bold text-slate-800">25%</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="btn-toggle-cycle" class="px-3.5 py-1.5 rounded-xl bg-cyan-700 text-white font-medium hover:bg-cyan-800 transition-colors shadow-sm text-[11px] flex items-center gap-1.5">
+            <span>▶ Auto-Morph Tour</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Realtime Telemetry Overlay (Bottom Right) -->
+  <div class="fixed bottom-5 right-5 hidden md:flex flex-col gap-1.5 pointer-events-none z-10 font-mono text-[10px] text-slate-500 bg-white/85 cad-panel p-3 rounded-2xl border border-slate-200/90 shadow-lg">
+    <div class="flex items-center justify-between gap-6">
+      <span>PMC CONTRACT:</span>
+      <span class="text-cyan-800 font-bold" id="telemetry-contract">EPC TURNKEY / PMC</span>
+    </div>
+    <div class="flex items-center justify-between gap-6">
+      <span>STRUCTURAL SYSTEM:</span>
+      <span class="text-slate-900 font-bold" id="telemetry-struct">MASS TIMBER & SLENDER STEEL</span>
+    </div>
+    <div class="flex items-center justify-between gap-6">
+      <span>FACADE ENVELOPE:</span>
+      <span class="text-slate-900 font-bold" id="telemetry-facade">TRIPLE-GLAZED LOW-E CURTAIN</span>
+    </div>
+    <div class="flex items-center justify-between gap-6">
+      <span>OCCUPANCY RATING:</span>
+      <span class="text-slate-900 font-bold" id="telemetry-occupancy">LUXURY RESIDENTIAL (4 P)</span>
+    </div>
+    <div class="flex items-center justify-between gap-6">
+      <span>SUSTAINABILITY:</span>
+      <span class="text-emerald-700 font-bold" id="telemetry-sustain">LEED PLATINUM // NET-ZERO</span>
+    </div>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+    const container = document.getElementById('canvas-container');
+    const gridCanvas = document.getElementById('grid-bg');
+    const sliderScroll = document.getElementById('slider-scroll');
+    const sliderExplode = document.getElementById('slider-explode');
+    const explodeValLabel = document.getElementById('explode-val');
+    const scrollPercentageLabel = document.getElementById('scroll-percentage');
+    const badgeScale = document.getElementById('badge-scale');
+    const typoSubtitle = document.getElementById('typo-subtitle');
+    const hudZoning = document.getElementById('hud-zoning');
+    const hudFootprint = document.getElementById('hud-footprint');
+    const hudHeight = document.getElementById('hud-height');
+    const telemetryStruct = document.getElementById('telemetry-struct');
+    const telemetryFacade = document.getElementById('telemetry-facade');
+    const telemetryOccupancy = document.getElementById('telemetry-occupancy');
+    const telemetryContract = document.getElementById('telemetry-contract');
+    const telemetrySustain = document.getElementById('telemetry-sustain');
+
+    let scene, camera, renderer, controls;
+    let autoRotate = false;
+    let isAutoTour = false;
+    let tourClock = 0;
+
+    let currentScrollProgress = 0.0;
+    let targetScrollProgress = 0.0;
+    let explodeAmount = 0.25;
+
+    const masterWorldGroup = new THREE.Group();
+    const dynamicGroundGroup = new THREE.Group();
+
+    const typologyGroups = [];
+    const registeredMeshes = [];
+    const registeredLines = [];
+
+    let currentTheme = 'cad';
+    const materialThemes = {
+      cad: {
+        background: 0xf0f4f8,
+        gridColor: 'rgba(44, 82, 112, 0.12)',
+        majorGridColor: 'rgba(44, 82, 112, 0.28)',
+        solidFace: new THREE.MeshBasicMaterial({
+          color: 0xffffff,
+          polygonOffset: true,
+          polygonOffsetFactor: 1,
+          polygonOffsetUnits: 1
+        }),
+        accentFace: new THREE.MeshBasicMaterial({
+          color: 0xe5eef5,
+          polygonOffset: true,
+          polygonOffsetFactor: 1,
+          polygonOffsetUnits: 1
+        }),
+        darkTrimFace: new THREE.MeshBasicMaterial({
+          color: 0x22303c,
+          polygonOffset: true,
+          polygonOffsetFactor: 1,
+          polygonOffsetUnits: 1
+        }),
+        glassFace: new THREE.MeshBasicMaterial({
+          color: 0xcae5f7,
+          transparent: true,
+          opacity: 0.42,
+          polygonOffset: true,
+          polygonOffsetFactor: 1,
+          polygonOffsetUnits: 1
+        }),
+        waterFace: new THREE.MeshBasicMaterial({
+          color: 0x98d4f5,
+          transparent: true,
+          opacity: 0.75,
+          polygonOffset: true,
+          polygonOffsetFactor: 1,
+          polygonOffsetUnits: 1
+        }),
+        greeneryFace: new THREE.MeshBasicMaterial({
+          color: 0xd4ecd5,
+          polygonOffset: true,
+          polygonOffsetFactor: 1,
+          polygonOffsetUnits: 1
+        }),
+        lineMaterial: new THREE.LineBasicMaterial({
+          color: 0x264964,
+          linewidth: 1.5,
+          transparent: true,
+          opacity: 0.95
+        }),
+        accentLineMaterial: new THREE.LineBasicMaterial({
+          color: 0x0c2538,
+          linewidth: 2.0
+        })
+      },
+      holo: {
+        background: 0x050c14,
+        gridColor: 'rgba(0, 240, 255, 0.08)',
+        majorGridColor: 'rgba(0, 240, 255, 0.22)',
+        solidFace: new THREE.MeshBasicMaterial({
+          color: 0x091624,
+          polygonOffset: true,
+          polygonOffsetFactor: 1,
+          polygonOffsetUnits: 1
+        }),
+        accentFace: new THREE.MeshBasicMaterial({
+          color: 0x0f253a,
+          polygonOffset: true,
+          polygonOffsetFactor: 1,
+          polygonOffsetUnits: 1
+        }),
+        darkTrimFace: new THREE.MeshBasicMaterial({
+          color: 0x002c42,
+          polygonOffset: true,
+          polygonOffsetFactor: 1,
+          polygonOffsetUnits: 1
+        }),
+        glassFace: new THREE.MeshBasicMaterial({
+          color: 0x005978,
+          transparent: true,
+          opacity: 0.45,
+          polygonOffset: true,
+          polygonOffsetFactor: 1,
+          polygonOffsetUnits: 1
+        }),
+        waterFace: new THREE.MeshBasicMaterial({
+          color: 0x00e1ff,
+          transparent: true,
+          opacity: 0.65,
+          polygonOffset: true,
+          polygonOffsetFactor: 1,
+          polygonOffsetUnits: 1
+        }),
+        greeneryFace: new THREE.MeshBasicMaterial({
+          color: 0x006b5b,
+          polygonOffset: true,
+          polygonOffsetFactor: 1,
+          polygonOffsetUnits: 1
+        }),
+        lineMaterial: new THREE.LineBasicMaterial({
+          color: 0x00e8ff,
+          linewidth: 1.5,
+          transparent: true,
+          opacity: 0.95
+        }),
+        accentLineMaterial: new THREE.LineBasicMaterial({
+          color: 0x54ffd5,
+          linewidth: 2.0
+        })
+      },
+      clay: {
+        background: 0xeaeef2,
+        gridColor: 'rgba(95, 110, 125, 0.1)',
+        majorGridColor: 'rgba(95, 110, 125, 0.22)',
+        solidFace: new THREE.MeshStandardMaterial({
+          color: 0xf6f4ef,
+          roughness: 0.45,
+          metalness: 0.05,
+          polygonOffset: true,
+          polygonOffsetFactor: 1,
+          polygonOffsetUnits: 1
+        }),
+        accentFace: new THREE.MeshStandardMaterial({
+          color: 0xdfd8cb,
+          roughness: 0.65,
+          metalness: 0.05
+        }),
+        darkTrimFace: new THREE.MeshStandardMaterial({
+          color: 0x313235,
+          roughness: 0.35,
+          metalness: 0.8
+        }),
+        glassFace: new THREE.MeshPhysicalMaterial({
+          color: 0xa9ccdc,
+          transparent: true,
+          opacity: 0.4,
+          roughness: 0.05,
+          transmission: 0.85,
+          ior: 1.52
+        }),
+        waterFace: new THREE.MeshStandardMaterial({
+          color: 0x489ec7,
+          roughness: 0.1,
+          metalness: 0.2,
+          transparent: true,
+          opacity: 0.8
+        }),
+        greeneryFace: new THREE.MeshStandardMaterial({
+          color: 0x769b76,
+          roughness: 0.8,
+          metalness: 0.0
+        }),
+        lineMaterial: new THREE.LineBasicMaterial({
+          color: 0x363029,
+          linewidth: 1.2,
+          transparent: true,
+          opacity: 0.55
+        }),
+        accentLineMaterial: new THREE.LineBasicMaterial({
+          color: 0x161311,
+          linewidth: 1.8
+        })
+      }
+    };
+
+    const typologiesData = [
+      {
+        name: "Minimalist Modern Pavilion",
+        subtitle: "Single-level cantilevered mass-timber villa with sunken fire lounge, frameless corner glazing, and solar carport.",
+        zoning: "RESIDENTIAL R-1 (SUBURBAN)",
+        footprint: "180 m²",
+        height: "+4.80 m",
+        contract: "EPC LUMP SUM RESIDENTIAL",
+        struct: "MASS TIMBER & BLACK STEEL",
+        facade: "CORNER LOW-E GLASS CURTAIN",
+        occupancy: "SINGLE FAMILY (4 P)",
+        sustain: "LEED PLATINUM // NET-ZERO",
+        cameraPos: new THREE.Vector3(-12, 8.5, 14),
+        camTarget: new THREE.Vector3(0, 2.4, 0),
+        groundScale: 1.05
+      },
+      {
+        name: "Biophilic Cantilever Pool Villa",
+        subtitle: "Sculptural two-story luxury residence featuring floating concrete trays, cantilevered infinity pool, and motorized brise-soleil.",
+        zoning: "ESTATE RESIDENTIAL",
+        footprint: "620 m²",
+        height: "+9.60 m",
+        contract: "EPC DESIGN-BUILD RESIDENTIAL",
+        struct: "POST-TENSIONED CONCRETE",
+        facade: "OPERABLE TIMBER BRISE-SOLEIL",
+        occupancy: "LUXURY RESIDENTIAL (8 P)",
+        sustain: "WELL CERTIFIED GOLD",
+        cameraPos: new THREE.Vector3(-16, 11, 20),
+        camTarget: new THREE.Vector3(0, 4.8, 0),
+        groundScale: 1.45
+      },
+      {
+        name: "Terraced Bio-Residential Complex",
+        subtitle: "Next-gen stepped multi-family housing with cascading sky-gardens, undulating balconies, and double-height ground gallery.",
+        zoning: "URBAN HIGH-DENSITY R-5",
+        footprint: "4,800 m²",
+        height: "+26.40 m",
+        contract: "FIDIC RED BOOK / PMC SUPERVISION",
+        struct: "HYBRID STEEL & COMPOSITE SLAB",
+        facade: "BIOPHILIC SKY-TERRACE LATTICE",
+        occupancy: "48 LUXURY RESIDENCES (160 P)",
+        sustain: "BREEAM OUTSTANDING",
+        cameraPos: new THREE.Vector3(-25, 20, 32),
+        camTarget: new THREE.Vector3(0, 12.0, 0),
+        groundScale: 2.1
+      },
+      {
+        name: "Civic Medical & Life Sciences Center",
+        subtitle: "Aerodynamic healthcare campus with double-cantilever trauma pavilion, ceramic facade fins, and elevated trauma helipad.",
+        zoning: "INSTITUTIONAL HEALTHCARE",
+        footprint: "24,000 m²",
+        height: "+39.50 m",
+        contract: "EPCM MAJOR HEALTHCARE",
+        struct: "SEISMIC MOMENT STEEL FRAME",
+        facade: "CERAMIC PHOTO-VOLTAIC BAGUETTES",
+        occupancy: "320 BEDS // 850 CLINICAL STAFF",
+        sustain: "LEED HEALTHCARE GOLD",
+        cameraPos: new THREE.Vector3(-35, 30, 45),
+        camTarget: new THREE.Vector3(0, 16.5, 0),
+        groundScale: 2.9
+      },
+      {
+        name: "Parametric Metropolis Hyper-Tower",
+        subtitle: "Iconic supertall tower featuring an aerodynamic diagrid exoskeleton, biophilic multi-story sky voids, and glass crown spire.",
+        zoning: "CBD COMMERCIAL / PENTHOUSE",
+        footprint: "110,000 m²",
+        height: "+128.00 m",
+        contract: "EPC MEGA-PROJECT CONCESSION",
+        struct: "MEGA-COLUMN & STEEL DIAGRID",
+        facade: "AERODYNAMIC DOUBLE-SKIN CAVITY",
+        occupancy: "COMMERCIAL & SKY-CLUB (4,200 P)",
+        sustain: "LEED PLATINUM // NET-ZERO",
+        cameraPos: new THREE.Vector3(-50, 56, 68),
+        camTarget: new THREE.Vector3(0, 40.0, 0),
+        groundScale: 3.9
+      }
+    ];
+
+    function renderBackgroundGrid() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      gridCanvas.width = w;
+      gridCanvas.height = h;
+      const ctx = gridCanvas.getContext('2d');
+      ctx.clearRect(0, 0, w, h);
+
+      const theme = materialThemes[currentTheme];
+      const spacing = 32;
+
+      ctx.strokeStyle = theme.gridColor;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (let x = 0; x < w; x += spacing) {
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, h);
+      }
+      for (let y = 0; y < h; y += spacing) {
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+      }
+      ctx.stroke();
+
+      ctx.strokeStyle = theme.majorGridColor;
+      ctx.lineWidth = 1.5;
+      const majorSpacing = spacing * 4;
+      ctx.beginPath();
+      for (let x = 0; x < w; x += majorSpacing) {
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, h);
+      }
+      for (let y = 0; y < h; y += majorSpacing) {
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+      }
+      ctx.stroke();
+    }
+
+    function initRenderer() {
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(materialThemes[currentTheme].background);
+
+      const aspect = window.innerWidth / window.innerHeight;
+      camera = new THREE.PerspectiveCamera(40, aspect, 0.1, 1000);
+      camera.position.copy(typologiesData[0].cameraPos);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.15;
+      container.appendChild(renderer.domElement);
+
+      controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.target.copy(typologiesData[0].camTarget);
+      controls.maxPolarAngle = Math.PI * 0.51;
+      controls.minDistance = 3;
+      controls.maxDistance = 220;
+
+      const ambientLight = new THREE.AmbientLight(0xffffff, 1.3);
+      scene.add(ambientLight);
+
+      const dirLight = new THREE.DirectionalLight(0xfffbf2, 1.4);
+      dirLight.position.set(35, 75, 45);
+      dirLight.castShadow = true;
+      dirLight.shadow.mapSize.width = 2048;
+      dirLight.shadow.mapSize.height = 2048;
+      dirLight.shadow.bias = -0.0001;
+      const d = 60;
+      dirLight.shadow.camera.left = -d;
+      dirLight.shadow.camera.right = d;
+      dirLight.shadow.camera.top = d;
+      dirLight.shadow.camera.bottom = -d;
+      scene.add(dirLight);
+
+      const fillLight = new THREE.DirectionalLight(0xd6e8fa, 0.7);
+      fillLight.position.set(-35, 35, -35);
+      scene.add(fillLight);
+
+      scene.add(masterWorldGroup);
+      masterWorldGroup.add(dynamicGroundGroup);
+
+      renderBackgroundGrid();
+    }
+
+    function createCadMesh(geometry, type = 'solid', customAngle = 26) {
+      const theme = materialThemes[currentTheme];
+      let mat = theme.solidFace;
+      if (type === 'glass') mat = theme.glassFace;
+      else if (type === 'accent') mat = theme.accentFace;
+      else if (type === 'trim') mat = theme.darkTrimFace;
+      else if (type === 'water') mat = theme.waterFace;
+      else if (type === 'greenery') mat = theme.greeneryFace;
+
+      const mesh = new THREE.Mesh(geometry, mat);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      mesh.userData = { matType: type };
+      registeredMeshes.push(mesh);
+
+      const edgesGeom = new THREE.EdgesGeometry(geometry, customAngle);
+      const lineMat = (type === 'trim' || type === 'accent') ? theme.accentLineMaterial : theme.lineMaterial;
+      const edgeLine = new THREE.LineSegments(edgesGeom, lineMat);
+      mesh.add(edgeLine);
+      registeredLines.push(edgeLine);
+
+      return mesh;
+    }
+
+    function buildDynamicGround() {
+      const mainPlate = createCadMesh(new THREE.BoxGeometry(18, 0.35, 18), 'accent');
+      mainPlate.position.set(0, -0.175, 0);
+      dynamicGroundGroup.add(mainPlate);
+
+      // Paved entrance driveway
+      const drive = createCadMesh(new THREE.BoxGeometry(6.0, 0.05, 8.0), 'trim');
+      drive.position.set(0, 0.01, 10.0);
+      dynamicGroundGroup.add(drive);
+
+      // Architectural site boundary markers
+      for (let i = 0; i < 4; i++) {
+        const border = createCadMesh(new THREE.BoxGeometry(20, 0.1, 0.4), 'trim');
+        const rot = (i * Math.PI) / 2;
+        border.position.set(Math.sin(rot) * 9.8, 0.05, Math.cos(rot) * 9.8);
+        border.rotation.y = rot;
+        dynamicGroundGroup.add(border);
+      }
+
+      // Minimalist architectural landscape planters
+      [[-8, 0.2, -6], [-8, 0.2, 2], [8, 0.2, -6], [8, 0.2, 2]].forEach(pos => {
+        const planter = createCadMesh(new THREE.BoxGeometry(1.6, 0.4, 3.2), 'solid');
+        planter.position.set(...pos);
+        const bush = createCadMesh(new THREE.BoxGeometry(1.4, 0.6, 3.0), 'greenery');
+        bush.position.set(pos[0], pos[1] + 0.4, pos[2]);
+        dynamicGroundGroup.add(planter, bush);
+      });
+    }
+
+    function buildHomeTypology() {
+      const group = new THREE.Group();
+      group.userData = { name: "Pavilion", explodeParts: [] };
+
+      // Tier 0: Floating Foundation & Sunken Fire Lounge
+      const tier0 = new THREE.Group();
+      const plinth = createCadMesh(new THREE.BoxGeometry(10.2, 0.35, 8.4), 'accent');
+      plinth.position.set(0, 0.175, 0);
+      tier0.add(plinth);
+
+      // Sunken terrace with firepit
+      const deck = createCadMesh(new THREE.BoxGeometry(4.8, 0.2, 3.8), 'solid');
+      deck.position.set(3.2, 0.1, 4.4);
+      const firePit = createCadMesh(new THREE.BoxGeometry(1.2, 0.3, 1.2), 'trim');
+      firePit.position.set(3.2, 0.25, 4.4);
+      const flameCore = createCadMesh(new THREE.BoxGeometry(0.8, 0.15, 0.8), 'accent');
+      flameCore.position.set(3.2, 0.35, 4.4);
+      tier0.add(deck, firePit, flameCore);
+      group.add(tier0);
+
+      // Tier 1: Living Pavilion & Frameless Corner Glass
+      const tier1 = new THREE.Group();
+      // Main architectural core volume
+      const coreVolume = createCadMesh(new THREE.BoxGeometry(4.6, 3.2, 6.2), 'solid');
+      coreVolume.position.set(-2.2, 1.95, -0.4);
+      tier1.add(coreVolume);
+
+      // Frameless glass lounge box
+      const glassRoom = createCadMesh(new THREE.BoxGeometry(5.2, 3.0, 4.8), 'glass');
+      glassRoom.position.set(2.0, 1.85, 0.6);
+      tier1.add(glassRoom);
+
+      // Slender architectural columns (Black steel HEB-100)
+      [[4.4, 1.85, 2.8], [4.4, 1.85, -1.6], [-0.5, 1.85, 2.8]].forEach(pt => {
+        const col = createCadMesh(new THREE.BoxGeometry(0.18, 3.2, 0.18), 'trim');
+        col.position.set(...pt);
+        tier1.add(col);
+      });
+
+      // Solar carport pergola on the left
+      const carportRoof = createCadMesh(new THREE.BoxGeometry(3.6, 0.15, 4.8), 'accent');
+      carportRoof.position.set(-6.2, 2.8, 0.6);
+      tier1.add(carportRoof);
+      for (let s = 0; s < 6; s++) {
+        const slat = createCadMesh(new THREE.BoxGeometry(3.4, 0.08, 0.2), 'trim');
+        slat.position.set(-6.2, 2.95, -1.2 + s * 0.7);
+        tier1.add(slat);
+      }
+      [-4.6, -7.8].forEach(cx => {
+        const carCol = createCadMesh(new THREE.BoxGeometry(0.15, 2.8, 0.15), 'trim');
+        carCol.position.set(cx, 1.4, 2.8);
+        tier1.add(carCol);
+      });
+
+      // Minimalist EV car wireframe mass
+      const carBase = createCadMesh(new THREE.BoxGeometry(2.0, 0.7, 3.8), 'trim');
+      carBase.position.set(-6.2, 0.45, 0.6);
+      const carCabin = createCadMesh(new THREE.BoxGeometry(1.7, 0.6, 2.2), 'glass');
+      carCabin.position.set(-6.2, 1.0, 0.3);
+      tier1.add(carBase, carCabin);
+
+      group.add(tier1);
+
+      // Tier 2: Cantilever Monopitch Floating Roof
+      const tier2 = new THREE.Group();
+      const mainRoof = createCadMesh(new THREE.BoxGeometry(9.6, 0.35, 7.8), 'accent');
+      mainRoof.position.set(0.6, 3.75, 0.4);
+      mainRoof.rotation.z = -0.04;
+      tier2.add(mainRoof);
+
+      // Rooftop solar glass skylight
+      const skylight = createCadMesh(new THREE.BoxGeometry(3.2, 0.12, 1.8), 'glass');
+      skylight.position.set(-1.4, 3.98, 0.4);
+      skylight.rotation.z = -0.04;
+      tier2.add(skylight);
+
+      // Extended cantilever fascia trim
+      const fascia = createCadMesh(new THREE.BoxGeometry(9.8, 0.45, 0.2), 'trim');
+      fascia.position.set(0.6, 3.8, 4.3);
+      tier2.add(fascia);
+
+      group.add(tier2);
+
+      group.userData.explodeParts = [
+        { group: tier0, factor: 0.0 },
+        { group: tier1, factor: 0.8 },
+        { group: tier2, factor: 2.2 }
+      ];
+
+      return group;
+    }
+
+    function buildVillaTypology() {
+      const group = new THREE.Group();
+      group.userData = { name: "Villa", explodeParts: [] };
+
+      // Tier 0: Ground Terraces & Cantilever Infinity Pool
+      const tier0 = new THREE.Group();
+      const groundSlab = createCadMesh(new THREE.BoxGeometry(13.6, 0.4, 12.0), 'accent');
+      groundSlab.position.set(0, 0.2, 0);
+      tier0.add(groundSlab);
+
+      // Floating cantilever infinity reflection pool
+      const poolTray = createCadMesh(new THREE.BoxGeometry(5.2, 0.6, 4.2), 'solid');
+      poolTray.position.set(5.2, 0.3, 3.6);
+      const waterSheet = createCadMesh(new THREE.BoxGeometry(4.8, 0.05, 3.8), 'water');
+      waterSheet.position.set(5.2, 0.55, 3.6);
+      tier0.add(poolTray, waterSheet);
+
+      // Stepped outdoor pool sun-deck
+      const sunDeck = createCadMesh(new THREE.BoxGeometry(2.4, 0.15, 3.6), 'trim');
+      sunDeck.position.set(2.0, 0.35, 3.6);
+      tier0.add(sunDeck);
+      group.add(tier0);
+
+      // Tier 1: Ground Floor Architecture & Double-Height Atrium
+      const tier1 = new THREE.Group();
+      const groundLiving = createCadMesh(new THREE.BoxGeometry(9.2, 3.4, 7.8), 'solid');
+      groundLiving.position.set(-1.2, 2.1, -0.6);
+      tier1.add(groundLiving);
+
+      // Floor-to-ceiling glass wall toward pool
+      const glassWall = createCadMesh(new THREE.BoxGeometry(0.15, 3.2, 5.4), 'glass');
+      glassWall.position.set(3.4, 2.0, 0.8);
+      tier1.add(glassWall);
+
+      // Portico columns
+      [[-4.5, 2.0, 3.8], [-1.0, 2.0, 3.8], [2.4, 2.0, 3.8]].forEach(pt => {
+        const col = createCadMesh(new THREE.BoxGeometry(0.3, 3.4, 0.3), 'trim');
+        col.position.set(...pt);
+        tier1.add(col);
+      });
+
+      // Front louvered timber screen door
+      const screenPanel = createCadMesh(new THREE.BoxGeometry(2.2, 3.2, 0.15), 'trim');
+      screenPanel.position.set(0.6, 2.0, 3.8);
+      tier1.add(screenPanel);
+      for (let i = 0; i < 9; i++) {
+        const blade = createCadMesh(new THREE.BoxGeometry(2.0, 0.06, 0.12), 'accent');
+        blade.position.set(0.6, 0.8 + i * 0.3, 3.9);
+        tier1.add(blade);
+      }
+      group.add(tier1);
+
+      // Tier 2: Cantilevered First-Floor Structural Tray
+      const tier2 = new THREE.Group();
+      const cantileverSlab = createCadMesh(new THREE.BoxGeometry(14.2, 0.45, 11.2), 'accent');
+      cantileverSlab.position.set(0.8, 4.0, 0.5);
+      tier2.add(cantileverSlab);
+
+      // Perimeter glass balustrade
+      const balustrade = createCadMesh(new THREE.BoxGeometry(14.0, 0.85, 0.08), 'glass');
+      balustrade.position.set(0.8, 4.65, 5.9);
+      tier2.add(balustrade);
+      group.add(tier2);
+
+      // Tier 3: Upper Master Suite & Operable Brise-Soleil
+      const tier3 = new THREE.Group();
+      const masterBlock = createCadMesh(new THREE.BoxGeometry(8.6, 3.2, 6.8), 'solid');
+      masterBlock.position.set(-1.0, 5.8, 0.2);
+      tier3.add(masterBlock);
+
+      // Master suite panoramic glass corner
+      const upperGlass = createCadMesh(new THREE.BoxGeometry(4.8, 3.0, 0.12), 'glass');
+      upperGlass.position.set(1.4, 5.7, 3.6);
+      tier3.add(upperGlass);
+
+      // Vertical motorized brise-soleil timber louvers
+      for (let l = 0; l < 14; l++) {
+        const louver = createCadMesh(new THREE.BoxGeometry(0.06, 3.2, 0.35), 'trim');
+        louver.position.set(-4.0 + l * 0.42, 5.8, 3.8);
+        louver.rotation.y = 0.45;
+        tier3.add(louver);
+      }
+
+      // Upper roof terrace planter
+      const rooftopPlanter = createCadMesh(new THREE.BoxGeometry(3.2, 0.5, 1.2), 'greenery');
+      rooftopPlanter.position.set(4.2, 4.45, 4.2);
+      tier3.add(rooftopPlanter);
+      group.add(tier3);
+
+      // Tier 4: Thin-Shell Floating Aerodynamic Roof
+      const tier4 = new THREE.Group();
+      const aerofoilRoof = createCadMesh(new THREE.BoxGeometry(14.6, 0.35, 10.6), 'accent');
+      aerofoilRoof.position.set(0.6, 7.8, 0.4);
+      tier4.add(aerofoilRoof);
+
+      // Solar photovoltaic arrays on roof
+      for (let r = 0; r < 3; r++) {
+        const solarPanel = createCadMesh(new THREE.BoxGeometry(12.0, 0.08, 2.2), 'trim');
+        solarPanel.position.set(0.6, 8.05, -3.0 + r * 2.8);
+        tier4.add(solarPanel);
+      }
+      group.add(tier4);
+
+      group.userData.explodeParts = [
+        { group: tier0, factor: 0.0 },
+        { group: tier1, factor: 0.4 },
+        { group: tier2, factor: 1.4 },
+        { group: tier3, factor: 2.6 },
+        { group: tier4, factor: 4.2 }
+      ];
+
+      return group;
+    }
+
+    function buildApartmentTypology() {
+      const group = new THREE.Group();
+      group.userData = { name: "Apartment", explodeParts: [] };
+
+      // Base Podium & Ground Commercial Origami Gallery
+      const tierPodium = new THREE.Group();
+      const podiumBase = createCadMesh(new THREE.BoxGeometry(16.5, 0.6, 14.5), 'trim');
+      podiumBase.position.set(0, 0.3, 0);
+      tierPodium.add(podiumBase);
+
+      // Double-height retail glass atrium
+      const retailGlass = createCadMesh(new THREE.BoxGeometry(15.4, 4.2, 13.4), 'glass');
+      retailGlass.position.set(0, 2.7, 0);
+      tierPodium.add(retailGlass);
+
+      // Angular origami entrance canopy
+      const origamiCanopy = createCadMesh(new THREE.BoxGeometry(8.2, 0.3, 3.4), 'accent');
+      origamiCanopy.position.set(0, 4.2, 7.8);
+      origamiCanopy.rotation.x = -0.08;
+      tierPodium.add(origamiCanopy);
+
+      // Structural V-Columns supporting the building podium
+      [-5.5, 5.5].forEach(vx => {
+        const vColA = createCadMesh(new THREE.BoxGeometry(0.35, 4.4, 0.35), 'trim');
+        vColA.position.set(vx - 0.6, 2.5, 6.8);
+        vColA.rotation.z = -0.18;
+        const vColB = createCadMesh(new THREE.BoxGeometry(0.35, 4.4, 0.35), 'trim');
+        vColB.position.set(vx + 0.6, 2.5, 6.8);
+        vColB.rotation.z = 0.18;
+        tierPodium.add(vColA, vColB);
+      });
+      group.add(tierPodium);
+
+      // Mid-Rise Cascading Terraced Residential Volumes
+      const tierTowerBody = new THREE.Group();
+      const floorCount = 5;
+      const floorHeight = 3.4;
+
+      for (let f = 0; f < floorCount; f++) {
+        const fy = 5.2 + f * floorHeight;
+        // Floor slab with organic rounded corners
+        const slabWidth = 15.6 - f * 0.9;
+        const slabDepth = 13.6 - f * 0.7;
+
+        const fSlab = createCadMesh(new THREE.BoxGeometry(slabWidth, 0.4, slabDepth), 'solid');
+        fSlab.position.set(f * 0.4, fy, -f * 0.2);
+        tierTowerBody.add(fSlab);
+
+        // Core residence body
+        const fCore = createCadMesh(new THREE.BoxGeometry(slabWidth - 2.0, floorHeight - 0.6, slabDepth - 2.0), 'accent');
+        fCore.position.set(f * 0.4, fy + (floorHeight - 0.4) / 2, -f * 0.2);
+        tierTowerBody.add(fCore);
+
+        // Continuous ribbon glass facade
+        const ribbonGlass = createCadMesh(new THREE.BoxGeometry(slabWidth - 0.4, 1.8, slabDepth - 0.4), 'glass');
+        ribbonGlass.position.set(f * 0.4, fy + 1.2, -f * 0.2);
+        tierTowerBody.add(ribbonGlass);
+
+        // Cantilevered green sky-terrace planters
+        const planter = createCadMesh(new THREE.BoxGeometry(3.6, 0.6, 1.8), 'greenery');
+        planter.position.set(f % 2 === 0 ? slabWidth / 2 - 1.2 : -slabWidth / 2 + 1.2, fy + 0.5, 6.0 - f * 0.3);
+        tierTowerBody.add(planter);
+      }
+
+      // Vertical glass elevator core on the flank
+      const elevatorSpine = createCadMesh(new THREE.BoxGeometry(2.8, 22.0, 3.4), 'glass');
+      elevatorSpine.position.set(-8.2, 12.0, 0);
+      tierTowerBody.add(elevatorSpine);
+
+      const spineFrame = createCadMesh(new THREE.BoxGeometry(3.0, 22.2, 0.3), 'trim');
+      spineFrame.position.set(-8.2, 12.0, 1.7);
+      tierTowerBody.add(spineFrame);
+
+      group.add(tierTowerBody);
+
+      // Penthouse Crown & Biophilic Sky-Lounge Pergola
+      const tierRoof = new THREE.Group();
+      const penthouse = createCadMesh(new THREE.BoxGeometry(9.4, 3.2, 8.4), 'solid');
+      penthouse.position.set(1.5, 23.8, -1.0);
+      tierRoof.add(penthouse);
+
+      // Rooftop infinity plunge pool
+      const skyPool = createCadMesh(new THREE.BoxGeometry(3.6, 0.5, 2.4), 'water');
+      skyPool.position.set(3.8, 24.2, 2.0);
+      tierRoof.add(skyPool);
+
+      // Parametric Pergola louver beams
+      for (let b = 0; b < 8; b++) {
+        const beam = createCadMesh(new THREE.BoxGeometry(10.2, 0.22, 0.22), 'trim');
+        beam.position.set(1.5, 25.8, -4.0 + b * 1.1);
+        tierRoof.add(beam);
+      }
+      group.add(tierRoof);
+
+      group.userData.explodeParts = [
+        { group: tierPodium, factor: 0.0 },
+        { group: tierTowerBody, factor: 1.8 },
+        { group: tierRoof, factor: 4.0 }
+      ];
+
+      return group;
+    }
+
+    function buildHospitalTypology() {
+      const group = new THREE.Group();
+      group.userData = { name: "Hospital", explodeParts: [] };
+
+      // Base Trauma Center & Curvilinear Emergency Canopy
+      const tierER = new THREE.Group();
+      const mainPodium = createCadMesh(new THREE.BoxGeometry(23.0, 0.8, 18.5), 'trim');
+      mainPodium.position.set(0, 0.4, 0);
+      tierER.add(mainPodium);
+
+      // Double-cantilever aerodynamic ambulance portico
+      const erCanopy = createCadMesh(new THREE.BoxGeometry(12.0, 0.45, 5.6), 'accent');
+      erCanopy.position.set(0, 4.6, 10.6);
+      tierER.add(erCanopy);
+
+      // Support cantilever steel pylons
+      [-4.2, 4.2].forEach(vx => {
+        const pylon = createCadMesh(new THREE.BoxGeometry(0.4, 4.6, 0.4), 'trim');
+        pylon.position.set(vx, 2.3, 11.2);
+        pylon.rotation.x = -0.12;
+        tierER.add(pylon);
+      });
+
+      // Ground clinical diagnostic block
+      const diagnosticBlock = createCadMesh(new THREE.BoxGeometry(21.4, 4.4, 16.8), 'solid');
+      diagnosticBlock.position.set(0, 3.0, 0);
+      tierER.add(diagnosticBlock);
+      group.add(tierER);
+
+      // Intermediate Diagnostic Skybridge & Atrium Cross-Wings
+      const tierWings = new THREE.Group();
+      // East Inpatient Tower
+      const wingEast = createCadMesh(new THREE.BoxGeometry(8.6, 12.0, 16.0), 'solid');
+      wingEast.position.set(-6.2, 11.4, 0);
+      tierWings.add(wingEast);
+
+      // West Research & ICU Tower
+      const wingWest = createCadMesh(new THREE.BoxGeometry(8.6, 12.0, 16.0), 'solid');
+      wingWest.position.set(6.2, 11.4, 0);
+      tierWings.add(wingWest);
+
+      // Double-height glass skybridge connecting twin towers
+      const skybridge = createCadMesh(new THREE.BoxGeometry(4.8, 3.6, 5.2), 'glass');
+      skybridge.position.set(0, 12.2, 0);
+      tierWings.add(skybridge);
+
+      // Architectural ceramic solar facade fins (Baguettes)
+      for (let f = 0; f < 4; f++) {
+        const yPos = 7.0 + f * 2.8;
+        const finE = createCadMesh(new THREE.BoxGeometry(8.8, 0.3, 0.6), 'accent');
+        finE.position.set(-6.2, yPos, 8.2);
+        const finW = createCadMesh(new THREE.BoxGeometry(8.8, 0.3, 0.6), 'accent');
+        finW.position.set(6.2, yPos, 8.2);
+        tierWings.add(finE, finW);
+      }
+      group.add(tierWings);
+
+      // Elevated Trauma Helipad & Mechanical HVAC Deck
+      const tierHeli = new THREE.Group();
+      const mechCore = createCadMesh(new THREE.BoxGeometry(7.2, 3.2, 7.2), 'trim');
+      mechCore.position.set(-4.0, 18.8, 0);
+      tierHeli.add(mechCore);
+
+      // Elevated octagonal landing flight deck
+      const heliDeck = createCadMesh(new THREE.CylinderGeometry(5.8, 6.2, 0.6, 8), 'accent');
+      heliDeck.position.set(4.2, 19.8, 0);
+      tierHeli.add(heliDeck);
+
+      // Helipad perimeter safety net rim
+      const heliRim = createCadMesh(new THREE.CylinderGeometry(6.4, 6.4, 0.2, 8), 'trim');
+      heliRim.position.set(4.2, 19.6, 0);
+      tierHeli.add(heliRim);
+
+      // Distinctive Helipad 'H' emergency landing marker
+      const hStem1 = createCadMesh(new THREE.BoxGeometry(0.4, 0.08, 2.6), 'trim');
+      hStem1.position.set(3.2, 20.15, 0);
+      const hStem2 = createCadMesh(new THREE.BoxGeometry(0.4, 0.08, 2.6), 'trim');
+      hStem2.position.set(5.2, 20.15, 0);
+      const hBar = createCadMesh(new THREE.BoxGeometry(2.0, 0.08, 0.4), 'trim');
+      hBar.position.set(4.2, 20.15, 0);
+      tierHeli.add(hStem1, hStem2, hBar);
+
+      group.add(tierHeli);
+
+      group.userData.explodeParts = [
+        { group: tierER, factor: 0.0 },
+        { group: tierWings, factor: 2.2 },
+        { group: tierHeli, factor: 5.2 }
+      ];
+
+      return group;
+    }
+
+    function buildSkyscraperTypology() {
+      const group = new THREE.Group();
+      group.userData = { name: "Skyscraper", explodeParts: [] };
+
+      // Base Podium & Multi-Tier Civic Plaza
+      const tierBase = new THREE.Group();
+      const grandPlaza = createCadMesh(new THREE.BoxGeometry(26.0, 1.4, 26.0), 'trim');
+      grandPlaza.position.set(0, 0.7, 0);
+      tierBase.add(grandPlaza);
+
+      // 4-Story glazed public atrium
+      const atrium = createCadMesh(new THREE.BoxGeometry(20.5, 9.6, 20.5), 'glass');
+      atrium.position.set(0, 6.2, 0);
+      tierBase.add(atrium);
+
+      // Perimeter hyper-columns
+      [-10.5, 10.5].forEach(cx => {
+        [-10.5, 10.5].forEach(cz => {
+          const col = createCadMesh(new THREE.BoxGeometry(1.6, 11.2, 1.6), 'trim');
+          col.position.set(cx, 6.2, cz);
+          tierBase.add(col);
+        });
+      });
+      group.add(tierBase);
+
+      // Lower Tower Shaft with Diagrid Exoskeleton Bracing
+      const tierLower = new THREE.Group();
+      const lowerCore = createCadMesh(new THREE.BoxGeometry(16.8, 28.0, 16.8), 'solid');
+      lowerCore.position.set(0, 25.5, 0);
+      tierLower.add(lowerCore);
+
+      // Double-skin curtain facade with diagrid diamond rings
+      for (let d = 0; d < 4; d++) {
+        const ring = createCadMesh(new THREE.BoxGeometry(17.4, 0.6, 17.4), 'trim');
+        ring.position.set(0, 15.0 + d * 8.2, 0);
+        tierLower.add(ring);
+      }
+      group.add(tierLower);
+
+      // Mid-Tower Biophilic Sky-Garden Cutouts & Taper
+      const tierMid = new THREE.Group();
+      const midCore = createCadMesh(new THREE.BoxGeometry(13.4, 30.0, 13.4), 'solid');
+      midCore.position.set(0, 54.5, 0);
+      tierMid.add(midCore);
+
+      // Deep recessed 3-story sky-garden voids
+      const skyGardenVoid = createCadMesh(new THREE.BoxGeometry(14.0, 4.8, 7.2), 'glass');
+      skyGardenVoid.position.set(0, 52.0, 4.0);
+      const skyGardenPlanter = createCadMesh(new THREE.BoxGeometry(12.0, 0.8, 2.4), 'greenery');
+      skyGardenPlanter.position.set(0, 50.0, 4.0);
+      tierMid.add(skyGardenVoid, skyGardenPlanter);
+      group.add(tierMid);
+
+      // Tower Crown, Observation Sky-Club & Needle Spire
+      const tierCrown = new THREE.Group();
+      const crownCore = createCadMesh(new THREE.BoxGeometry(9.8, 20.0, 9.8), 'accent');
+      crownCore.position.set(0, 79.5, 0);
+      tierCrown.add(crownCore);
+
+      // Glazed observation pyramid
+      const glassPyramid = createCadMesh(new THREE.ConeGeometry(6.2, 11.0, 4), 'glass');
+      glassPyramid.position.set(0, 95.0, 0);
+      glassPyramid.rotation.y = Math.PI / 4;
+      tierCrown.add(glassPyramid);
+
+      // Stainless steel communication needle spire
+      const spire = createCadMesh(new THREE.CylinderGeometry(0.12, 0.5, 24.0, 8), 'trim');
+      spire.position.set(0, 110.0, 0);
+      tierCrown.add(spire);
+
+      // Red aircraft warning beacon
+      const beaconMat = new THREE.MeshBasicMaterial({ color: 0xff1e1e });
+      const beacon = new THREE.Mesh(new THREE.SphereGeometry(0.4, 16, 16), beaconMat);
+      beacon.position.set(0, 122.2, 0);
+      tierCrown.add(beacon);
+
+      group.add(tierCrown);
+
+      group.userData.explodeParts = [
+        { group: tierBase, factor: 0.0 },
+        { group: tierLower, factor: 2.2 },
+        { group: tierMid, factor: 5.5 },
+        { group: tierCrown, factor: 10.5 }
+      ];
+
+      return group;
+    }
+
+    function assembleAllTypologies() {
+      buildDynamicGround();
+
+      const home = buildHomeTypology();
+      const villa = buildVillaTypology();
+      const apt = buildApartmentTypology();
+      const hosp = buildHospitalTypology();
+      const tower = buildSkyscraperTypology();
+
+      typologyGroups.push(home, villa, apt, hosp, tower);
+
+      typologyGroups.forEach((g) => {
+        masterWorldGroup.add(g);
+        g.visible = false;
+      });
+
+      updateMorph(0.0);
+    }
+
+    function updateMorph(progress) {
+      currentScrollProgress = progress;
+
+      const maxStage = typologiesData.length - 1;
+      const clamped = Math.max(0, Math.min(progress, maxStage - 0.0001));
+      const baseIndex = Math.floor(clamped);
+      const nextIndex = Math.min(baseIndex + 1, maxStage);
+      const t = clamped - baseIndex;
+
+      const currentData = typologiesData[baseIndex];
+      const nextData = typologiesData[nextIndex];
+
+      badgeScale.innerText = `STAGE ${baseIndex + 1} / ${typologiesData.length} : ${currentData.name.toUpperCase()}`;
+      scrollPercentageLabel.innerText = `${((progress / maxStage) * 100).toFixed(1)}% // ${currentData.name.toUpperCase()}`;
+      typoSubtitle.innerText = t < 0.5 ? currentData.subtitle : nextData.subtitle;
+      hudZoning.innerText = t < 0.5 ? currentData.zoning : nextData.zoning;
+      hudFootprint.innerText = t < 0.5 ? currentData.footprint : nextData.footprint;
+      hudHeight.innerText = t < 0.5 ? currentData.height : nextData.height;
+      if (telemetryContract) telemetryContract.innerText = (t < 0.5 ? currentData.contract : nextData.contract) || "EPC TURNKEY";
+      if (telemetryStruct) telemetryStruct.innerText = t < 0.5 ? currentData.struct : nextData.struct;
+      if (telemetryFacade) telemetryFacade.innerText = t < 0.5 ? currentData.facade : nextData.facade;
+      if (telemetryOccupancy) telemetryOccupancy.innerText = t < 0.5 ? currentData.occupancy : nextData.occupancy;
+      if (telemetrySustain) telemetrySustain.innerText = (t < 0.5 ? currentData.sustain : nextData.sustain) || "LEED PLATINUM";
+
+      document.querySelectorAll('.scroll-notch').forEach((btn, idx) => {
+        btn.classList.toggle('active', idx === baseIndex);
+
+        if (idx === baseIndex) {
+          btn.classList.add('bg-cyan-600', 'text-white', 'shadow-md');
+          btn.classList.remove('text-slate-700');
+        } else {
+          btn.classList.remove('bg-cyan-600', 'text-white', 'shadow-md');
+          btn.classList.add('text-slate-700');
+        }
+      });
+
+      const interpolatedCamPos = new THREE.Vector3().lerpVectors(currentData.cameraPos, nextData.cameraPos, t);
+      const interpolatedTarget = new THREE.Vector3().lerpVectors(currentData.camTarget, nextData.camTarget, t);
+
+      if (!controls.state || controls.state === -1) {
+        camera.position.lerp(interpolatedCamPos, 0.08);
+        controls.target.lerp(interpolatedTarget, 0.08);
+      }
+
+      const groundScale = THREE.MathUtils.lerp(currentData.groundScale, nextData.groundScale, t);
+      dynamicGroundGroup.scale.set(groundScale, 1.0, groundScale);
+
+      typologyGroups.forEach((group, index) => {
+        if (index === baseIndex) {
+          group.visible = true;
+          const fadeOut = Math.cos(t * Math.PI * 0.5);
+          group.scale.set(fadeOut, fadeOut, fadeOut);
+          group.position.y = (1.0 - fadeOut) * -2.5;
+          applyExplodedDisassembly(group, explodeAmount);
+        } else if (index === nextIndex) {
+          group.visible = true;
+          const fadeIn = Math.sin(t * Math.PI * 0.5);
+          group.scale.set(fadeIn, fadeIn, fadeIn);
+          group.position.y = (1.0 - fadeIn) * 4.5;
+          applyExplodedDisassembly(group, explodeAmount);
+        } else {
+          group.visible = false;
+        }
+      });
+    }
+
+    function applyExplodedDisassembly(group, factor) {
+      if (!group.userData || !group.userData.explodeParts) return;
+      group.userData.explodeParts.forEach(part => {
+        part.group.position.y = part.factor * factor * 2.8;
+      });
+    }
+
+    function applyTheme(themeName) {
+      if (!materialThemes[themeName]) return;
+      currentTheme = themeName;
+      const theme = materialThemes[themeName];
+
+      scene.background.set(theme.background);
+
+      registeredMeshes.forEach(mesh => {
+        const type = mesh.userData.matType;
+        if (type === 'glass') mesh.material = theme.glassFace;
+        else if (type === 'accent') mesh.material = theme.accentFace;
+        else if (type === 'trim') mesh.material = theme.darkTrimFace;
+        else if (type === 'water') mesh.material = theme.waterFace;
+        else if (type === 'greenery') mesh.material = theme.greeneryFace;
+        else mesh.material = theme.solidFace;
+      });
+
+      registeredLines.forEach(line => {
+        line.material = theme.lineMaterial;
+      });
+
+      ['cad', 'holo', 'clay'].forEach(t => {
+        const btn = document.getElementById(`btn-theme-${t}`);
+        if (t === themeName) {
+          btn.className = 'px-3 py-1.5 rounded-xl text-xs font-mono font-medium transition-all bg-slate-900 text-white shadow-sm';
+        } else {
+          btn.className = 'px-3 py-1.5 rounded-xl text-xs font-mono font-medium transition-all text-slate-600 hover:bg-slate-100';
+        }
+      });
+
+      renderBackgroundGrid();
+    }
+
+    function setupEventListeners() {
+      const maxScroll = typologiesData.length - 1;
+
+      window.addEventListener('wheel', (e) => {
+        isAutoTour = false;
+        document.getElementById('btn-toggle-cycle').innerHTML = '<span>▶ Auto-Morph Tour</span>';
+
+        const delta = e.deltaY * 0.0022;
+        targetScrollProgress = Math.max(0, Math.min(targetScrollProgress + delta, maxScroll - 0.001));
+        sliderScroll.value = Math.round(targetScrollProgress * 100);
+      }, { passive: true });
+
+      sliderScroll.addEventListener('input', (e) => {
+        isAutoTour = false;
+        document.getElementById('btn-toggle-cycle').innerHTML = '<span>▶ Auto-Morph Tour</span>';
+        targetScrollProgress = parseFloat(e.target.value) / 100;
+      });
+
+      sliderExplode.addEventListener('input', (e) => {
+        explodeAmount = parseFloat(e.target.value) / 100;
+        explodeValLabel.innerText = `${Math.round(explodeAmount * 100)}%`;
+      });
+
+      document.querySelectorAll('.scroll-notch').forEach(btn => {
+        btn.addEventListener('click', () => {
+          isAutoTour = false;
+          document.getElementById('btn-toggle-cycle').innerHTML = '<span>▶ Auto-Morph Tour</span>';
+          const stage = parseInt(btn.getAttribute('data-stage'));
+          targetScrollProgress = stage;
+          sliderScroll.value = stage * 100;
+        });
+      });
+
+      const cycleBtn = document.getElementById('btn-toggle-cycle');
+      cycleBtn.addEventListener('click', () => {
+        isAutoTour = !isAutoTour;
+        cycleBtn.innerHTML = isAutoTour ? '<span>⏸ Pause Tour</span>' : '<span>▶ Auto-Morph Tour</span>';
+      });
+
+      document.getElementById('btn-theme-cad').addEventListener('click', () => applyTheme('cad'));
+      document.getElementById('btn-theme-holo').addEventListener('click', () => applyTheme('holo'));
+      document.getElementById('btn-theme-clay').addEventListener('click', () => applyTheme('clay'));
+
+      const autoRotateBtn = document.getElementById('btn-auto-rotate');
+      autoRotateBtn.addEventListener('click', () => {
+        autoRotate = !autoRotate;
+        autoRotateBtn.classList.toggle('bg-slate-200', autoRotate);
+      });
+
+      document.getElementById('btn-reset-cam').addEventListener('click', () => {
+        const activeIdx = Math.round(targetScrollProgress);
+        camera.position.copy(typologiesData[activeIdx].cameraPos);
+        controls.target.copy(typologiesData[activeIdx].camTarget);
+      });
+
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderBackgroundGrid();
+      });
+    }
+
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      const delta = clock.getDelta();
+
+      if (isAutoTour) {
+        tourClock += delta * 0.28;
+        const maxScroll = typologiesData.length - 1;
+        const oscillation = (Math.sin(tourClock) + 1.0) * 0.5 * (maxScroll - 0.001);
+        targetScrollProgress = oscillation;
+        sliderScroll.value = Math.round(targetScrollProgress * 100);
+      }
+
+      currentScrollProgress += (targetScrollProgress - currentScrollProgress) * 0.1;
+      updateMorph(currentScrollProgress);
+
+      if (autoRotate) {
+        masterWorldGroup.rotation.y += delta * 0.22;
+      }
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initRenderer();
+      assembleAllTypologies();
+      setupEventListeners();
+      animate();
+    });
+  </script>
+</body>
+</html>

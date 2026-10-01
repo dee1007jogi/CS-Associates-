@@ -1,0 +1,1868 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadbull - Blueprint to Reality: Interactive Architectural Assembly</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter, Space Grotesk & Cormorant Garamond for Royal Elegance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      background-color: #040810;
+      font-family: 'Inter', sans-serif;
+      color: #f8fafc;
+      overflow-x: hidden;
+    }
+    .royal-font {
+      font-family: 'Cormorant Garamond', serif;
+    }
+    .hud-font {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .mono-font {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Fixed 3D canvas viewport */
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    /* Blueprint subtle gold/cyan grid overlay */
+    .blueprint-grid-overlay {
+      background-size: 36px 36px;
+      background-image: 
+        linear-gradient(to right, rgba(226, 180, 94, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(56, 189, 248, 0.04) 1px, transparent 1px);
+    }
+    /* Glassmorphism panel styling with royal gold accents */
+    .glass-panel {
+      background: rgba(8, 14, 26, 0.82);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(226, 180, 94, 0.28);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6), 0 0 15px rgba(212, 175, 55, 0.08);
+    }
+    .glass-card {
+      background: rgba(11, 20, 36, 0.72);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(226, 180, 94, 0.2);
+    }
+    .gold-badge {
+      background: linear-gradient(135deg, rgba(226, 180, 94, 0.2) 0%, rgba(180, 130, 40, 0.1) 100%);
+      border: 1px solid rgba(226, 180, 94, 0.45);
+      color: #fde68a;
+    }
+    /* Smooth custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #040810;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #d4af37;
+      border-radius: 9999px;
+    }
+    /* Animated pulse dot */
+    @keyframes ping-slow {
+      0% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.6); opacity: 0; }
+      100% { transform: scale(1); opacity: 0; }
+    }
+    .animate-ping-slow {
+      animation: ping-slow 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+  </style>
+
+  <!-- Import Three.js via ES Modules -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body class="relative">
+
+  <!-- Fixed WebGL Scene Background -->
+  <div id="canvas-container"></div>
+  <div class="fixed inset-0 blueprint-grid-overlay pointer-events-none z-10"></div>
+
+  <!-- Persistent Header -->
+  <header class="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-6 py-4 pointer-events-auto">
+    <div class="flex items-center space-x-3">
+      <div class="w-10 h-10 rounded-xl border border-amber-400/50 bg-amber-950/40 flex items-center justify-center shadow-[0_0_25px_rgba(212,175,55,0.4)] backdrop-blur-md">
+        <svg class="w-5 h-5 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+        </svg>
+      </div>
+      <div>
+        <h1 class="hud-font text-lg font-bold tracking-wider text-white uppercase flex items-center gap-2">
+          Cadbull <span class="text-[10px] mono-font px-2 py-0.5 rounded gold-badge">ROYALE 3-TIER MEGA-ESTATE</span>
+        </h1>
+        <p class="text-[11px] text-amber-200/80 mono-font tracking-tight">Parametric Kinetic Architecture • Backlit Onyx • Cascading Moat & Sky-Gardens</p>
+      </div>
+    </div>
+
+    <!-- Live Stage Tracker in Navbar -->
+    <div class="hidden md:flex items-center glass-panel px-4 py-1.5 rounded-full space-x-3 text-xs mono-font">
+      <div class="flex items-center gap-2">
+        <span id="nav-stage-indicator" class="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_8px_#f59e0b]"></span>
+        <span id="nav-stage-text" class="text-amber-100">Phase 01: Master Blueprint Grid</span>
+      </div>
+      <span class="text-amber-600/70">|</span>
+      <span id="nav-pct-text" class="text-amber-300 font-bold">0%</span>
+    </div>
+
+    <!-- Quick Action -->
+    <div class="flex items-center space-x-3">
+      <button id="btn-jump-interior" class="glass-panel hover:bg-amber-400 hover:text-slate-950 text-amber-200 border-amber-400/40 px-3.5 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-all shadow-lg flex items-center gap-1.5">
+        <span>Enter Royal Salon</span>
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Left Floating Chapter Dots -->
+  <div class="fixed left-6 top-1/2 -translate-y-1/2 z-30 hidden lg:flex flex-col space-y-4">
+    <button class="chapter-dot group flex items-center gap-3 text-left" data-target="0">
+      <div class="w-3 h-3 rounded-full border-2 border-amber-400 bg-amber-400 transition-all group-hover:scale-125 shadow-[0_0_8px_rgba(245,158,11,0.6)]"></div>
+      <span class="text-[11px] mono-font text-amber-200 opacity-70 group-hover:opacity-100 transition-opacity whitespace-nowrap">01. Master Blueprint</span>
+    </button>
+    <button class="chapter-dot group flex items-center gap-3 text-left" data-target="0.22">
+      <div class="w-3 h-3 rounded-full border-2 border-amber-500/50 bg-slate-900 transition-all group-hover:scale-125"></div>
+      <span class="text-[11px] mono-font text-amber-200 opacity-70 group-hover:opacity-100 transition-opacity whitespace-nowrap">02. Podium, Moat & Auto Gallery</span>
+    </button>
+    <button class="chapter-dot group flex items-center gap-3 text-left" data-target="0.40">
+      <div class="w-3 h-3 rounded-full border-2 border-amber-500/50 bg-slate-900 transition-all group-hover:scale-125"></div>
+      <span class="text-[11px] mono-font text-amber-200 opacity-70 group-hover:opacity-100 transition-opacity whitespace-nowrap">03. Backlit Onyx & Cascading Moat</span>
+    </button>
+    <button class="chapter-dot group flex items-center gap-3 text-left" data-target="0.55">
+      <div class="w-3 h-3 rounded-full border-2 border-amber-500/50 bg-slate-900 transition-all group-hover:scale-125"></div>
+      <span class="text-[11px] mono-font text-amber-200 opacity-70 group-hover:opacity-100 transition-opacity whitespace-nowrap">04. Parametric Fins & Sky-Gardens</span>
+    </button>
+    <button class="chapter-dot group flex items-center gap-3 text-left" data-target="0.70">
+      <div class="w-3 h-3 rounded-full border-2 border-amber-500/50 bg-slate-900 transition-all group-hover:scale-125"></div>
+      <span class="text-[11px] mono-font text-amber-200 opacity-70 group-hover:opacity-100 transition-opacity whitespace-nowrap">05. 3-Floor Parametric Panorama</span>
+    </button>
+    <button class="chapter-dot group flex items-center gap-3 text-left" data-target="0.90">
+      <div class="w-3 h-3 rounded-full border-2 border-amber-500/50 bg-slate-900 transition-all group-hover:scale-125"></div>
+      <span class="text-[11px] mono-font text-amber-200 opacity-70 group-hover:opacity-100 transition-opacity whitespace-nowrap">06. Stepping Stones & Threshold</span>
+    </button>
+  </div>
+
+  <!-- Bottom Floating Scroll Hint -->
+  <div id="scroll-prompt" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-30 pointer-events-none flex flex-col items-center space-y-2 transition-opacity duration-500">
+    <span class="text-[11px] mono-font uppercase tracking-widest text-amber-300 font-semibold drop-shadow">Scroll to Construct Palatial Estate</span>
+    <div class="w-5 h-9 rounded-full border-2 border-amber-400/60 p-1 flex justify-center bg-amber-950/40 backdrop-blur-sm shadow-[0_0_15px_rgba(212,175,55,0.3)]">
+      <div class="w-1.5 h-2.5 rounded-full bg-amber-400 animate-bounce"></div>
+    </div>
+  </div>
+
+  <!-- 
+    ========================================================================
+    SCROLL INTERPOLATION TRACK (Spans 480vh for cinematic storytelling pacing)
+    ========================================================================
+  -->
+  <div id="scroll-track" class="relative w-full" style="height: 520vh;">
+    
+    <!-- Step 1: Initial Blueprint Phase (0% - 20%) -->
+    <div class="sticky top-28 left-6 sm:left-12 max-w-xl lg:max-w-2xl z-20 pointer-events-none px-6 step-panel transition-opacity duration-700 opacity-100" id="step-1">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-amber-950/80 border border-amber-400/50 text-[11px] mono-font text-amber-300 uppercase tracking-widest mb-3 backdrop-blur-md">
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span>
+        STAGE 01 • 3-TIER MEGA-ESTATE SCHEMATICS
+      </div>
+      <h2 class="royal-font text-5xl sm:text-6xl font-semibold text-white leading-none drop-shadow-xl tracking-tight">
+        MONUMENTAL 3-FLOOR <br>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-yellow-100 font-bold">SOVEREIGN PALACE.</span>
+      </h2>
+      <p class="mt-3 text-sm text-amber-100/90 font-normal leading-relaxed drop-shadow max-w-md">
+        Spanning three monolithic tiers of Calacatta Gold marble, double-height reception salons, mid-level cantilevered suites, and a penthouse sky pavilion with golden pergolas.
+      </p>
+
+      <div class="mt-5 grid grid-cols-2 gap-3 max-w-sm pointer-events-auto">
+        <div class="glass-card p-3 rounded-lg border-amber-500/30">
+          <p class="text-[10px] mono-font text-amber-400 uppercase tracking-wider">Estate Domain</p>
+          <p class="text-base font-bold text-white mt-0.5">2,850 m² Across 3 Levels</p>
+        </div>
+        <div class="glass-card p-3 rounded-lg border-amber-500/30">
+          <p class="text-[10px] mono-font text-amber-400 uppercase tracking-wider">Vertical Height</p>
+          <p class="text-base font-bold text-white mt-0.5">14.8m Tri-Level Elevation</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Foundation & Columns Rising (20% - 40%) -->
+    <div class="sticky top-28 left-6 sm:left-12 max-w-xl lg:max-w-2xl z-20 pointer-events-none px-6 step-panel transition-opacity duration-700 opacity-0 hidden" id="step-2">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-amber-950/80 border border-amber-400/50 text-[11px] mono-font text-amber-300 uppercase tracking-widest mb-3 backdrop-blur-md">
+        STAGE 02 • NERO PODIUM, MOAT & AUTO SHOWCASE
+      </div>
+      <h2 class="royal-font text-4xl sm:text-5xl font-semibold text-white leading-tight drop-shadow-xl">
+        FLOATING STEPPING STONES & <br>
+        <span class="text-amber-300 font-bold">HYPERCAR GLASS PAVILION</span>
+      </h2>
+      <p class="mt-3 text-sm text-amber-100/90 font-normal leading-relaxed drop-shadow max-w-md">
+        Anchored on Nero Marquina marble with perimeter LED under-lit floating stepping stones, sunken fire pit, and an integrated climate-controlled glass showcase gallery.
+      </p>
+    </div>
+
+    <!-- Step 3: Level 2 & Cantilever Gallery (40% - 60%) -->
+    <div class="sticky top-28 left-6 sm:left-12 max-w-xl lg:max-w-2xl z-20 pointer-events-none px-6 step-panel transition-opacity duration-700 opacity-0 hidden" id="step-3">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-amber-950/80 border border-amber-400/50 text-[11px] mono-font text-amber-300 uppercase tracking-widest mb-3 backdrop-blur-md">
+        STAGE 03 • WATERFALL CASCADE & BACKLIT ONYX
+      </div>
+      <h2 class="royal-font text-4xl sm:text-5xl font-semibold text-white leading-tight drop-shadow-xl">
+        PARAMETRIC GOLDEN FINS & <br>
+        <span class="text-amber-300 font-bold">CASCADING WATER BLADE</span>
+      </h2>
+      <p class="mt-3 text-sm text-amber-100/90 font-normal leading-relaxed drop-shadow max-w-md">
+        A 3-storey monolithic Honey Onyx core illuminates from within as an architectural sheet-waterfall cascades from the cantilevered Level 2 terrace into the reflection moat.
+      </p>
+    </div>
+
+    <!-- Step 4: Long Wide Panoramic Shot & Door Entrance (60% - 100%) -->
+    <div class="sticky top-28 left-6 sm:left-12 max-w-xl lg:max-w-2xl z-20 pointer-events-none px-6 step-panel transition-opacity duration-700 opacity-0 hidden" id="step-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-amber-950/80 border border-amber-400/50 text-[11px] mono-font text-amber-300 uppercase tracking-widest mb-3 backdrop-blur-md">
+        STAGE 04 • SKY-GARDEN VISTA & GRAND ENTRY
+      </div>
+      <h2 class="royal-font text-4xl sm:text-5xl font-semibold text-white leading-tight drop-shadow-xl">
+        BIOPHILIC SKY-GARDENS & <br>
+        <span class="text-amber-300 font-bold">GILDED PORTAL THRESHOLD</span>
+      </h2>
+      <p class="mt-3 text-sm text-amber-100/90 font-normal leading-relaxed drop-shadow max-w-md">
+        Hovering above the estate, admire the cantilevered olive tree gardens and rooftop glass spa before gliding past the water blade directly through the grand sliding salon door.
+      </p>
+    </div>
+
+  </div>
+
+  <!-- 
+    ========================================================================
+    SECTION II: INTERIOR RESIDENCE, BIM SPECIFICATIONS & ARCHITECTURAL SPECS
+    Smoothly transitions in as the user finishes scrolling through the threshold!
+    ========================================================================
+  -->
+  <section id="section-interior-showcase" class="relative z-30 min-h-screen bg-gradient-to-b from-[#040810]/95 via-[#07101e] to-[#03060c] border-t border-amber-500/30 pt-20 pb-28 px-4 sm:px-8 lg:px-14 xl:px-20 w-full">
+    
+    <!-- Full-Width Layout Container -->
+    <div class="w-full max-w-none">
+      <div class="flex flex-col md:flex-row md:items-end justify-between border-b border-amber-500/30 pb-8 mb-12 gap-6">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full gold-badge text-xs mono-font mb-3">
+            <span class="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_#f59e0b]"></span>
+            PALATIAL INTERIORS & MATERIAL AUDIT • SECTION 02
+          </div>
+          <h2 class="royal-font text-4xl sm:text-6xl font-semibold text-white tracking-tight">
+            The 3-Storey Sovereign Mega-Estate
+          </h2>
+          <p class="text-amber-200/80 text-sm sm:text-base mt-2 max-w-2xl">
+            A tri-level masterwork of royal monumental architecture: Bookmatched Calacatta Gold marble slabs, 3-storey titanium brass curtain mullions, suspended cantilever suites, and an eagle's-nest penthouse terrace.
+          </p>
+        </div>
+
+        <div class="flex items-center space-x-3">
+          <button id="btn-back-to-blueprint" class="glass-panel hover:bg-amber-950/80 text-amber-200 px-4 py-2 rounded-lg text-xs mono-font transition-all border-amber-400/40">
+            ↑ Return to Master Plan
+          </button>
+          <a href="#inquiry" class="bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-200 hover:brightness-110 text-slate-950 font-bold px-6 py-2 rounded-lg text-xs tracking-wider uppercase transition-all shadow-[0_0_25px_rgba(212,175,55,0.45)]">
+            Commission Villa
+          </a>
+        </div>
+      </div>
+
+      <!-- Interactive 3D Room Camera Focus Buttons -->
+      <div class="glass-panel p-4 rounded-2xl mb-12 border-amber-500/30">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-white uppercase tracking-wider">Inspect Palatial Angles</p>
+              <p class="text-[11px] text-amber-200/70">Pivots the background 3D camera to curated vantage points:</p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-2">
+            <button class="room-cam-btn px-4 py-2 rounded-lg text-xs mono-font transition-all bg-gradient-to-r from-amber-400 to-amber-300 text-slate-950 font-bold shadow-md" data-cam="lounge">
+              01 Grand Royal Salon
+            </button>
+            <button class="room-cam-btn px-4 py-2 rounded-lg text-xs mono-font transition-all glass-panel text-amber-200 hover:text-white hover:bg-amber-900/40" data-cam="waterfall">
+              02 Waterfall & Onyx Core
+            </button>
+            <button class="room-cam-btn px-4 py-2 rounded-lg text-xs mono-font transition-all glass-panel text-amber-200 hover:text-white hover:bg-amber-900/40" data-cam="autogallery">
+              03 Hypercar Pavilion
+            </button>
+            <button class="room-cam-btn px-4 py-2 rounded-lg text-xs mono-font transition-all glass-panel text-amber-200 hover:text-white hover:bg-amber-900/40" data-cam="penthouse">
+              04 Sky-Garden Penthouse
+            </button>
+            <button class="room-cam-btn px-4 py-2 rounded-lg text-xs mono-font transition-all glass-panel text-amber-200 hover:text-white hover:bg-amber-900/40" data-cam="aerial">
+              05 3-Floor Parametric Vista
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 Key Architectural Pillars Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+        
+        <!-- Card 1 -->
+        <div class="glass-card p-6 rounded-2xl border-amber-500/25 hover:border-amber-400/60 transition-all">
+          <div class="w-12 h-12 rounded-xl bg-amber-950/60 border border-amber-400/40 flex items-center justify-center text-amber-300 mb-4 shadow-[0_0_15px_rgba(212,175,55,0.2)]">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          </div>
+          <h3 class="royal-font text-2xl font-bold text-white mb-2">Bookmatched Calacatta Gold</h3>
+          <p class="text-xs text-amber-100/80 leading-relaxed mb-4">
+            Quarried from Carrara, Italy, continuous grain-matched marble slabs encase the primary cantilever monolith with seamless micro-bevel joints and high-gloss protective sealant.
+          </p>
+          <ul class="text-[11px] mono-font space-y-1.5 text-amber-300">
+            <li class="flex items-center gap-1.5"><span class="text-amber-400">★</span> 20mm Precision Cut Honey Onyx & Calacatta</li>
+            <li class="flex items-center gap-1.5"><span class="text-amber-400">★</span> Zero-Deflection Structural Carbon Frame</li>
+            <li class="flex items-center gap-1.5"><span class="text-amber-400">★</span> Integrated Warm LED Perimeter Coving</li>
+          </ul>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="glass-card p-6 rounded-2xl border-amber-500/25 hover:border-amber-400/60 transition-all">
+          <div class="w-12 h-12 rounded-xl bg-amber-950/60 border border-amber-400/40 flex items-center justify-center text-amber-300 mb-4 shadow-[0_0_15px_rgba(212,175,55,0.2)]">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+          </div>
+          <h3 class="royal-font text-2xl font-bold text-white mb-2">Aquatic Moat & Fire Oasis</h3>
+          <p class="text-xs text-amber-100/80 leading-relaxed mb-4">
+            The villa appears to float atop a crystalline turquoise infinity pool with a sunken central fire lounge crafted from black river rock and brushed bronze burners.
+          </p>
+          <ul class="text-[11px] mono-font space-y-1.5 text-amber-300">
+            <li class="flex items-center gap-1.5"><span class="text-amber-400">★</span> Submerged Cerulean LED Illumination</li>
+            <li class="flex items-center gap-1.5"><span class="text-amber-400">★</span> Automated Ethanol Fireplace Hearth</li>
+            <li class="flex items-center gap-1.5"><span class="text-amber-400">★</span> Cascading Water Blade Hydro-Acoustics</li>
+          </ul>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="glass-card p-6 rounded-2xl border-amber-500/25 hover:border-amber-400/60 transition-all">
+          <div class="w-12 h-12 rounded-xl bg-amber-950/60 border border-amber-400/40 flex items-center justify-center text-amber-300 mb-4 shadow-[0_0_15px_rgba(212,175,55,0.2)]">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+          </div>
+          <h3 class="royal-font text-2xl font-bold text-white mb-2">Brushed Champagne Brass Mullions</h3>
+          <p class="text-xs text-amber-100/80 leading-relaxed mb-4">
+            Floor-to-ceiling ultra-clear low-iron acoustic glazing held by anodized champagne brass frames, sliding whisper-quiet into hidden cavity pockets.
+          </p>
+          <ul class="text-[11px] mono-font space-y-1.5 text-amber-300">
+            <li class="flex items-center gap-1.5"><span class="text-amber-400">★</span> Ultra-Clear Pilkington Optiwhite Glazing</li>
+            <li class="flex items-center gap-1.5"><span class="text-amber-400">★</span> Concealed Magnetic Levitation Tracks</li>
+            <li class="flex items-center gap-1.5"><span class="text-amber-400">★</span> Smart Home Crestron Integration</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Floor Plan Blueprint Schematic Matrix -->
+      <div class="glass-panel p-8 rounded-3xl border-sky-500/30 mb-16">
+        <div class="flex flex-col lg:flex-row items-center justify-between gap-8">
+          <div class="lg:w-1/2">
+            <span class="text-xs mono-font text-sky-400 uppercase tracking-widest">BIM DATA SUMMARY</span>
+            <h3 class="hud-font text-2xl sm:text-3xl font-bold text-white mt-1 mb-4">Tri-Level Spatial Program & Schedule</h3>
+            <div class="space-y-3">
+              <div class="flex justify-between items-center py-2.5 border-b border-sky-500/20 text-xs">
+                <span class="text-sky-200 font-medium">Level 01: Grand Social Salon, Open Kitchen & Terrace Moat</span>
+                <span class="mono-font text-sky-400 font-semibold">1,050 m²</span>
+              </div>
+              <div class="flex justify-between items-center py-2.5 border-b border-sky-500/20 text-xs">
+                <span class="text-sky-200 font-medium">Level 02: VIP Guest Wings, Private Library & Cantilever Terraces</span>
+                <span class="mono-font text-sky-400 font-semibold">980 m²</span>
+              </div>
+              <div class="flex justify-between items-center py-2.5 border-b border-sky-500/20 text-xs">
+                <span class="text-sky-200 font-medium">Level 03: Sovereign Master Penthouse & Sky Pergola Observatory</span>
+                <span class="mono-font text-sky-400 font-semibold">620 m²</span>
+              </div>
+              <div class="flex justify-between items-center py-2.5 border-b border-sky-500/20 text-xs">
+                <span class="text-sky-200 font-medium">Sub-grade: Private Car Gallery, Spa, Wine Vault & Plant</span>
+                <span class="mono-font text-sky-400 font-semibold">200 m²</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:w-1/2 w-full p-6 rounded-2xl bg-sky-950/60 border border-sky-400/20 text-center">
+            <div class="w-16 h-16 mx-auto mb-3 rounded-2xl bg-sky-900/40 border border-sky-400/40 flex items-center justify-center text-sky-400">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            </div>
+            <h4 class="hud-font text-base font-bold text-white uppercase">Download Full CAD & BIM Package</h4>
+            <p class="text-xs text-sky-300/80 mt-1 mb-4">Complete DWG, Revit, and IFC models with structural schedules.</p>
+            <button id="btn-mock-download" class="px-5 py-2.5 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs uppercase tracking-wider transition-all shadow-md">
+              Download BIM Bundle (.ZIP)
+            </button>
+            <p id="download-msg" class="text-[11px] mono-font text-emerald-400 mt-2 hidden">✓ Package generation initiated (Sample CAD Archive)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact / Build Together Form -->
+      <div id="inquiry" class="glass-panel p-8 sm:p-12 rounded-3xl border-sky-500/30 max-w-5xl mx-auto text-center">
+        <h3 class="hud-font text-2xl sm:text-3xl font-extrabold text-white uppercase">Ready to Engineer Your Vision?</h3>
+        <p class="text-xs sm:text-sm text-sky-200/80 mt-2 mb-6">Cadbull architects and BIM consultants collaborate globally from preliminary concept sketching through to on-site robotic fabrication.</p>
+        
+        <form onsubmit="event.preventDefault(); document.getElementById('form-feedback').classList.remove('hidden');" class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+          <div>
+            <label class="block text-[11px] mono-font text-sky-300 uppercase mb-1">Your Name</label>
+            <input type="text" required placeholder="Arch. Sarah Miller" class="w-full bg-slate-950/80 border border-sky-500/30 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-400">
+          </div>
+          <div>
+            <label class="block text-[11px] mono-font text-sky-300 uppercase mb-1">Corporate Email</label>
+            <input type="email" required placeholder="sarah@studio-design.com" class="w-full bg-slate-950/80 border border-sky-500/30 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-400">
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block text-[11px] mono-font text-sky-300 uppercase mb-1">Project Scope</label>
+            <textarea rows="3" placeholder="Tell us about your residential or commercial site development..." class="w-full bg-slate-950/80 border border-sky-500/30 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-400"></textarea>
+          </div>
+          <div class="sm:col-span-2 text-center mt-2">
+            <button type="submit" class="px-8 py-3 rounded-lg bg-sky-400 hover:bg-sky-300 text-slate-950 font-bold text-xs uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(56,189,248,0.4)]">
+              Initiate Project Blueprint
+            </button>
+            <div id="form-feedback" class="mt-3 text-xs mono-font text-emerald-400 hidden">
+              ✓ Message dispatched to Cadbull Architectural Studio. We will contact you within 24 hours.
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <footer class="mt-16 pt-8 border-t border-sky-500/20 text-center text-xs mono-font text-sky-400/60">
+        Cadbull 3D Architectural Engine • Built with Three.js & Tailwind CSS • 100% Procedural
+      </footer>
+    </div>
+  </section>
+
+  <!-- 
+    ========================================================================
+    THREE.JS PROCEDURAL 3D APPLICATION & SCROLL INTERPOLATION LOGIC
+    ========================================================================
+  -->
+  <script type="module">
+    import * as THREE from 'three';
+
+    /* ==========================================================================
+       ROYAL PROCEDURAL TEXTURE GENERATION ENGINES
+       ========================================================================== */
+
+    // 1. Calacatta Gold Italian Marble (Luminous white base with warm gold & soft grey veins)
+    function createCalacattaMarbleTexture() {
+      const size = 1024;
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+
+      // Base warm ivory stone
+      const bgGrad = ctx.createLinearGradient(0, 0, size, size);
+      bgGrad.addColorStop(0, '#f9f8f4');
+      bgGrad.addColorStop(0.5, '#f3f1ea');
+      bgGrad.addColorStop(1, '#fdfcf9');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, size, size);
+
+      // Micro mineral specks
+      const imgData = ctx.getImageData(0, 0, size, size);
+      const data = imgData.data;
+      for (let i = 0; i < data.length; i += 4) {
+        const noise = (Math.random() - 0.5) * 8;
+        data[i] = Math.min(255, Math.max(0, data[i] + noise));
+        data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + noise - 1));
+        data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + noise - 3));
+      }
+      ctx.putImageData(imgData, 0, 0);
+
+      // Procedural Marble Vein Drawer
+      function drawVein(points, strokeColor, width, blur) {
+        ctx.save();
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = width;
+        ctx.lineCap = 'round';
+        ctx.shadowColor = strokeColor;
+        ctx.shadowBlur = blur;
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+        for (let i = 1; i < points.length - 1; i++) {
+          const xc = (points[i].x + points[i + 1].x) / 2;
+          const yc = (points[i].y + points[i + 1].y) / 2;
+          ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+        }
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Soft Smokey Grey Under-Veins
+      for (let v = 0; v < 3; v++) {
+        const pts = [];
+        let y = (v * 300) + 100;
+        for (let x = 0; x <= size; x += 120) {
+          pts.push({ x, y: y + (Math.sin(x * 0.015) * 110) + (Math.random() - 0.5) * 45 });
+        }
+        drawVein(pts, 'rgba(175, 172, 168, 0.22)', 14, 18);
+      }
+
+      // Vivid Golden Amber Master Veins
+      for (let v = 0; v < 4; v++) {
+        const pts = [];
+        let y = (v * 260) + 60;
+        for (let x = 0; x <= size; x += 90) {
+          pts.push({ x, y: y + (Math.cos(x * 0.012 + v) * 90) + (Math.random() - 0.5) * 60 });
+        }
+        drawVein(pts, 'rgba(212, 160, 68, 0.45)', 4.5, 8);
+        drawVein(pts, 'rgba(158, 114, 40, 0.35)', 2.0, 2);
+      }
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.colorSpace = THREE.SRGBColorSpace;
+      return texture;
+    }
+
+    // 2. Nero Marquina / Black & Gold Marble for Foundation Podium
+    function createNeroGoldMarbleTexture() {
+      const size = 1024;
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+
+      ctx.fillStyle = '#101317';
+      ctx.fillRect(0, 0, size, size);
+
+      // Deep rich texture variation
+      const imgData = ctx.getImageData(0, 0, size, size);
+      const data = imgData.data;
+      for (let i = 0; i < data.length; i += 4) {
+        const noise = (Math.random() - 0.5) * 12;
+        data[i] = Math.min(255, Math.max(0, data[i] + noise + 2));
+        data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + noise + 1));
+        data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + noise));
+      }
+      ctx.putImageData(imgData, 0, 0);
+
+      // Glowing Gold Fractal Fractures
+      for (let v = 0; v < 5; v++) {
+        ctx.strokeStyle = 'rgba(235, 185, 90, 0.35)';
+        ctx.lineWidth = 2.5;
+        ctx.shadowColor = '#f59e0b';
+        ctx.shadowBlur = 6;
+        ctx.beginPath();
+        let curX = Math.random() * size;
+        let curY = 0;
+        ctx.moveTo(curX, curY);
+        while (curY < size) {
+          curX += (Math.random() - 0.5) * 60;
+          curY += Math.random() * 40 + 20;
+          ctx.lineTo(curX, curY);
+        }
+        ctx.stroke();
+      }
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.colorSpace = THREE.SRGBColorSpace;
+      return texture;
+    }
+
+    // 3. Hand-scraped Smoked Walnut with Satin Polish
+    function createSmokedWalnutTexture() {
+      const w = 512, h = 512;
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+
+      ctx.fillStyle = '#22160d';
+      ctx.fillRect(0, 0, w, h);
+
+      const plankHeight = 36;
+      for (let y = 0; y < h; y += plankHeight) {
+        ctx.fillStyle = (y / plankHeight) % 2 === 0 ? '#2c1c11' : '#1e130b';
+        ctx.fillRect(0, y, w, plankHeight - 2);
+
+        // Rich subtle golden woodgrain lines
+        ctx.strokeStyle = 'rgba(195, 140, 75, 0.15)';
+        ctx.lineWidth = 1;
+        for (let j = 0; j < 6; j++) {
+          const gy = y + Math.random() * plankHeight;
+          ctx.beginPath();
+          ctx.moveTo(0, gy);
+          ctx.bezierCurveTo(w * 0.3, gy + (Math.random() - 0.5) * 5, w * 0.7, gy + (Math.random() - 0.5) * 5, w, gy);
+          ctx.stroke();
+        }
+      }
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.colorSpace = THREE.SRGBColorSpace;
+      return texture;
+    }
+
+    // 4. Sparkling Water Normal Map for Turquoise Pool
+    function createWaterNormalTexture() {
+      const size = 512;
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+
+      const imgData = ctx.createImageData(size, size);
+      const data = imgData.data;
+
+      for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+          const idx = (y * size + x) * 4;
+          const nx = Math.sin(x * 0.08) * Math.cos(y * 0.08) * 0.5;
+          const ny = Math.cos(x * 0.08) * Math.sin(y * 0.08) * 0.5;
+          data[idx] = Math.floor((nx + 1) * 127.5);
+          data[idx + 1] = Math.floor((ny + 1) * 127.5);
+          data[idx + 2] = 255;
+          data[idx + 3] = 255;
+        }
+      }
+      ctx.putImageData(imgData, 0, 0);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      return texture;
+    }
+
+    // 5. Backlit Translucent Honey Onyx (Glowing golden-amber crystallite stone matrix)
+    function createHoneyOnyxTexture() {
+      const size = 1024;
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+
+      const bgGrad = ctx.createRadialGradient(size * 0.5, size * 0.5, 40, size * 0.5, size * 0.5, size * 0.7);
+      bgGrad.addColorStop(0, '#ffe8b5');
+      bgGrad.addColorStop(0.4, '#e6aa45');
+      bgGrad.addColorStop(0.8, '#b87720');
+      bgGrad.addColorStop(1, '#8f4f0e');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, size, size);
+
+      // Micro-crystalline cellular patterns
+      for (let c = 0; c < 28; c++) {
+        const cx = Math.random() * size;
+        const cy = Math.random() * size;
+        const cr = Math.random() * 90 + 30;
+        const cGrad = ctx.createRadialGradient(cx, cy, 2, cx, cy, cr);
+        cGrad.addColorStop(0, 'rgba(255, 235, 175, 0.45)');
+        cGrad.addColorStop(0.6, 'rgba(215, 145, 45, 0.25)');
+        cGrad.addColorStop(1, 'rgba(140, 75, 15, 0)');
+        ctx.fillStyle = cGrad;
+        ctx.beginPath();
+        ctx.arc(cx, cy, cr, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Deep glowing dendritic veins
+      for (let v = 0; v < 6; v++) {
+        ctx.strokeStyle = 'rgba(255, 245, 210, 0.6)';
+        ctx.lineWidth = Math.random() * 3 + 1.5;
+        ctx.shadowColor = '#f59e0b';
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        let curX = Math.random() * size;
+        let curY = 0;
+        ctx.moveTo(curX, curY);
+        while (curY < size) {
+          curX += (Math.random() - 0.5) * 45;
+          curY += Math.random() * 50 + 20;
+          ctx.lineTo(curX, curY);
+        }
+        ctx.stroke();
+      }
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.colorSpace = THREE.SRGBColorSpace;
+      return texture;
+    }
+
+    // 6. Waterfall Water Blade Flow Texture
+    function createWaterfallTexture() {
+      const w = 256, h = 512;
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+
+      ctx.fillStyle = 'rgba(25, 110, 160, 0.35)';
+      ctx.fillRect(0, 0, w, h);
+
+      for (let x = 0; x < w; x += 3) {
+        ctx.strokeStyle = `rgba(210, 245, 255, ${Math.random() * 0.45 + 0.2})`;
+        ctx.lineWidth = Math.random() * 2 + 1;
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x + (Math.random() - 0.5) * 4, h);
+        ctx.stroke();
+      }
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      return texture;
+    }
+
+    /* ==========================================================================
+       SCENE SETUP & OPULENT LIGHTING
+       ========================================================================== */
+
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x030712); // Deep Royal Sapphire Night
+    scene.fog = new THREE.FogExp2(0x050e1e, 0.009);
+
+    const camera = new THREE.PerspectiveCamera(48, window.innerWidth / window.innerHeight, 0.1, 800);
+    camera.position.set(24, 38, 42);
+    camera.lookAt(2, 6, 0);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.30;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    container.appendChild(renderer.domElement);
+
+    // Atmospheric royal ambient & twilight sun
+    const hemiLight = new THREE.HemisphereLight(0x3e6b9e, 0x1a160d, 1.5);
+    scene.add(hemiLight);
+
+    const sunLight = new THREE.DirectionalLight(0xffecd1, 1.8);
+    sunLight.position.set(-28, 42, 28);
+    sunLight.castShadow = true;
+    sunLight.shadow.mapSize.width = 2048;
+    sunLight.shadow.mapSize.height = 2048;
+    sunLight.shadow.bias = -0.0001;
+    scene.add(sunLight);
+
+    // Warm Interior Level 1 Grand Chandelier
+    const grandLoungeLight = new THREE.PointLight(0xffbe6b, 0.0, 26, 1.3);
+    grandLoungeLight.position.set(4.0, 3.2, 0.5);
+    grandLoungeLight.castShadow = true;
+    scene.add(grandLoungeLight);
+
+    // Level 2 VIP Suite Interior Glow
+    const level2SuiteLight = new THREE.PointLight(0xffaa4f, 0.0, 22, 1.2);
+    level2SuiteLight.position.set(4.0, 7.8, 0.5);
+    level2SuiteLight.castShadow = true;
+    scene.add(level2SuiteLight);
+
+    // Level 3 Master Penthouse Celestial Glow
+    const penthouseLight = new THREE.PointLight(0xffd085, 0.0, 24, 1.4);
+    penthouseLight.position.set(3.5, 12.5, 0.8);
+    penthouseLight.castShadow = true;
+    scene.add(penthouseLight);
+
+    // Pool Terrace Submerged Turquoise Glow
+    const poolAquaLight = new THREE.PointLight(0x00f0ff, 0.0, 24, 2.0);
+    poolAquaLight.position.set(0.5, 0.1, 9.5);
+    scene.add(poolAquaLight);
+
+    // Sunken Fire Pit Amber Glow
+    const firePitLight = new THREE.PointLight(0xff6e1a, 0.0, 12, 1.6);
+    firePitLight.position.set(7.5, 0.7, 8.5);
+    scene.add(firePitLight);
+
+    // Multi-tier Cantilever Under-Soffit Golden Wash
+    const terraceWash = new THREE.SpotLight(0xffcf7b, 0.0, 30, Math.PI / 3, 0.4, 1.0);
+    terraceWash.position.set(2.0, 4.8, 5.0);
+    terraceWash.target.position.set(2, 0, 8);
+    scene.add(terraceWash);
+    scene.add(terraceWash.target);
+
+    // Backlit Honey Onyx Core Internal Light Column
+    const onyxCoreLight = new THREE.PointLight(0xffaa2b, 0.0, 22, 1.5);
+    onyxCoreLight.position.set(-3.2, 7.5, -0.5);
+    scene.add(onyxCoreLight);
+
+    // Waterfall Edge Cyan LED Grazer
+    const waterfallLight = new THREE.SpotLight(0x60efff, 0.0, 15, Math.PI / 4, 0.5, 1.2);
+    waterfallLight.position.set(10.5, 5.1, 7.5);
+    waterfallLight.target.position.set(10.5, 0.2, 7.5);
+    scene.add(waterfallLight);
+    scene.add(waterfallLight.target);
+
+    // Automotive Gallery Showcase Spotlights
+    const autoGalleryLight = new THREE.SpotLight(0xffffff, 0.0, 18, Math.PI / 3.5, 0.2, 1.2);
+    autoGalleryLight.position.set(-11.5, 3.8, 2.5);
+    autoGalleryLight.target.position.set(-11.5, 0.5, 2.5);
+    scene.add(autoGalleryLight);
+    scene.add(autoGalleryLight.target);
+
+    /* ==========================================================================
+       ROYAL PBR MATERIALS: CALACATTA GOLD, CHAMPAGNE BRASS & HONEY GLASS
+       ========================================================================== */
+
+    const calacattaMap = createCalacattaMarbleTexture();
+    calacattaMap.repeat.set(2, 2);
+    const neroGoldMap = createNeroGoldMarbleTexture();
+    neroGoldMap.repeat.set(2, 2);
+    const walnutMap = createSmokedWalnutTexture();
+    walnutMap.repeat.set(2, 2);
+    const waterNormal = createWaterNormalTexture();
+    waterNormal.repeat.set(6, 6);
+    const honeyOnyxMap = createHoneyOnyxTexture();
+    honeyOnyxMap.repeat.set(1, 2);
+    const waterfallMap = createWaterfallTexture();
+    waterfallMap.repeat.set(1, 3);
+
+    // Luxurious Calacatta Gold Marble for Main Villa Volumes
+    const calacattaMarbleMat = new THREE.MeshStandardMaterial({
+      map: calacattaMap,
+      roughness: 0.18,
+      metalness: 0.05,
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.0
+    });
+
+    // Nero Marquina Black & Gold Veined Marble
+    const neroMarbleMat = new THREE.MeshStandardMaterial({
+      map: neroGoldMap,
+      roughness: 0.22,
+      metalness: 0.12,
+      color: 0x181a1f,
+      transparent: true,
+      opacity: 0.0
+    });
+
+    // Brushed Champagne Gold / Titanium Brass for Mullions & Accents
+    const champagneBrassMat = new THREE.MeshStandardMaterial({
+      color: 0xdfb76c,
+      roughness: 0.24,
+      metalness: 0.92,
+      transparent: true,
+      opacity: 0.0
+    });
+
+    // Mirror Gold Trim Material
+    const mirrorGoldMat = new THREE.MeshStandardMaterial({
+      color: 0xf5d07a,
+      roughness: 0.1,
+      metalness: 0.98,
+      transparent: true,
+      opacity: 0.0
+    });
+
+    // Ultra-Clear Pilkington Acoustic Glazing
+    const royalGlassMat = new THREE.MeshPhysicalMaterial({
+      color: 0xfffcf5,
+      transmission: 0.92,
+      opacity: 0.0,
+      transparent: true,
+      roughness: 0.05,
+      ior: 1.54,
+      reflectivity: 0.95,
+      thickness: 0.35
+    });
+
+    // Backlit Translucent Honey Onyx Feature Monolith
+    const backlitOnyxMat = new THREE.MeshStandardMaterial({
+      map: honeyOnyxMap,
+      roughness: 0.12,
+      metalness: 0.08,
+      emissive: new THREE.Color(0xf59e0b),
+      emissiveIntensity: 0.0,
+      emissiveMap: honeyOnyxMap,
+      transparent: true,
+      opacity: 0.0
+    });
+
+    // Cascading Architectural Waterfall Material
+    const waterfallMat = new THREE.MeshPhysicalMaterial({
+      map: waterfallMap,
+      color: 0x88eeff,
+      transmission: 0.85,
+      roughness: 0.1,
+      transparent: true,
+      opacity: 0.0,
+      ior: 1.33
+    });
+
+    // Hand-scraped Smoked Walnut
+    const woodMat = new THREE.MeshStandardMaterial({
+      map: walnutMap,
+      roughness: 0.35,
+      metalness: 0.05,
+      transparent: true,
+      opacity: 0.0
+    });
+
+    // Turquoise Mediterranean Moat Water
+    const poolWaterMat = new THREE.MeshPhysicalMaterial({
+      color: 0x076a8a,
+      roughness: 0.04,
+      transmission: 0.72,
+      transparent: true,
+      opacity: 0.0,
+      ior: 1.333,
+      normalMap: waterNormal,
+      normalScale: new THREE.Vector2(0.09, 0.09)
+    });
+
+    // Warm Architectural Cove Strip Emissive Glow
+    const coveLightMat = new THREE.MeshBasicMaterial({
+      color: 0xffda8a,
+      transparent: true,
+      opacity: 0.0
+    });
+
+    // Royal Navy / Champagne Velvet for Sofa
+    const royalVelvetMat = new THREE.MeshStandardMaterial({
+      color: 0x141e30,
+      roughness: 0.85,
+      metalness: 0.1,
+      transparent: true,
+      opacity: 0.0
+    });
+
+    // Biophilic Architectural Foliage Material (Olive & Cypress tone)
+    const foliageDarkMat = new THREE.MeshStandardMaterial({
+      color: 0x1d331f,
+      roughness: 0.65,
+      metalness: 0.05,
+      transparent: true,
+      opacity: 0.0
+    });
+
+    const foliageLightMat = new THREE.MeshStandardMaterial({
+      color: 0x2e542f,
+      roughness: 0.55,
+      metalness: 0.05,
+      transparent: true,
+      opacity: 0.0
+    });
+
+    // Automotive Liquid Metallic Titanium Grey Paint
+    const carPaintMat = new THREE.MeshPhysicalMaterial({
+      color: 0x242a36,
+      roughness: 0.12,
+      metalness: 0.95,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.05,
+      transparent: true,
+      opacity: 0.0
+    });
+
+    // Glowing Gold Blueprint Drafting Lines
+    const blueprintLineMat = new THREE.LineBasicMaterial({
+      color: 0xe2b45e, // Royal gold drafting line
+      transparent: true,
+      opacity: 0.95,
+      linewidth: 1
+    });
+
+    /* ==========================================================================
+       ARCHITECTURAL STRUCTURE ASSEMBLY (PALATIAL SPECIFICATIONS)
+       ========================================================================== */
+
+    const buildingRoot = new THREE.Group();
+    scene.add(buildingRoot);
+
+    const wireframesGroup = new THREE.Group();
+    scene.add(wireframesGroup);
+
+    const blueprintGroundGroup = new THREE.Group();
+    scene.add(blueprintGroundGroup);
+
+    function addEdges(geometry, targetGroup, parentMatrix = new THREE.Matrix4()) {
+      const edges = new THREE.EdgesGeometry(geometry, 25);
+      const line = new THREE.LineSegments(edges, blueprintLineMat);
+      line.applyMatrix4(parentMatrix);
+      targetGroup.add(line);
+      return line;
+    }
+
+    // 1. Stage A: Foundation, Massive Moat Deck & Automotive Showcase
+    const groupFoundation = new THREE.Group();
+    buildingRoot.add(groupFoundation);
+
+    // Deep Nero Marquina Mega-Sub-Podium (Enlarged for 3-Floor Scale)
+    const podiumGeo = new THREE.BoxGeometry(44, 1.0, 32);
+    const podiumMesh = new THREE.Mesh(podiumGeo, neroMarbleMat);
+    podiumMesh.position.set(0, -0.5, 4);
+    podiumMesh.receiveShadow = true;
+    groupFoundation.add(podiumMesh);
+    addEdges(podiumGeo, wireframesGroup, podiumMesh.matrixWorld);
+
+    // Upper Calacatta Gold Marble Pool Deck (Spacious 24m width)
+    const terraceGeo = new THREE.BoxGeometry(26, 0.4, 18);
+    const terraceMesh = new THREE.Mesh(terraceGeo, calacattaMarbleMat);
+    terraceMesh.position.set(2.5, 0.2, 7.5);
+    terraceMesh.receiveShadow = true;
+    terraceMesh.castShadow = true;
+    groupFoundation.add(terraceMesh);
+    addEdges(terraceGeo, wireframesGroup, terraceMesh.matrixWorld);
+
+    // Perimeter Champagne Gold Inlay Trim on Terrace
+    const terraceGoldTrimGeo = new THREE.BoxGeometry(26.1, 0.05, 18.1);
+    const terraceGoldTrim = new THREE.Mesh(terraceGoldTrimGeo, champagneBrassMat);
+    terraceGoldTrim.position.set(2.5, 0.42, 7.5);
+    groupFoundation.add(terraceGoldTrim);
+
+    // Crystalline Turquoise Reflection Pool / Moat (Expansive)
+    const poolGeo = new THREE.PlaneGeometry(18, 10.5);
+    const poolWaterMesh = new THREE.Mesh(poolGeo, poolWaterMat);
+    poolWaterMesh.rotation.x = -Math.PI / 2;
+    poolWaterMesh.position.set(1.5, 0.38, 9.8);
+    poolWaterMesh.receiveShadow = true;
+    groupFoundation.add(poolWaterMesh);
+
+    // Floating Illuminated Travertine Stepping Stones across the Moat
+    const steppingStonesGroup = new THREE.Group();
+    for (let s = 0; s < 5; s++) {
+      const stoneGeo = new THREE.BoxGeometry(1.8, 0.16, 1.2);
+      const stoneMesh = new THREE.Mesh(stoneGeo, calacattaMarbleMat);
+      stoneMesh.position.set(4.6, 0.44, 13.8 - (s * 1.6));
+      stoneMesh.receiveShadow = true;
+      steppingStonesGroup.add(stoneMesh);
+
+      // Embedded Gold Perimeter Rim
+      const stoneRim = new THREE.Mesh(new THREE.BoxGeometry(1.84, 0.04, 1.24), champagneBrassMat);
+      stoneRim.position.set(4.6, 0.42, 13.8 - (s * 1.6));
+      steppingStonesGroup.add(stoneRim);
+
+      // Under-tread Warm LED Cove
+      const underGlow = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.02, 1.1), coveLightMat);
+      underGlow.position.set(4.6, 0.36, 13.8 - (s * 1.6));
+      steppingStonesGroup.add(underGlow);
+    }
+    groupFoundation.add(steppingStonesGroup);
+
+    // Sunken Royal Fire Lounge in Pool
+    const sunkenPitGroup = new THREE.Group();
+    sunkenPitGroup.position.set(8.5, 0.4, 8.8);
+
+    const sunkenBase = new THREE.Mesh(new THREE.BoxGeometry(5.2, 0.3, 4.2), neroMarbleMat);
+    sunkenPitGroup.add(sunkenBase);
+    addEdges(sunkenBase.geometry, wireframesGroup, sunkenBase.matrixWorld);
+
+    // Outer seating bench around fire pit
+    const benchGeo = new THREE.BoxGeometry(4.6, 0.3, 0.7);
+    const bench1 = new THREE.Mesh(benchGeo, royalVelvetMat);
+    bench1.position.set(0, 0.35, -1.4);
+    sunkenPitGroup.add(bench1);
+
+    const bench2 = new THREE.Mesh(benchGeo, royalVelvetMat);
+    bench2.position.set(0, 0.35, 1.4);
+    sunkenPitGroup.add(bench2);
+
+    // Central Fire Pit Hearth with Gold Rim
+    const fireHearth = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.2, 1.3), neroMarbleMat);
+    fireHearth.position.set(0, 0.3, 0);
+    sunkenPitGroup.add(fireHearth);
+
+    const fireGoldRim = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.05, 1.4), champagneBrassMat);
+    fireGoldRim.position.set(0, 0.42, 0);
+    sunkenPitGroup.add(fireGoldRim);
+
+    // Fire flame core
+    const flameGeo = new THREE.ConeGeometry(0.4, 0.6, 8);
+    const flameMat = new THREE.MeshBasicMaterial({ color: 0xffaa22 });
+    const flameMesh = new THREE.Mesh(flameGeo, flameMat);
+    flameMesh.position.set(0, 0.65, 0);
+    sunkenPitGroup.add(flameMesh);
+
+    groupFoundation.add(sunkenPitGroup);
+
+    // Hypercar Showcase Glass Pavilion Wing (West Extension)
+    const autoGalleryGroup = new THREE.Group();
+    autoGalleryGroup.position.set(-11.5, 0.4, 2.5);
+
+    const autoFloor = new THREE.Mesh(new THREE.BoxGeometry(9.0, 0.3, 8.0), neroMarbleMat);
+    autoFloor.receiveShadow = true;
+    autoGalleryGroup.add(autoFloor);
+
+    // Polished Glass Enclosure
+    const autoGlassBack = new THREE.Mesh(new THREE.BoxGeometry(8.8, 3.4, 0.04), royalGlassMat);
+    autoGlassBack.position.set(0, 1.7, -3.9);
+    autoGalleryGroup.add(autoGlassBack);
+
+    const autoGlassFront = new THREE.Mesh(new THREE.BoxGeometry(8.8, 3.4, 0.04), royalGlassMat);
+    autoGlassFront.position.set(0, 1.7, 3.9);
+    autoGalleryGroup.add(autoGlassFront);
+
+    const autoGlassSide = new THREE.Mesh(new THREE.BoxGeometry(0.04, 3.4, 7.8), royalGlassMat);
+    autoGlassSide.position.set(-4.4, 1.7, 0);
+    autoGalleryGroup.add(autoGlassSide);
+
+    // Brass Pavilion Frame & Roof
+    const autoRoof = new THREE.Mesh(new THREE.BoxGeometry(9.2, 0.3, 8.2), calacattaMarbleMat);
+    autoRoof.position.set(0, 3.5, 0);
+    autoGalleryGroup.add(autoRoof);
+
+    // Hexagonal Overhead LED Ceiling Grid in Showroom
+    for (let hx = -2.5; hx <= 2.5; hx += 2.5) {
+      const hexLight = new THREE.Mesh(new THREE.TorusGeometry(0.8, 0.03, 6, 6), coveLightMat);
+      hexLight.rotation.x = Math.PI / 2;
+      hexLight.position.set(hx, 3.32, 0);
+      autoGalleryGroup.add(hexLight);
+    }
+
+    // Sculpted Futuristic Concept Hypercar Silhouette
+    const carGroup = new THREE.Group();
+    carGroup.position.set(0, 0.35, 0);
+
+    const carBody = new THREE.Mesh(new THREE.BoxGeometry(4.4, 0.65, 2.0), carPaintMat);
+    carBody.position.y = 0.45;
+    carBody.castShadow = true;
+    carGroup.add(carBody);
+
+    const carCabin = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.5, 1.7), royalGlassMat);
+    carCabin.position.set(-0.2, 0.95, 0);
+    carGroup.add(carCabin);
+
+    // Wheels & gold brake calipers
+    const wheelGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.25, 24);
+    const wheelMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.4 });
+    const wheelCoords = [
+      [-1.4, 0.35, 1.05], [1.4, 0.35, 1.05],
+      [-1.4, 0.35, -1.05], [1.4, 0.35, -1.05]
+    ];
+    wheelCoords.forEach(([wx, wy, wz]) => {
+      const wheel = new THREE.Mesh(wheelGeo, wheelMat);
+      wheel.rotation.x = Math.PI / 2;
+      wheel.position.set(wx, wy, wz);
+      carGroup.add(wheel);
+
+      const rim = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.26, 16), mirrorGoldMat);
+      rim.rotation.x = Math.PI / 2;
+      rim.position.set(wx, wy, wz);
+      carGroup.add(rim);
+    });
+
+    // Sleek Daytime Running Headlight Strips
+    const carLightF = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.06, 1.6), coveLightMat);
+    carLightF.position.set(2.22, 0.5, 0);
+    carGroup.add(carLightF);
+
+    autoGalleryGroup.add(carGroup);
+    groupFoundation.add(autoGalleryGroup);
+
+    // 2. Stage B: Floor 1 (Ground Floor) Structure & Backlit Onyx Monolith Spine
+    const groupGroundFloor = new THREE.Group();
+    buildingRoot.add(groupGroundFloor);
+
+    // 3-Storey Backlit Honey Onyx Structural Spine (Crystalline light column)
+    const onyxSpineGeo = new THREE.BoxGeometry(2.4, 14.2, 5.0);
+    const onyxSpine = new THREE.Mesh(onyxSpineGeo, backlitOnyxMat);
+    onyxSpine.position.set(-3.2, 7.1, -0.5);
+    groupGroundFloor.add(onyxSpine);
+    addEdges(onyxSpineGeo, wireframesGroup, onyxSpine.matrixWorld);
+
+    // Smoked Walnut Parquet Flooring (Expanded)
+    const gfFloorGeo = new THREE.BoxGeometry(16, 0.25, 12);
+    const gfFloorMesh = new THREE.Mesh(gfFloorGeo, woodMat);
+    gfFloorMesh.position.set(3.5, 0.45, -1.0);
+    groupGroundFloor.add(gfFloorMesh);
+
+    // Smoked Walnut Feature Wall with Brushed Brass Vertical Slats
+    const backWallGeo = new THREE.BoxGeometry(15.8, 4.2, 0.35);
+    const backWallMesh = new THREE.Mesh(backWallGeo, woodMat);
+    backWallMesh.position.set(3.5, 2.5, -6.8);
+    backWallMesh.receiveShadow = true;
+    groupGroundFloor.add(backWallMesh);
+
+    // Vertical Brass Slats on Feature Wall
+    for (let s = -7.2; s <= 7.2; s += 0.8) {
+      const slat = new THREE.Mesh(new THREE.BoxGeometry(0.04, 4.1, 0.06), champagneBrassMat);
+      slat.position.set(3.5 + s, 2.5, -6.6);
+      groupGroundFloor.add(slat);
+    }
+
+    // Grand Reception Modular Velvet Sofa with Gold Plinth
+    const sofaGroup = new THREE.Group();
+    sofaGroup.position.set(4.5, 0.55, -2.5);
+
+    const sofaGoldBase = new THREE.Mesh(new THREE.BoxGeometry(4.8, 0.08, 1.8), champagneBrassMat);
+    sofaGroup.add(sofaGoldBase);
+
+    const sofaCushions = new THREE.Mesh(new THREE.BoxGeometry(4.6, 0.5, 1.6), royalVelvetMat);
+    sofaCushions.position.y = 0.32;
+    sofaGroup.add(sofaCushions);
+
+    const sofaBack = new THREE.Mesh(new THREE.BoxGeometry(4.6, 0.65, 0.4), royalVelvetMat);
+    sofaBack.position.set(0, 0.85, -0.6);
+    sofaGroup.add(sofaBack);
+
+    // Royal Pillows
+    const pillowMat = new THREE.MeshStandardMaterial({ color: 0xdfb76c, roughness: 0.4 });
+    const p1 = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.35, 0.2), pillowMat);
+    p1.position.set(-1.6, 0.75, -0.35);
+    p1.rotation.y = 0.2;
+    sofaGroup.add(p1);
+
+    const p2 = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.35, 0.2), pillowMat);
+    p2.position.set(1.6, 0.75, -0.35);
+    p2.rotation.y = -0.2;
+    sofaGroup.add(p2);
+
+    groupGroundFloor.add(sofaGroup);
+
+    // Calacatta Marble & Brass Waterfall Coffee Table
+    const tableTop = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.08, 1.1), calacattaMarbleMat);
+    tableTop.position.set(4.5, 0.65, -0.8);
+    groupGroundFloor.add(tableTop);
+
+    const tableLeg1 = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.55, 1.1), champagneBrassMat);
+    tableLeg1.position.set(3.35, 0.36, -0.8);
+    groupGroundFloor.add(tableLeg1);
+
+    const tableLeg2 = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.55, 1.1), champagneBrassMat);
+    tableLeg2.position.set(5.65, 0.36, -0.8);
+    groupGroundFloor.add(tableLeg2);
+
+    // Grand Tiered Modern Crystal & Brass Chandelier (Tri-level height drops)
+    const chandelierGroup = new THREE.Group();
+    chandelierGroup.position.set(4.2, 3.8, 0.5);
+
+    for (let r = 0; r < 4; r++) {
+      const radius = 1.1 - (r * 0.26);
+      const ringGeo = new THREE.TorusGeometry(radius, 0.025, 8, 36);
+      const ring = new THREE.Mesh(ringGeo, champagneBrassMat);
+      ring.rotation.x = Math.PI / 2;
+      ring.position.y = -r * 0.35;
+      chandelierGroup.add(ring);
+
+      for (let c = 0; c < 16; c++) {
+        const ang = (c / 16) * Math.PI * 2;
+        const crystal = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.3, 6), royalGlassMat);
+        crystal.position.set(Math.cos(ang) * radius, (-r * 0.35) - 0.16, Math.sin(ang) * radius);
+        chandelierGroup.add(crystal);
+      }
+    }
+    groupGroundFloor.add(chandelierGroup);
+
+    // Monumental Fluted Champagne Brass Columns
+    const colGeo = new THREE.CylinderGeometry(0.14, 0.14, 4.2, 24);
+    const col1 = new THREE.Mesh(colGeo, champagneBrassMat);
+    col1.position.set(-2.0, 2.5, 4.5);
+    groupGroundFloor.add(col1);
+
+    const col2 = new THREE.Mesh(colGeo, champagneBrassMat);
+    col2.position.set(9.5, 2.5, 4.5);
+    groupGroundFloor.add(col2);
+
+    // West Architectural Marble Wing Anchor
+    const westWingGeo = new THREE.BoxGeometry(3.5, 4.2, 10);
+    const westWing = new THREE.Mesh(westWingGeo, calacattaMarbleMat);
+    westWing.position.set(-5.5, 2.5, -1.0);
+    groupGroundFloor.add(westWing);
+    addEdges(westWingGeo, wireframesGroup, westWing.matrixWorld);
+
+    // 3. Stage C: Glazed Facades & The Motorized Champagne Brass Door
+    const groupGlazing = new THREE.Group();
+    buildingRoot.add(groupGlazing);
+
+    function createRoyalGlazedFacadeWithDoor(width, height) {
+      const g = new THREE.Group();
+      
+      const fixW = width * 0.48;
+      const glassFix = new THREE.Mesh(new THREE.BoxGeometry(fixW, height, 0.02), royalGlassMat);
+      glassFix.position.set(-width * 0.24, 0, 0);
+      g.add(glassFix);
+
+      const frameFix = new THREE.Mesh(new THREE.BoxGeometry(fixW + 0.05, height + 0.05, 0.08), champagneBrassMat);
+      frameFix.position.set(-width * 0.24, 0, 0);
+      g.add(frameFix);
+
+      // Motorized SLIDING Door Right Panel
+      const doorW = width * 0.48;
+      const slidingDoor = new THREE.Group();
+
+      const glassDoor = new THREE.Mesh(new THREE.BoxGeometry(doorW, height, 0.02), royalGlassMat);
+      slidingDoor.add(glassDoor);
+
+      const frameDoor = new THREE.Mesh(new THREE.BoxGeometry(doorW + 0.05, height + 0.05, 0.08), champagneBrassMat);
+      slidingDoor.add(frameDoor);
+
+      // Royal Vertical Pull Handle in Mirror Gold
+      const handleMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 1.4, 16), mirrorGoldMat);
+      handleMesh.position.set(-doorW * 0.42, 0, 0.06);
+      slidingDoor.add(handleMesh);
+
+      slidingDoor.position.set(width * 0.24, 0, 0.05);
+      g.add(slidingDoor);
+
+      return { container: g, slidingDoor, doorWidth: doorW };
+    }
+
+    const { container: gfGlazing, slidingDoor: mainSlidingDoor, doorWidth: slidingDoorWidth } = createRoyalGlazedFacadeWithDoor(8.6, 4.2);
+    gfGlazing.position.set(4.6, 2.5, 2.0);
+    groupGlazing.add(gfGlazing);
+
+    // Helper to generate sculptural architectural trees and planters
+    function createArchitecturalPlanter(width, depth, numTrees = 2) {
+      const planterGroup = new THREE.Group();
+      // Bronze & Nero Marquina trough
+      const trough = new THREE.Mesh(new THREE.BoxGeometry(width, 0.5, depth), neroMarbleMat);
+      planterGroup.add(trough);
+
+      const troughRim = new THREE.Mesh(new THREE.BoxGeometry(width + 0.08, 0.06, depth + 0.08), champagneBrassMat);
+      troughRim.position.y = 0.26;
+      planterGroup.add(troughRim);
+
+      for (let t = 0; t < numTrees; t++) {
+        const tx = ((t + 0.5) / numTrees - 0.5) * (width * 0.7);
+        // Architectural trunk
+        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.07, 1.4, 8), woodMat);
+        trunk.position.set(tx, 0.85, 0);
+        trunk.rotation.z = (Math.random() - 0.5) * 0.2;
+        planterGroup.add(trunk);
+
+        // Tiered cloud-pruned foliage canopy
+        for (let f = 0; f < 3; f++) {
+          const foliage = new THREE.Mesh(
+            new THREE.DodecahedronGeometry(0.42 - f * 0.08, 1),
+            f % 2 === 0 ? foliageDarkMat : foliageLightMat
+          );
+          foliage.scale.set(1.4, 0.7, 1.2);
+          foliage.position.set(tx + (Math.random() - 0.5) * 0.2, 1.4 + f * 0.35, (Math.random() - 0.5) * 0.2);
+          planterGroup.add(foliage);
+        }
+
+        // Brass Uplight fixture
+        const upLight = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.1, 8), champagneBrassMat);
+        upLight.position.set(tx + 0.15, 0.28, 0.1);
+        planterGroup.add(upLight);
+      }
+      return planterGroup;
+    }
+
+    // 4. Stage D: Floor 2 (First Floor / Level 2 Cantilever Wing & Waterfall Cascade)
+    const groupFloor2 = new THREE.Group();
+    buildingRoot.add(groupFloor2);
+
+    // Floor 2 Marble Slab with Gold Fascia
+    const f2SlabGeo = new THREE.BoxGeometry(17.5, 0.6, 15.5);
+    const f2SlabMesh = new THREE.Mesh(f2SlabGeo, calacattaMarbleMat);
+    f2SlabMesh.position.set(4.0, 4.9, 0.8);
+    groupFloor2.add(f2SlabMesh);
+    addEdges(f2SlabGeo, wireframesGroup, f2SlabMesh.matrixWorld);
+
+    const f2GoldFascia = new THREE.Mesh(new THREE.BoxGeometry(17.6, 0.08, 15.6), champagneBrassMat);
+    f2GoldFascia.position.set(4.0, 4.9, 0.8);
+    groupFloor2.add(f2GoldFascia);
+
+    // Under-Soffit LED Cove Strip for Level 1 Ceiling
+    const f1CoveGeo = new THREE.BoxGeometry(16.5, 0.04, 7.5);
+    const f1CoveMesh = new THREE.Mesh(f1CoveGeo, coveLightMat);
+    f1CoveMesh.position.set(4.0, 4.58, 4.2);
+    groupFloor2.add(f1CoveMesh);
+
+    // Architectural Cascading Waterfall Blade pouring from Level 2 into the Moat
+    const waterfallBladeMesh = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 4.4), waterfallMat);
+    waterfallBladeMesh.position.set(10.5, 2.4, 7.8);
+    waterfallBladeMesh.rotation.y = -Math.PI / 10;
+    groupFloor2.add(waterfallBladeMesh);
+
+    // Waterfall Overflow Weir Spillway in Champagne Brass
+    const waterfallWeir = new THREE.Mesh(new THREE.BoxGeometry(3.8, 0.08, 0.4), champagneBrassMat);
+    waterfallWeir.position.set(10.5, 4.88, 7.8);
+    waterfallWeir.rotation.y = -Math.PI / 10;
+    groupFloor2.add(waterfallWeir);
+
+    // Level 2 Left Calacatta Gold Monolith
+    const f2WallLGeo = new THREE.BoxGeometry(0.8, 4.0, 13.5);
+    const f2WallL = new THREE.Mesh(f2WallLGeo, calacattaMarbleMat);
+    f2WallL.position.set(-2.5, 7.2, 0.5);
+    groupFloor2.add(f2WallL);
+    addEdges(f2WallLGeo, wireframesGroup, f2WallL.matrixWorld);
+
+    // Level 2 Right Calacatta Gold Monolith
+    const f2WallRGeo = new THREE.BoxGeometry(0.8, 4.0, 13.5);
+    const f2WallR = new THREE.Mesh(f2WallRGeo, calacattaMarbleMat);
+    f2WallR.position.set(10.5, 7.2, 0.5);
+    groupFloor2.add(f2WallR);
+    addEdges(f2WallRGeo, wireframesGroup, f2WallR.matrixWorld);
+
+    // Level 2 Panoramic Glazing
+    const f2Glaze = new THREE.Mesh(new THREE.BoxGeometry(12.2, 3.8, 0.02), royalGlassMat);
+    f2Glaze.position.set(4.0, 7.2, 4.8);
+    groupFloor2.add(f2Glaze);
+
+    // Parametric Aerodynamic Vertical Shading Fins (Kinetic Angle Gradation)
+    const parametricFinsGroup = new THREE.Group();
+    for (let f = 0; f < 14; f++) {
+      const fx = -4.8 + (f * 0.78);
+      const finGeo = new THREE.BoxGeometry(0.05, 3.8, 0.35);
+      const finMesh = new THREE.Mesh(finGeo, champagneBrassMat);
+      // Continuous parametric twist / angle rotation
+      const rotAngle = Math.sin((f / 14) * Math.PI) * 0.45 + 0.15;
+      finMesh.rotation.y = rotAngle;
+      finMesh.position.set(4.0 + fx, 7.2, 5.0);
+      parametricFinsGroup.add(finMesh);
+    }
+    groupFloor2.add(parametricFinsGroup);
+
+    // Level 2 Cantilever Sky-Garden Balcony Planter
+    const f2SkyGarden = createArchitecturalPlanter(8.0, 0.8, 3);
+    f2SkyGarden.position.set(2.5, 5.4, 7.6);
+    groupFloor2.add(f2SkyGarden);
+
+    // Level 2 Cantilever Balcony Guard Rail in Crystal Glass & Brass Rail
+    const f2RailGlass = new THREE.Mesh(new THREE.BoxGeometry(12.4, 1.15, 0.04), royalGlassMat);
+    f2RailGlass.position.set(4.0, 5.8, 8.2);
+    groupFloor2.add(f2RailGlass);
+
+    const f2RailHand = new THREE.Mesh(new THREE.BoxGeometry(12.5, 0.06, 0.08), champagneBrassMat);
+    f2RailHand.position.set(4.0, 6.4, 8.2);
+    groupFloor2.add(f2RailHand);
+
+    // 5. Stage E: Floor 3 (Second Floor / Level 3 Penthouse Sky Crown)
+    const groupFloor3 = new THREE.Group();
+    buildingRoot.add(groupFloor3);
+
+    // Floor 3 Intermediate Marble Slab with Gold Fascia
+    const f3SlabGeo = new THREE.BoxGeometry(15.5, 0.6, 13.5);
+    const f3SlabMesh = new THREE.Mesh(f3SlabGeo, calacattaMarbleMat);
+    f3SlabMesh.position.set(4.0, 9.5, -0.2);
+    groupFloor3.add(f3SlabMesh);
+    addEdges(f3SlabGeo, wireframesGroup, f3SlabMesh.matrixWorld);
+
+    const f3GoldFascia = new THREE.Mesh(new THREE.BoxGeometry(15.6, 0.08, 13.6), champagneBrassMat);
+    f3GoldFascia.position.set(4.0, 9.5, -0.2);
+    groupFloor3.add(f3GoldFascia);
+
+    // Under-Soffit LED Cove Strip for Level 2 Ceiling
+    const f2CoveGeo = new THREE.BoxGeometry(14.5, 0.04, 6.5);
+    const f2CoveMesh = new THREE.Mesh(f2CoveGeo, coveLightMat);
+    f2CoveMesh.position.set(4.0, 9.18, 3.2);
+    groupFloor3.add(f2CoveMesh);
+
+    // Level 3 Penthouse Master Pavilion
+    const pWallLGeo = new THREE.BoxGeometry(0.7, 3.8, 10.5);
+    const pWallL = new THREE.Mesh(pWallLGeo, calacattaMarbleMat);
+    pWallL.position.set(-1.8, 11.7, -0.8);
+    groupFloor3.add(pWallL);
+    addEdges(pWallLGeo, wireframesGroup, pWallL.matrixWorld);
+
+    const pWallRGeo = new THREE.BoxGeometry(0.7, 3.8, 10.5);
+    const pWallR = new THREE.Mesh(pWallRGeo, calacattaMarbleMat);
+    pWallR.position.set(9.8, 11.7, -0.8);
+    groupFloor3.add(pWallR);
+    addEdges(pWallRGeo, wireframesGroup, pWallR.matrixWorld);
+
+    // Penthouse Floor-to-Ceiling Curved & Linear Acoustic Glazing
+    const pGlaze = new THREE.Mesh(new THREE.BoxGeometry(10.9, 3.6, 0.02), royalGlassMat);
+    pGlaze.position.set(4.0, 11.7, 3.2);
+    groupFloor3.add(pGlaze);
+
+    for (let m = -4.0; m <= 4.0; m += 2.0) {
+      const pmull = new THREE.Mesh(new THREE.BoxGeometry(0.08, 3.6, 0.08), champagneBrassMat);
+      pmull.position.set(4.0 + m, 11.7, 3.22);
+      groupFloor3.add(pmull);
+    }
+
+    // Penthouse Rooftop Glass Plunge Pool / Jacuzzi on the Sky Deck
+    const skySpaGeo = new THREE.BoxGeometry(3.2, 0.8, 2.6);
+    const skySpaWater = new THREE.Mesh(skySpaGeo, poolWaterMat);
+    skySpaWater.position.set(8.2, 10.1, 4.6);
+    groupFloor3.add(skySpaWater);
+
+    const skySpaGlass = new THREE.Mesh(new THREE.BoxGeometry(3.3, 0.85, 2.7), royalGlassMat);
+    skySpaGlass.position.set(8.2, 10.1, 4.6);
+    groupFloor3.add(skySpaGlass);
+
+    // Level 3 Penthouse Sky-Garden Planter with Mediterranean Cypress
+    const pSkyGarden = createArchitecturalPlanter(5.4, 0.7, 2);
+    pSkyGarden.position.set(1.5, 9.9, 5.6);
+    groupFloor3.add(pSkyGarden);
+
+    // Penthouse Roof Canopy & Aerodynamic Tapered Visor
+    const pRoofGeo = new THREE.BoxGeometry(16.5, 0.55, 14.5);
+    const pRoofMesh = new THREE.Mesh(pRoofGeo, calacattaMarbleMat);
+    pRoofMesh.position.set(4.0, 13.8, 0.2);
+    groupFloor3.add(pRoofMesh);
+    addEdges(pRoofGeo, wireframesGroup, pRoofMesh.matrixWorld);
+
+    const pRoofGoldTrim = new THREE.Mesh(new THREE.BoxGeometry(16.6, 0.08, 14.6), champagneBrassMat);
+    pRoofGoldTrim.position.set(4.0, 13.8, 0.2);
+    groupFloor3.add(pRoofGoldTrim);
+
+    // Level 3 Golden Pergola Trellis (Louvers for Luxury Sky Observation Deck)
+    const pergolaGroup = new THREE.Group();
+    pergolaGroup.position.set(4.0, 14.4, 1.2);
+
+    for (let b = -6.5; b <= 6.5; b += 1.1) {
+      const beam = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.25, 9.5), champagneBrassMat);
+      beam.position.set(b, 0, 0);
+      pergolaGroup.add(beam);
+    }
+    groupFloor3.add(pergolaGroup);
+
+    // Level 3 Sky Terrace Crystal Balustrade
+    const pRailGlass = new THREE.Mesh(new THREE.BoxGeometry(11.2, 1.1, 0.04), royalGlassMat);
+    pRailGlass.position.set(4.0, 10.3, 5.8);
+    groupFloor3.add(pRailGlass);
+
+    const pRailHand = new THREE.Mesh(new THREE.BoxGeometry(11.3, 0.06, 0.08), champagneBrassMat);
+    pRailHand.position.set(4.0, 10.9, 5.8);
+    groupFloor3.add(pRailHand);
+
+    // Golden Architectural CAD Grid (Expanded for 3-Floor Master Scale)
+    const cadGrid = new THREE.GridHelper(56, 56, 0xe2b45e, 0x162232);
+    cadGrid.material.transparent = true;
+    cadGrid.position.set(3, 0.02, 3);
+    blueprintGroundGroup.add(cadGrid);
+
+    // 2D Architectural Floor Plan Polyline Contours (Expanded layout)
+    const planLineMat = new THREE.LineBasicMaterial({ color: 0xe2b45e, linewidth: 2, transparent: true });
+    const planPoints = [
+      // Site bounds
+      new THREE.Vector3(-18, 0.05, -10), new THREE.Vector3(22, 0.05, -10),
+      new THREE.Vector3(22, 0.05, -10), new THREE.Vector3(22, 0.05, 18),
+      new THREE.Vector3(22, 0.05, 18), new THREE.Vector3(-18, 0.05, 18),
+      new THREE.Vector3(-18, 0.05, 18), new THREE.Vector3(-18, 0.05, -10),
+      // Ground salon bounds
+      new THREE.Vector3(-4, 0.05, -7), new THREE.Vector3(12, 0.05, -7),
+      new THREE.Vector3(12, 0.05, -7), new THREE.Vector3(12, 0.05, 5),
+      new THREE.Vector3(12, 0.05, 5), new THREE.Vector3(-4, 0.05, 5),
+      new THREE.Vector3(-4, 0.05, 5), new THREE.Vector3(-4, 0.05, -7),
+      // Auto gallery bounds
+      new THREE.Vector3(-16, 0.05, -2), new THREE.Vector3(-7, 0.05, -2),
+      new THREE.Vector3(-7, 0.05, 7), new THREE.Vector3(-16, 0.05, 7),
+      new THREE.Vector3(-16, 0.05, -2),
+      // Pool bounds
+      new THREE.Vector3(-7, 0.05, 5), new THREE.Vector3(11, 0.05, 5),
+      new THREE.Vector3(11, 0.05, 5), new THREE.Vector3(11, 0.05, 16),
+      new THREE.Vector3(11, 0.05, 16), new THREE.Vector3(-7, 0.05, 16),
+      new THREE.Vector3(-7, 0.05, 16), new THREE.Vector3(-7, 0.05, 5)
+    ];
+    const planGeo = new THREE.BufferGeometry().setFromPoints(planPoints);
+    const planMesh = new THREE.LineSegments(planGeo, planLineMat);
+    blueprintGroundGroup.add(planMesh);
+
+    // CAD Crosshairs & Dimension Marks
+    function createCadCross(x, z, s = 0.8) {
+      const pts = [
+        new THREE.Vector3(x - s, 0.06, z), new THREE.Vector3(x + s, 0.06, z),
+        new THREE.Vector3(x, 0.06, z - s), new THREE.Vector3(x, 0.06, z + s)
+      ];
+      return new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts), planLineMat);
+    }
+    blueprintGroundGroup.add(createCadCross(-4, -7));
+    blueprintGroundGroup.add(createCadCross(12, -7));
+    blueprintGroundGroup.add(createCadCross(12, 5));
+    blueprintGroundGroup.add(createCadCross(-4, 5));
+    blueprintGroundGroup.add(createCadCross(-16, -2));
+    blueprintGroundGroup.add(createCadCross(-7, 7));
+
+    /* ==========================================================================
+       SCROLL ANIMATION ENGINE & CAMERA PATH FOR 3-FLOOR PALATIAL ESTATE
+       ========================================================================== */
+
+    const allPbrMaterials = [
+      calacattaMarbleMat, neroMarbleMat, champagneBrassMat, mirrorGoldMat, 
+      royalGlassMat, woodMat, royalVelvetMat, foliageDarkMat, foliageLightMat,
+      carPaintMat
+    ];
+
+    const camPathPoints = [
+      { t: 0.00, pos: new THREE.Vector3(24, 38, 42), target: new THREE.Vector3(2, 6, 0) },        // 01: Top blueprint master schematic
+      { t: 0.20, pos: new THREE.Vector3(28, 18, 34), target: new THREE.Vector3(3.0, 3.5, 2.0) },  // 02: Massive podium, stepping stones & moat
+      { t: 0.38, pos: new THREE.Vector3(22, 14, 26), target: new THREE.Vector3(4.0, 5.5, 2.0) },  // 03: Ground & Level 2 VIP wing with waterfall
+      { t: 0.52, pos: new THREE.Vector3(18, 18, 28), target: new THREE.Vector3(4.0, 8.5, 1.5) },  // 04: Level 3 Penthouse, Sky-Gardens & Pergola
+      { t: 0.68, pos: new THREE.Vector3(34, 20, 38), target: new THREE.Vector3(3.0, 6.8, 1.0) },  // 05: Panoramic long shot of huge 3-floor estate
+      { t: 0.80, pos: new THREE.Vector3(18, 8.0, 22), target: new THREE.Vector3(4.2, 3.8, 2.5) }, // 06: Descending across reflection moat & waterfall
+      { t: 0.88, pos: new THREE.Vector3(8.5, 3.2, 9.5), target: new THREE.Vector3(4.6, 2.5, 2.0) }, // 07: Stepping stones & terrace approach
+      { t: 0.94, pos: new THREE.Vector3(5.6, 2.5, 3.6), target: new THREE.Vector3(4.6, 2.5, -2.0) }, // 08: Door threshold
+      { t: 0.98, pos: new THREE.Vector3(4.6, 2.4, 0.8), target: new THREE.Vector3(4.5, 2.4, -4.5) }, // 09: Gliding through open champagne door
+      { t: 1.00, pos: new THREE.Vector3(4.2, 2.2, -1.8), target: new THREE.Vector3(4.2, 2.2, -7.0) } // 10: Settled in Grand Royal Salon
+    ];
+
+    function getInterpolatedCam(progress) {
+      const p = Math.max(0, Math.min(1, progress));
+      for (let i = 0; i < camPathPoints.length - 1; i++) {
+        const p1 = camPathPoints[i];
+        const p2 = camPathPoints[i + 1];
+        if (p >= p1.t && p <= p2.t) {
+          const segT = (p - p1.t) / (p2.t - p1.t);
+          const ease = 0.5 - 0.5 * Math.cos(segT * Math.PI);
+          const pos = new THREE.Vector3().lerpVectors(p1.pos, p2.pos, ease);
+          const target = new THREE.Vector3().lerpVectors(p1.target, p2.target, ease);
+          return { pos, target };
+        }
+      }
+      return camPathPoints[camPathPoints.length - 1];
+    }
+
+    // Interactive Room Cam targets for 3-Floor Villa
+    let activeRoomCam = null;
+    const roomCamPositions = {
+      lounge: { pos: new THREE.Vector3(3.2, 2.4, 0.5), target: new THREE.Vector3(4.5, 2.2, -3.0) },
+      waterfall: { pos: new THREE.Vector3(14.5, 4.2, 11.5), target: new THREE.Vector3(9.5, 3.5, 6.0) },
+      autogallery: { pos: new THREE.Vector3(-14.0, 3.2, 7.5), target: new THREE.Vector3(-11.0, 1.2, 2.5) },
+      penthouse: { pos: new THREE.Vector3(1.0, 14.5, 12.0), target: new THREE.Vector3(4.0, 12.5, 2.0) },
+      aerial: { pos: new THREE.Vector3(34.0, 20.0, 38.0), target: new THREE.Vector3(3.0, 6.8, 1.0) }
+    };
+
+    let currentScrollProgress = 0;
+    let targetScrollProgress = 0;
+
+    const navStageIndicator = document.getElementById('nav-stage-indicator');
+    const navStageText = document.getElementById('nav-stage-text');
+    const navPctText = document.getElementById('nav-pct-text');
+    const scrollPrompt = document.getElementById('scroll-prompt');
+
+    const step1 = document.getElementById('step-1');
+    const step2 = document.getElementById('step-2');
+    const step3 = document.getElementById('step-3');
+    const step4 = document.getElementById('step-4');
+
+    function updateAssemblyProgress(t) {
+      // Keep structural integrity so the full 3D Palatial Estate is prominently visible from t=0
+      // 1. Foundation & Substructure
+      groupFoundation.position.y = 0;
+      groupFoundation.scale.set(1, 1, 1);
+
+      // 2. Floor 1 Ground Salon
+      groupGroundFloor.position.y = 0;
+      groupGroundFloor.scale.set(1, 1, 1);
+
+      // 3. Floor 2 VIP Cantilever Wing (subtle architectural float-in if scrolling)
+      const tC = Math.max(0, Math.min(1, t / 0.35));
+      groupFloor2.position.y = 1.2 * (1 - tC);
+      groupFloor2.scale.set(1, 1, 1);
+
+      // 4. Floor 3 Master Penthouse & Pergola
+      const tD = Math.max(0, Math.min(1, Math.max(0, t - 0.15) / 0.35));
+      groupFloor3.position.y = 1.8 * (1 - tD);
+      groupFloor3.scale.set(1, 1, 1);
+
+      // Materials: In initial blueprint phase (t=0), materials have a semi-translucent presence (0.45)
+      // and transition smoothly into 100% solid photorealistic stone as user scrolls
+      const tMat = 0.45 + (0.55 * Math.max(0, Math.min(1, t / 0.50)));
+      allPbrMaterials.forEach(m => {
+        m.opacity = tMat;
+        m.transparent = tMat < 0.98;
+      });
+      poolWaterMat.opacity = 0.35 + (0.57 * Math.max(0, Math.min(1, t / 0.40)));
+      coveLightMat.opacity = 0.30 + (0.65 * Math.max(0, Math.min(1, t / 0.45)));
+      waterfallMat.opacity = 0.35 + (0.53 * Math.max(0, Math.min(1, t / 0.40)));
+      backlitOnyxMat.opacity = 0.45 + (0.53 * Math.max(0, Math.min(1, t / 0.35)));
+      backlitOnyxMat.emissiveIntensity = 0.50 + (0.70 * Math.max(0, Math.min(1, t / 0.45)));
+
+      // Blueprint drafting lines glow brightly at first, remaining subtly visible as detail accents
+      const lineOpacity = Math.max(0.18, 1.0 - (t * 0.82));
+      blueprintLineMat.opacity = lineOpacity;
+      cadGrid.material.opacity = Math.max(0.08, 0.85 - (t * 0.70));
+
+      // Opulent Warm Interior & Cove Lighting Activates
+      const lightT = 0.20 + (0.80 * Math.max(0, Math.min(1, t / 0.50)));
+      grandLoungeLight.intensity = 7.5 * lightT;
+      level2SuiteLight.intensity = 6.2 * lightT;
+      penthouseLight.intensity = 6.8 * lightT;
+      poolAquaLight.intensity = 5.2 * lightT;
+      firePitLight.intensity = 4.2 * lightT;
+      terraceWash.intensity = 4.8 * lightT;
+      onyxCoreLight.intensity = 6.5 * lightT;
+      waterfallLight.intensity = 4.5 * lightT;
+      autoGalleryLight.intensity = 5.5 * lightT;
+
+      // 5. Motorized Sliding Door Opening (t: 0.86 -> 0.96)
+      const doorOpenT = Math.max(0, Math.min(1, (t - 0.86) / 0.10));
+      mainSlidingDoor.position.x = (8.6 * 0.24) + (doorOpenT * slidingDoorWidth * 0.90);
+
+      // UI HUD updates
+      const pct = Math.round(t * 100);
+      navPctText.textContent = `${pct}%`;
+
+      if (t < 0.18) {
+        navStageText.textContent = "Phase 01: 3-Floor Master Schematics";
+        navStageIndicator.className = "w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_8px_#f59e0b]";
+        step1.classList.remove('hidden'); step1.style.opacity = '1';
+        step2.classList.add('hidden');
+        step3.classList.add('hidden');
+        step4.classList.add('hidden');
+      } else if (t < 0.40) {
+        navStageText.textContent = "Phase 02: Podium, Moat & Auto Pavilion";
+        navStageIndicator.className = "w-2.5 h-2.5 rounded-full bg-yellow-400 shadow-[0_0_8px_#facc15]";
+        step1.classList.add('hidden');
+        step2.classList.remove('hidden'); step2.style.opacity = '1';
+        step3.classList.add('hidden');
+        step4.classList.add('hidden');
+      } else if (t < 0.62) {
+        navStageText.textContent = "Phase 03: Waterfall Cascade & Onyx Core";
+        navStageIndicator.className = "w-2.5 h-2.5 rounded-full bg-amber-300 shadow-[0_0_8px_#fde68a]";
+        step1.classList.add('hidden');
+        step2.classList.add('hidden');
+        step3.classList.remove('hidden'); step3.style.opacity = '1';
+        step4.classList.add('hidden');
+      } else {
+        navStageText.textContent = "Phase 04: Parametric Panorama & Grand Threshold";
+        navStageIndicator.className = "w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]";
+        step1.classList.add('hidden');
+        step2.classList.add('hidden');
+        step3.classList.add('hidden');
+        step4.classList.remove('hidden'); step4.style.opacity = '1';
+      }
+
+      if (t > 0.04) {
+        scrollPrompt.style.opacity = '0';
+      } else {
+        scrollPrompt.style.opacity = '1';
+      }
+    }
+
+    // Calculate Scroll Progress based on window position within track
+    const scrollTrack = document.getElementById('scroll-track');
+    window.addEventListener('scroll', () => {
+      const trackRect = scrollTrack.getBoundingClientRect();
+      const trackHeight = scrollTrack.offsetHeight - window.innerHeight;
+      const scrolled = -trackRect.top;
+      targetScrollProgress = Math.max(0, Math.min(1, scrolled / trackHeight));
+
+      if (targetScrollProgress < 0.98) {
+        activeRoomCam = null;
+      }
+    });
+
+    // Chapter Dots click navigation
+    const chapterDots = document.querySelectorAll('.chapter-dot');
+    chapterDots.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetPct = parseFloat(btn.dataset.target);
+        const trackHeight = scrollTrack.offsetHeight - window.innerHeight;
+        const targetScrollY = targetPct * trackHeight;
+        window.scrollTo({ top: targetScrollY, behavior: 'smooth' });
+      });
+    });
+
+    // Skip to interior button
+    document.getElementById('btn-jump-interior').addEventListener('click', () => {
+      const section2 = document.getElementById('section-interior-showcase');
+      section2.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // Return to top plan
+    document.getElementById('btn-back-to-blueprint').addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Interactive Room Cam Switchers
+    const roomCamButtons = document.querySelectorAll('.room-cam-btn');
+    roomCamButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        roomCamButtons.forEach(b => {
+          b.className = "room-cam-btn px-4 py-2 rounded-lg text-xs mono-font transition-all glass-panel text-amber-200 hover:text-white hover:bg-amber-900/40";
+        });
+        btn.className = "room-cam-btn px-4 py-2 rounded-lg text-xs mono-font transition-all bg-gradient-to-r from-amber-400 to-amber-300 text-slate-950 font-bold shadow-md";
+        const key = btn.dataset.cam;
+        if (roomCamPositions[key]) {
+          activeRoomCam = roomCamPositions[key];
+        }
+      });
+    });
+
+    // Download mock feedback
+    const btnMockDownload = document.getElementById('btn-mock-download');
+    const downloadMsg = document.getElementById('download-msg');
+    btnMockDownload.addEventListener('click', () => {
+      btnMockDownload.textContent = "Preparing Sovereign BIM Archive...";
+      setTimeout(() => {
+        btnMockDownload.textContent = "Downloaded Royale BIM Package (64.8 MB)";
+        downloadMsg.classList.remove('hidden');
+      }, 900);
+    });
+
+    // Window Resize Handling
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    });
+
+    /* ==========================================================================
+       MAIN ANIMATION LOOP (Butter-Smooth Lerp Damping & Luxury Micro-Dynamics)
+       ========================================================================== */
+
+    const clock = new THREE.Clock();
+    const currentCamTarget = new THREE.Vector3(2, 0, 0);
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      const delta = clock.getDelta();
+      const elapsedTime = clock.getElapsedTime();
+
+      // Smooth damped interpolation towards target scroll progress
+      currentScrollProgress += (targetScrollProgress - currentScrollProgress) * 0.08;
+      updateAssemblyProgress(currentScrollProgress);
+
+      if (activeRoomCam) {
+        camera.position.lerp(activeRoomCam.pos, 0.05);
+        currentCamTarget.lerp(activeRoomCam.target, 0.05);
+      } else {
+        const camData = getInterpolatedCam(currentScrollProgress);
+        camera.position.lerp(camData.pos, 0.08);
+        currentCamTarget.lerp(camData.target, 0.08);
+      }
+
+      camera.lookAt(currentCamTarget);
+
+      // Crystalline Turquoise Water Shimmer
+      waterNormal.offset.x = (elapsedTime * 0.02) % 1;
+      waterNormal.offset.y = (elapsedTime * 0.035) % 1;
+
+      // Realistic Vertical Flow for Cascading Water Blade
+      waterfallMap.offset.y = -(elapsedTime * 0.6) % 1;
+
+      // Organic Breathing Luminous Pulse on Backlit Honey Onyx Core
+      if (currentScrollProgress > 0.25) {
+        const pulse = 1.0 + Math.sin(elapsedTime * 1.5) * 0.15;
+        backlitOnyxMat.emissiveIntensity = 1.2 * pulse;
+        onyxCoreLight.intensity = 6.5 * pulse;
+      }
+
+      // Realistic Micro-Flicker in Sunken Fire Lounge
+      if (currentScrollProgress > 0.3) {
+        firePitLight.intensity = 4.2 + Math.sin(elapsedTime * 8) * 0.4 + Math.cos(elapsedTime * 15) * 0.2;
+      }
+
+      // Subtle atmospheric breathing in golden twilight
+      sunLight.position.x = -28 + Math.sin(elapsedTime * 0.10) * 2.2;
+
+      renderer.render(scene, camera);
+    }
+
+    // Update matrices and initialize initial state immediately
+    scene.updateMatrixWorld(true);
+    updateAssemblyProgress(0);
+
+    // Launch 3D render loop immediately
+    animate();
+  </script>
+</body>
+</html>

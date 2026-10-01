@@ -1,0 +1,2671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Architectural Construction 3D Visualization</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #f4f5f7;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      user-select: none;
+      letter-spacing: -0.01em;
+    }
+    h1, h2, h3, h4, .font-display {
+      font-family: 'Outfit', 'Syne', sans-serif !important;
+      letter-spacing: -0.025em;
+    }
+    #webgl-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 4px;
+    }
+    @keyframes heroEntrance {
+      0% {
+        opacity: 0;
+        transform: translateY(22px) scale(0.98);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    .hero-entrance-anim {
+      animation: heroEntrance 1.6s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
+    }
+  </style>
+  <!-- Three.js, OrbitControls, and Tween.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+</head>
+<body class="relative">
+
+  <div id="ui-container" class="absolute inset-0 pointer-events-none z-10 flex flex-col justify-between p-4 md:p-6">
+    <!-- Top breathing room where parent React header renders -->
+    <div></div>
+
+    <!-- Left-Side Editorial Headings & Content -->
+    <section class="absolute left-6 md:left-[70px] top-20 md:top-24 max-w-sm md:max-w-md pointer-events-auto flex flex-col space-y-4 hero-entrance-anim">
+      <!-- Status Badge -->
+      <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-neutral-900/90 backdrop-blur-md text-white text-[11px] font-semibold tracking-wider uppercase w-fit shadow-md border border-neutral-700/50">
+        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+        <span>Single-Point Ownership // Planning to Handover</span>
+      </div>
+
+      <!-- Main Heading Group -->
+      <div class="space-y-1.5">
+        <h2 class="text-3xl md:text-5xl font-black tracking-tight text-neutral-900 leading-[1.06]">
+          A TRADITION OF TRUST,<br>
+          <span class="text-amber-600 font-bold">BUILT WITH QUALITY.</span>
+        </h2>
+        <p class="text-xs md:text-sm text-neutral-600 font-normal leading-relaxed pt-1">
+          Under the leadership of <strong class="text-neutral-900 font-semibold">Mr. Kiran Dikshit L</strong>, CS Associates protects your investment, timeline, and architectural dream through rigorous 7-stage civil supervision and transparent WhatsApp daily progress tracking.
+        </p>
+      </div>
+
+      <!-- Architectural Spec Stats Grid -->
+      <div class="grid grid-cols-3 gap-2.5 pt-1">
+        <div class="glass-panel p-2.5 rounded-xl border border-white/70 shadow-sm">
+          <div class="text-[10px] uppercase font-bold text-neutral-400 tracking-wider">Experience</div>
+          <div class="text-base md:text-lg font-black text-neutral-900 leading-tight mt-0.5">25+<span class="text-xs font-semibold text-neutral-500"> Yrs</span></div>
+          <div class="text-[9px] text-neutral-500 font-medium">Civil & Structural PMC</div>
+        </div>
+        <div class="glass-panel p-2.5 rounded-xl border border-white/70 shadow-sm">
+          <div class="text-[10px] uppercase font-bold text-neutral-400 tracking-wider">Track Record</div>
+          <div class="text-base md:text-lg font-black text-neutral-900 leading-tight mt-0.5">200+<span class="text-xs font-semibold text-neutral-500"> Projects</span></div>
+          <div class="text-[9px] text-neutral-500 font-medium">Villas & Commercial</div>
+        </div>
+        <div class="glass-panel p-2.5 rounded-xl border border-white/70 shadow-sm">
+          <div class="text-[10px] uppercase font-bold text-neutral-400 tracking-wider">Governance</div>
+          <div class="text-base md:text-lg font-black text-neutral-900 leading-tight mt-0.5">7-Stage<span class="text-xs font-semibold text-neutral-500"> PMC</span></div>
+          <div class="text-[9px] text-neutral-500 font-medium">Zero-Leakage Handover</div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Bottom Lighting Ambience Selector -->
+    <footer class="pointer-events-auto flex items-center justify-start gap-2">
+      <div class="glass-panel p-1.5 rounded-2xl flex items-center space-x-1 text-xs">
+        <button class="env-btn active px-3 py-1.5 rounded-xl font-medium bg-amber-500 text-white transition shadow-sm" data-theme="studio">Studio Light</button>
+        <button class="env-btn px-3 py-1.5 rounded-xl font-medium text-neutral-700 hover:bg-neutral-100 transition" data-theme="golden">Golden Hour</button>
+        <button class="env-btn px-3 py-1.5 rounded-xl font-medium text-neutral-700 hover:bg-neutral-100 transition" data-theme="overcast">Overcast BIM</button>
+      </div>
+    </footer>
+  </div>
+
+  <canvas id="webgl-canvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById('webgl-canvas');
+    let scene, camera, renderer, controls;
+    let autoRotate = false; // Off by default so continuous scroll exploration is silky smooth
+    let craneJibGroup, craneCableGroup, hoistedGirder;
+    let animatedVehicles = [];
+
+    // Automated Ground-to-Summit Hoisting Cycle State & Telemetry
+    let craneTrolleyMesh, craneHookBlock, craneCablesLine, craneSlingsGroup;
+    let groundSupplyGirdersGroup, summitInstalledGirdersGroup;
+    let placedGirderCount = 3;
+
+    const HOIST_PHASES = {
+      SLEW_TO_YARD: 0,
+      LOWER_TO_GROUND: 1,
+      RIG_GIRDER: 2,
+      HOIST_TO_SUMMIT: 3,
+      SLEW_TO_CROWN: 4,
+      LOWER_TO_INSTALL: 5,
+      RELEASE_AND_RESET: 6
+    };
+
+    const craneCycle = {
+      phase: HOIST_PHASES.SLEW_TO_YARD,
+      timer: 0,
+      // Target kinematics
+      yardAzimuth: -0.216,     // Local jib angle aligned to Ground Supply Yard (X: 3.2, Z: 10.8)
+      yardRadius: 13.8,        // Horizontal reach to yard
+      summitAzimuth: 1.555,    // Local jib angle aligned to Tower 1 Crown (X: 18.0, Z: 2.5)
+      summitRadius: 7.43,      // Reach to crown installation bay
+      // Current animated parameters
+      curAzimuth: -0.216,
+      curRadius: 13.8,
+      curHookDrop: 5.0,        // Distance below trolley (Jib World Y is 42.3m)
+      transitDrop: 5.5,        // Clearance depth when traversing (Hook World Y ~ 36.8m)
+      groundDrop: 41.2,        // Descent to ground yard (Hook World Y ~ 1.1m, over 35m lower!)
+      summitDrop: 15.2,        // Hook depth when seating girder onto crown (World Y ~ 27.1m)
+      hasLoad: false,
+      loadWeightTons: 18.4,
+      tareWeightTons: 2.1,
+      swayAngle: 0
+    };
+
+    // Lighting components for dynamic atmosphere switching
+    let keyLight, fillLight, rimLight, hemiLight;
+    let floorMesh;
+    let skyDomeMesh, distantCityGroup, cloudDeckGroup;
+    let isEntranceAnimating = false;
+
+    function generateCloudTexture() {
+      const cv = document.createElement('canvas');
+      cv.width = 512;
+      cv.height = 512;
+      const ctx = cv.getContext('2d');
+
+      const grad = ctx.createRadialGradient(256, 256, 10, 256, 256, 250);
+      grad.addColorStop(0, 'rgba(255, 255, 255, 0.88)');
+      grad.addColorStop(0.35, 'rgba(248, 250, 252, 0.65)');
+      grad.addColorStop(0.7, 'rgba(241, 245, 249, 0.22)');
+      grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(256, 256, 250, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Soft cellular cloud noise puffs
+      for (let i = 0; i < 45; i++) {
+        const px = 256 + (Math.random() - 0.5) * 220;
+        const py = 256 + (Math.random() - 0.5) * 160;
+        const rad = Math.random() * 90 + 40;
+        const pGrad = ctx.createRadialGradient(px, py, 5, px, py, rad);
+        pGrad.addColorStop(0, 'rgba(255, 255, 255, 0.55)');
+        pGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        ctx.fillStyle = pGrad;
+        ctx.beginPath();
+        ctx.arc(px, py, rad, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      const tex = new THREE.CanvasTexture(cv);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      return tex;
+    }
+
+    function buildCloudLayer() {
+      cloudDeckGroup = new THREE.Group();
+      const cloudTex = generateCloudTexture();
+      const cloudMat = new THREE.MeshBasicMaterial({
+        map: cloudTex,
+        transparent: true,
+        opacity: 0.62,
+        depthWrite: false,
+        side: THREE.DoubleSide
+      });
+
+      // Layered cloud wisps suspended in the upper atmosphere through which the camera dives
+      const cloudPuffs = [
+        [16.5, 92, 125, 65, 45, -0.15],
+        [-10, 86, 110, 55, 40, 0.25],
+        [42, 88, 115, 60, 42, -0.08],
+        [16.5, 78, 85, 70, 48, 0.12],
+        [-5, 72, 60, 50, 35, -0.2],
+        [35, 75, 70, 58, 38, 0.18],
+        [16.5, 64, 40, 62, 44, -0.05]
+      ];
+
+      cloudPuffs.forEach(([cx, cy, cz, cw, ch, rotZ]) => {
+        const cGeo = new THREE.PlaneGeometry(cw, ch);
+        const cMesh = new THREE.Mesh(cGeo, cloudMat.clone());
+        cMesh.position.set(cx, cy, cz);
+        cMesh.rotation.x = -Math.PI / 2.3;
+        cMesh.rotation.z = rotZ;
+        cloudDeckGroup.add(cMesh);
+      });
+
+      scene.add(cloudDeckGroup);
+    }
+
+    function generateBlueprintTexture() {
+      const cv = document.createElement('canvas');
+      cv.width = 2048;
+      cv.height = 2048;
+      const ctx = cv.getContext('2d');
+
+      // Clean architectural drafting paper base
+      ctx.fillStyle = '#f8fafc';
+      ctx.fillRect(0, 0, cv.width, cv.height);
+
+      // Fine sub-grid lines (16px spacing)
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < cv.width; x += 16) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, cv.height);
+        ctx.stroke();
+      }
+      for (let y = 0; y < cv.height; y += 16) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(cv.width, y);
+        ctx.stroke();
+      }
+
+      // Medium modular grid lines (64px spacing)
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 1.2;
+      for (let x = 0; x < cv.width; x += 64) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, cv.height);
+        ctx.stroke();
+      }
+      for (let y = 0; y < cv.height; y += 64) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(cv.width, y);
+        ctx.stroke();
+      }
+
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 2;
+      ctx.fillStyle = '#64748b';
+      ctx.font = 'bold 16px "Courier New", monospace';
+
+      const colLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+      colLetters.forEach((letter, idx) => {
+        const gx = 128 + idx * 256;
+        ctx.beginPath();
+        ctx.moveTo(gx, 0);
+        ctx.lineTo(gx, cv.height);
+        ctx.stroke();
+
+        [40, cv.height - 40].forEach(by => {
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(gx, by, 18, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#2563eb';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          ctx.fillStyle = '#1e3a8a';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(letter, gx, by + 1);
+        });
+      });
+
+      const rowNumbers = ['1', '2', '3', '4', '5', '6', '7', '8'];
+      rowNumbers.forEach((num, idx) => {
+        const gy = 128 + idx * 256;
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, gy);
+        ctx.lineTo(cv.width, gy);
+        ctx.stroke();
+
+        [40, cv.width - 40].forEach(bx => {
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(bx, gy, 18, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#2563eb';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          ctx.fillStyle = '#1e3a8a';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(num, bx, gy + 1);
+        });
+      });
+
+      ctx.strokeStyle = '#2563eb';
+      ctx.fillStyle = 'rgba(37, 99, 235, 0.05)';
+      ctx.lineWidth = 3;
+
+      // Center Core Tower Footprint & shear core chambers
+      ctx.beginPath();
+      ctx.rect(980, 860, 480, 480);
+      ctx.stroke();
+      ctx.fill();
+
+      ctx.lineWidth = 2;
+      for (let ix = 0; ix < 3; ix++) {
+        for (let iy = 0; iy < 3; iy++) {
+          const px = 1030 + ix * 160;
+          const py = 910 + iy * 160;
+          ctx.strokeRect(px, py, 60, 60);
+          ctx.beginPath();
+          ctx.moveTo(px, py);
+          ctx.lineTo(px + 60, py + 60);
+          ctx.moveTo(px + 60, py);
+          ctx.lineTo(px, py + 60);
+          ctx.stroke();
+        }
+      }
+
+      // Cylindrical/Curved Tower Footprint
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(1550, 1100, 240, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(2, 132, 199, 0.06)';
+      ctx.fill();
+
+      // Radial reinforcement circles
+      ctx.setLineDash([8, 8]);
+      ctx.strokeStyle = '#0284c7';
+      ctx.lineWidth = 1.8;
+      [80, 140, 190].forEach(r => {
+        ctx.beginPath();
+        ctx.arc(1550, 1100, r, 0, Math.PI * 2);
+        ctx.stroke();
+      });
+      ctx.setLineDash([]);
+
+      // West Annex & Utility Trenches
+      ctx.strokeStyle = '#2563eb';
+      ctx.lineWidth = 2.5;
+      ctx.strokeRect(480, 880, 360, 400);
+
+      ctx.strokeStyle = 'rgba(37, 99, 235, 0.18)';
+      ctx.lineWidth = 1.2;
+      for (let d = -300; d < 400; d += 30) {
+        ctx.beginPath();
+        ctx.moveTo(Math.max(480, 480 + d), 880);
+        ctx.lineTo(Math.min(840, 480 + d + 400), 1280);
+        ctx.stroke();
+      }
+
+      // Heavy Haul Road Axis
+      ctx.strokeStyle = '#ea580c';
+      ctx.lineWidth = 3;
+      ctx.setLineDash([20, 14]);
+      ctx.beginPath();
+      ctx.moveTo(100, 1650);
+      ctx.lineTo(1950, 1650);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.strokeStyle = 'rgba(234, 88, 12, 0.4)';
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.moveTo(100, 1570); ctx.lineTo(1950, 1570);
+      ctx.moveTo(100, 1730); ctx.lineTo(1950, 1730);
+      ctx.stroke();
+
+      // Crane Jib Slew Boundary
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([12, 10]);
+      ctx.beginPath();
+      ctx.arc(1150, 950, 520, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 1.5;
+      ctx.fillStyle = '#334155';
+      ctx.font = 'bold 15px "Courier New", monospace';
+
+      ctx.beginPath();
+      ctx.moveTo(980, 780); ctx.lineTo(1460, 780);
+      ctx.moveTo(972, 788); ctx.lineTo(988, 772);
+      ctx.moveTo(1452, 788); ctx.lineTo(1468, 772);
+      ctx.stroke();
+      ctx.textAlign = 'center';
+      ctx.fillText('48,000 mm [TYPICAL CORE SPAN]', 1220, 768);
+
+      const tbX = 1380, tbY = 1780, tbW = 600, tbH = 210;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+      ctx.fillRect(tbX, tbY, tbW, tbH);
+      ctx.strokeStyle = '#1e3a8a';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(tbX, tbY, tbW, tbH);
+
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(tbX, tbY + 50); ctx.lineTo(tbX + tbW, tbY + 50);
+      ctx.moveTo(tbX, tbY + 110); ctx.lineTo(tbX + tbW, tbY + 110);
+      ctx.moveTo(tbX, tbY + 160); ctx.lineTo(tbX + tbW, tbY + 160);
+      ctx.moveTo(tbX + 380, tbY + 110); ctx.lineTo(tbX + 380, tbY + tbH);
+      ctx.stroke();
+
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 20px -apple-system, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('METROPOLIS HORIZON CORE - COMPLEX MASTER PLAN', tbX + 20, tbY + 34);
+
+      ctx.fillStyle = '#475569';
+      ctx.font = '13px "Courier New", monospace';
+      ctx.fillText('DISCIPLINE: STRUCTURAL CIVIL & FOUNDATION REINFORCEMENT', tbX + 20, tbY + 80);
+      ctx.fillText('SCALE: 1:100  |  DATUM: LEVEL ±0.000 FFL', tbX + 20, tbY + 98);
+      ctx.fillText('SPEC: C60/75 HIGH-PERFORMANCE CONCRETE // REBAR B500B', tbX + 20, tbY + 138);
+      ctx.fillText('ISSUED FOR CONSTRUCTION // REV. 04', tbX + 20, tbY + 188);
+
+      ctx.fillStyle = '#2563eb';
+      ctx.font = 'bold 18px "Courier New", monospace';
+      ctx.fillText('SHEET DWG: S-101', tbX + 400, tbY + 188);
+
+      // North Rosette
+      const nX = 1880, nY = 160;
+      ctx.strokeStyle = '#1e3a8a';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.arc(nX, nY, 48, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.fillStyle = '#1e3a8a';
+      ctx.beginPath();
+      ctx.moveTo(nX, nY - 42); ctx.lineTo(nX - 12, nY + 16); ctx.lineTo(nX, nY + 6);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = '#1e3a8a';
+      ctx.font = 'bold 22px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('N', nX, nY - 54);
+
+      const texture = new THREE.CanvasTexture(cv);
+      texture.anisotropy = 16;
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.colorSpace = THREE.SRGBColorSpace;
+      return texture;
+    }
+
+    function generateConcreteTexture() {
+      const cv = document.createElement('canvas');
+      cv.width = 512;
+      cv.height = 512;
+      const ctx = cv.getContext('2d');
+
+      ctx.fillStyle = '#dcdfe4';
+      ctx.fillRect(0, 0, cv.width, cv.height);
+
+      const imgData = ctx.getImageData(0, 0, cv.width, cv.height);
+      const data = imgData.data;
+      for (let i = 0; i < data.length; i += 4) {
+        const noise = (Math.random() - 0.5) * 26;
+        data[i] = Math.min(255, Math.max(0, data[i] + noise));
+        data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + noise));
+        data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + noise));
+      }
+      ctx.putImageData(imgData, 0, 0);
+
+      const texture = new THREE.CanvasTexture(cv);
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(4, 4);
+      return texture;
+    }
+
+    function generateFoliageTexture() {
+      const cv = document.createElement('canvas');
+      cv.width = 256;
+      cv.height = 256;
+      const ctx = cv.getContext('2d');
+
+      ctx.fillStyle = '#4d7c0f';
+      ctx.fillRect(0, 0, 256, 256);
+
+      for (let i = 0; i < 2000; i++) {
+        const x = Math.random() * 256;
+        const y = Math.random() * 256;
+        const rad = Math.random() * 6 + 2;
+        ctx.fillStyle = Math.random() > 0.4 ? '#65a30d' : '#3f6212';
+        ctx.beginPath();
+        ctx.arc(x, y, rad, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      const texture = new THREE.CanvasTexture(cv);
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      return texture;
+    }
+
+    function generateSkyTexture(theme = 'studio') {
+      const cv = document.createElement('canvas');
+      cv.width = 1024;
+      cv.height = 1024;
+      const ctx = cv.getContext('2d');
+
+      const grad = ctx.createLinearGradient(0, 0, 0, cv.height);
+
+      if (theme === 'golden') {
+        grad.addColorStop(0, '#fef3c7');
+        grad.addColorStop(0.45, '#fed7aa');
+        grad.addColorStop(0.72, '#fde68a');
+        grad.addColorStop(1.0, '#fef9c3');
+      } else if (theme === 'overcast') {
+        grad.addColorStop(0, '#cbd5e1');
+        grad.addColorStop(0.5, '#e2e8f0');
+        grad.addColorStop(0.75, '#f1f5f9');
+        grad.addColorStop(1.0, '#e2e8f0');
+      } else {
+        grad.addColorStop(0, '#ffffff');
+        grad.addColorStop(0.4, '#f8fafc');
+        grad.addColorStop(0.7, '#f1f5f9');
+        grad.addColorStop(0.85, '#e2e8f0');
+        grad.addColorStop(1.0, '#f8fafc');
+      }
+
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, cv.width, cv.height);
+
+      const blueLine = theme === 'golden' ? 'rgba(217, 119, 6, 0.12)' : 'rgba(37, 99, 235, 0.14)';
+      const cyanLine = theme === 'golden' ? 'rgba(234, 88, 12, 0.08)' : 'rgba(2, 132, 199, 0.09)';
+      const textCol = theme === 'golden' ? 'rgba(180, 83, 9, 0.4)' : 'rgba(30, 58, 138, 0.35)';
+
+      ctx.strokeStyle = blueLine;
+      ctx.lineWidth = 1;
+      ctx.font = '9px "Courier New", monospace';
+      ctx.fillStyle = textCol;
+
+      for (let y = 120; y < cv.height * 0.85; y += 48) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(cv.width, y);
+        ctx.stroke();
+
+        const elevMeters = Math.round((cv.height * 0.85 - y) * 0.35);
+        ctx.fillText(`EL +${elevMeters}.00m ── [DATUM SECTION]`, 18, y - 4);
+      }
+
+      ctx.strokeStyle = cyanLine;
+      ctx.lineWidth = 1;
+      for (let x = 60; x < cv.width; x += 80) {
+        ctx.beginPath();
+        ctx.moveTo(x, 80);
+        ctx.lineTo(x, cv.height * 0.88);
+        ctx.stroke();
+      }
+
+      const tex = new THREE.CanvasTexture(cv);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      return tex;
+    }
+
+    function generateElevationBlueprintTexture() {
+      const cv = document.createElement('canvas');
+      cv.width = 2048;
+      cv.height = 1024;
+      const ctx = cv.getContext('2d');
+
+      ctx.fillStyle = 'rgba(248, 250, 252, 0.94)';
+      ctx.fillRect(0, 0, cv.width, cv.height);
+
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < cv.width; x += 16) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, cv.height); ctx.stroke();
+      }
+      for (let y = 0; y < cv.height; y += 16) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(cv.width, y); ctx.stroke();
+      }
+
+      const levels = [
+        { y: 120, label: 'ROOF PARAPET LVL // +228.00m FFL', code: 'L-54' },
+        { y: 220, label: 'ZONE 4 PENTHOUSE // +192.00m FFL', code: 'L-46' },
+        { y: 340, label: 'ZONE 3 HIGH-RISE // +154.00m FFL', code: 'L-36' },
+        { y: 480, label: 'MECHANICAL PLANT // +116.00m FFL', code: 'L-28' },
+        { y: 620, label: 'ZONE 2 MID-RISE  // +78.00m FFL',  code: 'L-18' },
+        { y: 760, label: 'ZONE 1 LOW-RISE  // +40.00m FFL',  code: 'L-10' },
+        { y: 880, label: 'PODIUM ATRIUM    // +14.00m FFL',  code: 'L-03' },
+        { y: 960, label: 'GROUND DATUM     // ±0.00m FFL',   code: 'L-00' }
+      ];
+
+      levels.forEach(lvl => {
+        ctx.strokeStyle = '#2563eb';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(60, lvl.y);
+        ctx.lineTo(cv.width - 60, lvl.y);
+        ctx.stroke();
+
+        ctx.fillStyle = '#1e3a8a';
+        ctx.font = 'bold 14px "Courier New", monospace';
+        ctx.textAlign = 'left';
+        ctx.fillText(`${lvl.code} : ${lvl.label}`, 110, lvl.y - 6);
+      });
+
+      const texture = new THREE.CanvasTexture(cv);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      return texture;
+    }
+
+    function updateCameraOffset() {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const shiftX = width > 768 ? -Math.round(width * 0.08) : 0;
+      camera.setViewOffset(width, height, shiftX, 0, width, height);
+    }
+
+    function generateAsphaltTexture() {
+      const cv = document.createElement('canvas');
+      cv.width = 2048;
+      cv.height = 512;
+      const ctx = cv.getContext('2d');
+
+      // Heavy aggregate asphalt base
+      ctx.fillStyle = '#26292e';
+      ctx.fillRect(0, 0, cv.width, cv.height);
+
+      // Procedural asphalt mineral aggregate speckle noise
+      const imgData = ctx.getImageData(0, 0, cv.width, cv.height);
+      const d = imgData.data;
+      for (let i = 0; i < d.length; i += 4) {
+        const noise = (Math.random() - 0.5) * 32;
+        d[i] = Math.min(255, Math.max(0, d[i] + noise));
+        d[i + 1] = Math.min(255, Math.max(0, d[i + 1] + noise));
+        d[i + 2] = Math.min(255, Math.max(0, d[i + 2] + noise));
+      }
+      ctx.putImageData(imgData, 0, 0);
+
+      // Yellow double center line
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 8;
+      ctx.beginPath();
+      ctx.moveTo(0, 246);
+      ctx.lineTo(cv.width, 246);
+      ctx.moveTo(0, 266);
+      ctx.lineTo(cv.width, 266);
+      ctx.stroke();
+
+      // White outer lane boundary lines
+      ctx.strokeStyle = '#f8fafc';
+      ctx.lineWidth = 7;
+      ctx.beginPath();
+      ctx.moveTo(0, 35);
+      ctx.lineTo(cv.width, 35);
+      ctx.moveTo(0, 477);
+      ctx.lineTo(cv.width, 477);
+      ctx.stroke();
+
+      // Dashed lane divider lines
+      ctx.setLineDash([64, 48]);
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.moveTo(0, 145);
+      ctx.lineTo(cv.width, 145);
+      ctx.moveTo(0, 367);
+      ctx.lineTo(cv.width, 367);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Construction Site Access Zebra Crosswalk (X: 780 to 980)
+      ctx.fillStyle = '#ffffff';
+      for (let bx = 780; bx < 980; bx += 32) {
+        ctx.fillRect(bx, 42, 18, 430);
+      }
+
+      // Stop Line ahead of crosswalk
+      ctx.fillRect(740, 42, 16, 430);
+
+      // Heavy wear streaks / oil tire marks along wheel ruts
+      ctx.fillStyle = 'rgba(15, 17, 21, 0.22)';
+      ctx.fillRect(0, 85, cv.width, 38);
+      ctx.fillRect(0, 195, cv.width, 38);
+      ctx.fillRect(0, 310, cv.width, 38);
+      ctx.fillRect(0, 420, cv.width, 38);
+
+      // Cast iron storm drain grates & manholes along gutter
+      ctx.fillStyle = '#1e293b';
+      for (let mx = 200; mx < cv.width; mx += 420) {
+        ctx.beginPath();
+        ctx.arc(mx, 256, 26, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        // Gutter drain grates
+        ctx.fillRect(mx - 80, 15, 48, 16);
+        ctx.fillRect(mx - 80, 481, 48, 16);
+      }
+
+      const tex = new THREE.CanvasTexture(cv);
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.ClampToEdgeWrapping;
+      tex.repeat.set(2, 1);
+      tex.anisotropy = 16;
+      return tex;
+    }
+
+    function buildFrontRoadway() {
+      const roadGroup = new THREE.Group();
+      const asphaltTex = generateAsphaltTexture();
+
+      // Expanded Multi-Lane Asphalt Roadway (Extended to 210m to span full wide-angle low lens horizon)
+      const roadWidth = 210;
+      const roadDepth = 15.0;
+      const roadGeo = new THREE.PlaneGeometry(roadWidth, roadDepth);
+      const roadMat = new THREE.MeshStandardMaterial({
+        map: asphaltTex,
+        roughness: 0.88,
+        metalness: 0.12
+      });
+      const roadMesh = new THREE.Mesh(roadGeo, roadMat);
+      roadMesh.rotation.x = -Math.PI / 2;
+      roadMesh.position.set(10, 0.03, 25.0);
+      roadMesh.receiveShadow = true;
+      roadGroup.add(roadMesh);
+
+      // Sidewalk Concrete Material
+      const concretePaveMat = new THREE.MeshStandardMaterial({
+        color: 0xd1d5db,
+        roughness: 0.82,
+        metalness: 0.05
+      });
+      const curbGraniteMat = new THREE.MeshStandardMaterial({
+        color: 0x9ca3af,
+        roughness: 0.75,
+        metalness: 0.1
+      });
+
+      // North Sidewalk (Front transition between road and construction staging)
+      const northWalk = new THREE.Mesh(new THREE.BoxGeometry(roadWidth, 0.18, 3.4), concretePaveMat);
+      northWalk.position.set(10, 0.09, 16.0);
+      northWalk.receiveShadow = true;
+      roadGroup.add(northWalk);
+
+      // North Granite Curb Chamfer
+      const northCurb = new THREE.Mesh(new THREE.BoxGeometry(roadWidth, 0.22, 0.35), curbGraniteMat);
+      northCurb.position.set(10, 0.11, 17.7);
+      northCurb.castShadow = true;
+      northCurb.receiveShadow = true;
+      roadGroup.add(northCurb);
+
+      // South Sidewalk (Foreground pedestrian viewing promenade right in front of camera)
+      const southWalk = new THREE.Mesh(new THREE.BoxGeometry(roadWidth, 0.18, 4.4), concretePaveMat);
+      southWalk.position.set(10, 0.09, 34.2);
+      southWalk.receiveShadow = true;
+      roadGroup.add(southWalk);
+
+      const southCurb = new THREE.Mesh(new THREE.BoxGeometry(roadWidth, 0.22, 0.35), curbGraniteMat);
+      southCurb.position.set(10, 0.11, 32.2);
+      southCurb.castShadow = true;
+      southCurb.receiveShadow = true;
+      roadGroup.add(southCurb);
+
+      // Perimeter Concrete Jersey Barriers (Separating traffic road from active construction yard)
+      const barrierMat = new THREE.MeshStandardMaterial({ color: 0xe5e7eb, roughness: 0.85 });
+      const stripeTapeMat = new THREE.MeshStandardMaterial({ color: 0xea580c, roughness: 0.4 });
+
+      for (let bx = -65; bx <= 85; bx += 3.8) {
+        // Skip opening at the active heavy vehicle site gate (X: 3 to 17)
+        if (bx > 3 && bx < 17) continue;
+
+        const barrierGroup = new THREE.Group();
+        const bBase = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.75, 0.5), barrierMat);
+        bBase.position.y = 0.375;
+        bBase.castShadow = true;
+        barrierGroup.add(bBase);
+
+        // Reflective hazard striping plate
+        const tape = new THREE.Mesh(new THREE.BoxGeometry(3.61, 0.18, 0.52), stripeTapeMat);
+        tape.position.y = 0.45;
+        barrierGroup.add(tape);
+
+        barrierGroup.position.set(bx, 0.18, 17.5);
+        roadGroup.add(barrierGroup);
+      }
+
+      // Site Access Gatehouse & Security Boom Barrier
+      const guardBooth = new THREE.Mesh(
+        new THREE.BoxGeometry(2.4, 2.6, 2.0),
+        new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.4, metalness: 0.3 })
+      );
+      guardBooth.position.set(2.8, 1.4, 16.2);
+      guardBooth.castShadow = true;
+      roadGroup.add(guardBooth);
+
+      // Guardhouse tinted observation window
+      const boothWindow = new THREE.Mesh(
+        new THREE.BoxGeometry(2.42, 0.9, 1.2),
+        new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.1, metalness: 0.9, transparent: true, opacity: 0.65 })
+      );
+      boothWindow.position.set(2.8, 1.6, 16.2);
+      roadGroup.add(boothWindow);
+
+      // Heavy Access Boom Barrier
+      const boomPivotPost = new THREE.Mesh(
+        new THREE.BoxGeometry(0.4, 1.1, 0.4),
+        new THREE.MeshStandardMaterial({ color: 0xea580c, roughness: 0.5 })
+      );
+      boomPivotPost.position.set(4.4, 0.65, 17.6);
+      boomPivotPost.castShadow = true;
+      roadGroup.add(boomPivotPost);
+
+      const boomArm = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.06, 0.06, 6.2, 12),
+        new THREE.MeshStandardMaterial({ color: 0xfacc15, roughness: 0.4 })
+      );
+      boomArm.rotation.z = Math.PI / 2;
+      boomArm.position.set(7.5, 1.05, 17.6);
+      boomArm.castShadow = true;
+      roadGroup.add(boomArm);
+
+      // Modern Curved Architectural LED Streetlights along South Sidewalk
+      const poleMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.35, metalness: 0.8 });
+      const lampGlowMat = new THREE.MeshStandardMaterial({ color: 0xffedd5, emissive: 0xffd8a8, emissiveIntensity: 0.8 });
+
+      for (let lx = -60; lx <= 80; lx += 20) {
+        const poleGroup = new THREE.Group();
+        const verticalPole = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.18, 7.8, 12), poleMat);
+        verticalPole.position.y = 3.9;
+        verticalPole.castShadow = true;
+        poleGroup.add(verticalPole);
+
+        // Curved arm reaching over road
+        const arm = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 2.6), poleMat);
+        arm.position.set(0, 7.7, -1.2);
+        poleGroup.add(arm);
+
+        const luminaire = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.12, 0.95), lampGlowMat);
+        luminaire.position.set(0, 7.6, -2.3);
+        poleGroup.add(luminaire);
+
+        poleGroup.position.set(lx, 0.18, 34.0);
+        roadGroup.add(poleGroup);
+      }
+
+      scene.add(roadGroup);
+    }
+
+    function init() {
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0xf6f7f9);
+      scene.fog = new THREE.Fog(0xf6f7f9, 75, 280);
+
+      // Camera: Initial state begins high in the clouds for majestic entrance animation
+      camera = new THREE.PerspectiveCamera(36, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.set(16.5, 95.0, 142.0);
+      updateCameraOffset();
+
+      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false, powerPreference: "high-performance" });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.15;
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableZoom = false; // Stop manual zooming; scrolling explores the 4 cinematic stages
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.maxPolarAngle = Math.PI / 2 - 0.01;
+      controls.minDistance = 6;
+      controls.maxDistance = 280;
+      // Cloud Altitude Look-At Target
+      controls.target.set(16.5, 28.0, 12.0);
+
+      hemiLight = new THREE.HemisphereLight(0xffffff, 0xd8dde6, 0.85);
+      hemiLight.position.set(0, 50, 0);
+      scene.add(hemiLight);
+
+      keyLight = new THREE.DirectionalLight(0xfffaf0, 2.2);
+      keyLight.position.set(-15, 65, 45);
+      keyLight.target.position.set(18, 10, 0);
+      scene.add(keyLight.target);
+      keyLight.castShadow = true;
+      keyLight.shadow.mapSize.width = 2048;
+      keyLight.shadow.mapSize.height = 2048;
+      keyLight.shadow.camera.near = 5;
+      keyLight.shadow.camera.far = 160;
+      keyLight.shadow.camera.left = -45;
+      keyLight.shadow.camera.right = 65;
+      keyLight.shadow.camera.top = 45;
+      keyLight.shadow.camera.bottom = -42;
+      keyLight.shadow.bias = -0.0001;
+      keyLight.shadow.radius = 2.5;
+      scene.add(keyLight);
+
+      fillLight = new THREE.DirectionalLight(0xe0f2fe, 0.9);
+      fillLight.position.set(50, 25, -20);
+      scene.add(fillLight);
+
+      rimLight = new THREE.DirectionalLight(0xffffff, 1.1);
+      rimLight.position.set(10, 40, -50);
+      scene.add(rimLight);
+
+      buildSkyAndDistantSkyline();
+      buildCloudLayer();
+      buildMonumentalTitle();
+      buildStudioAndBlueprints();
+      buildFrontRoadway();
+      buildTowers();
+      buildSpatialBlueprintAroundBuildings();
+      buildTowerCrane();
+      buildConstructionVehicles();
+      buildSitePropsAndMaterials();
+      buildFoliageTrees();
+
+      setupInteraction();
+      window.addEventListener('resize', onWindowResize);
+    }
+
+    function buildStudioAndBlueprints() {
+      const blueprintTex = generateBlueprintTexture();
+
+      const floorGeo = new THREE.PlaneGeometry(160, 160);
+      const floorMat = new THREE.MeshStandardMaterial({
+        map: blueprintTex,
+        roughness: 0.85,
+        metalness: 0.05
+      });
+      floorMesh = new THREE.Mesh(floorGeo, floorMat);
+      floorMesh.rotation.x = -Math.PI / 2;
+      floorMesh.position.y = -0.01;
+      floorMesh.receiveShadow = true;
+      scene.add(floorMesh);
+
+      const sheetGeo = new THREE.PlaneGeometry(64, 46);
+      const sheetTex = blueprintTex.clone();
+      sheetTex.needsUpdate = true;
+      const sheetMat = new THREE.MeshStandardMaterial({
+        map: sheetTex,
+        roughness: 0.72,
+        metalness: 0.02,
+        polygonOffset: true,
+        polygonOffsetFactor: -2,
+        polygonOffsetUnits: -2
+      });
+      const sheet = new THREE.Mesh(sheetGeo, sheetMat);
+      sheet.rotation.x = -Math.PI / 2;
+      sheet.rotation.z = -0.08;
+      sheet.position.set(10, 0.02, 7);
+      sheet.receiveShadow = true;
+      scene.add(sheet);
+
+      const paperRollMat = new THREE.MeshStandardMaterial({
+        color: 0xfdfefe,
+        roughness: 0.45,
+        metalness: 0.02,
+        side: THREE.DoubleSide
+      });
+
+      const roll1Group = new THREE.Group();
+      const outerRoll = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 1.6, 26, 48, 1, true), paperRollMat);
+      outerRoll.castShadow = true;
+      outerRoll.receiveShadow = true;
+      const innerRoll = new THREE.Mesh(new THREE.CylinderGeometry(1.48, 1.48, 26.05, 48, 1, true), new THREE.MeshStandardMaterial({ color: 0x94a3b8, side: THREE.BackSide }));
+      roll1Group.add(outerRoll);
+      roll1Group.add(innerRoll);
+      roll1Group.rotation.z = Math.PI / 2;
+      roll1Group.rotation.y = -0.55;
+      roll1Group.position.set(-13, 1.6, 14);
+      scene.add(roll1Group);
+
+      const roll2 = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 22, 36, 1, true), paperRollMat);
+      roll2.rotation.z = Math.PI / 2;
+      roll2.rotation.y = -0.3;
+      roll2.position.set(-8, 3.2, 2);
+      roll2.castShadow = true;
+      scene.add(roll2);
+    }
+
+    function buildSkyAndDistantSkyline() {
+      const skyGeo = new THREE.SphereGeometry(220, 48, 24);
+      const skyMat = new THREE.MeshBasicMaterial({
+        map: generateSkyTexture('studio'),
+        side: THREE.BackSide,
+        depthWrite: false
+      });
+      skyDomeMesh = new THREE.Mesh(skyGeo, skyMat);
+      skyDomeMesh.position.set(10, -5, 0);
+      scene.add(skyDomeMesh);
+
+      distantCityGroup = new THREE.Group();
+      const distantMat = new THREE.MeshStandardMaterial({
+        color: 0xcfd8e3,
+        roughness: 0.95,
+        metalness: 0.05,
+        transparent: true,
+        opacity: 0.42
+      });
+
+      const distantBuildings = [
+        [-25, -55, 12, 42, 10], [-10, -65, 14, 56, 12], [2, -60, 10, 48, 9],
+        [15, -70, 16, 68, 14], [28, -58, 11, 52, 10], [42, -62, 15, 60, 13],
+        [58, -50, 13, 44, 11], [-38, -48, 9, 36, 8]
+      ];
+
+      distantBuildings.forEach(([bx, bz, bw, bh, bd]) => {
+        const bMesh = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, bd), distantMat);
+        bMesh.position.set(bx, bh / 2, bz);
+        if (bh > 45) {
+          const spire = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.8, 8, 4), distantMat);
+          spire.position.set(0, bh / 2 + 4, 0);
+          bMesh.add(spire);
+        }
+        distantCityGroup.add(bMesh);
+      });
+      scene.add(distantCityGroup);
+    }
+
+    let monumentalTitleMesh = null;
+    let monumentalTitleTex = null;
+
+    function buildMonumentalTitle() {
+      const cv = document.createElement('canvas');
+      cv.width = 4096;
+      cv.height = 1024;
+      const ctx = cv.getContext('2d');
+
+      ctx.clearRect(0, 0, cv.width, cv.height);
+
+      const text = 'CS ASSOCIATES';
+      const subText = 'PROJECT MANAGEMENT CONSULTANCY · BENGALURU';
+      
+      const centerX = cv.width / 2;
+      const centerY = cv.height * 0.40;
+
+      ctx.save();
+      // Refined architectural typography - scaled down ("bit small")
+      ctx.font = '900 215px "Outfit", "Syne", "Plus Jakarta Sans", -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      if ('letterSpacing' in ctx) {
+        ctx.letterSpacing = '16px';
+      }
+
+      // Crisp, solid 100% pure white lettering - zero gray tint
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(text, centerX, centerY);
+
+      // Clean white hairline edge
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#ffffff';
+      ctx.strokeText(text, centerX, centerY);
+
+      // Architectural Technical Sub-descriptor - Solid pure white
+      ctx.font = '700 30px "Space Grotesk", "Outfit", sans-serif';
+      if ('letterSpacing' in ctx) {
+        ctx.letterSpacing = '12px';
+      }
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(subText, centerX, centerY + 145);
+
+      ctx.restore();
+
+      monumentalTitleTex = new THREE.CanvasTexture(cv);
+      monumentalTitleTex.colorSpace = THREE.SRGBColorSpace;
+
+      // Plane Geometry (aspect 4:1) - Scaled down ("bit small")
+      const planeWidth = 135;
+      const planeHeight = 33.75;
+      const titleGeo = new THREE.PlaneGeometry(planeWidth, planeHeight);
+      const titleMat = new THREE.MeshBasicMaterial({
+        map: monumentalTitleTex,
+        transparent: true,
+        opacity: 1.0,
+        fog: false, // Prevents scene fog from darkening pure white to gray
+        depthWrite: false,
+        side: THREE.DoubleSide
+      });
+
+      monumentalTitleMesh = new THREE.Mesh(titleGeo, titleMat);
+      // Position: Centered harmoniously in the background skyline
+      monumentalTitleMesh.position.set(16.5, 34.5, -36.0);
+      scene.add(monumentalTitleMesh);
+    }
+
+    function buildTowers() {
+      const concreteTex = generateConcreteTexture();
+
+      const slabMat = new THREE.MeshStandardMaterial({
+        color: 0x52525b,
+        map: concreteTex,
+        roughness: 0.85,
+        metalness: 0.1
+      });
+
+      const coreMat = new THREE.MeshStandardMaterial({
+        color: 0x27272a,
+        roughness: 0.9,
+        metalness: 0.2
+      });
+
+      const columnSteelMat = new THREE.MeshStandardMaterial({
+        color: 0x71717a,
+        roughness: 0.5,
+        metalness: 0.6
+      });
+
+      const rebarMat = new THREE.MeshStandardMaterial({
+        color: 0xd4d4d8,
+        roughness: 0.35,
+        metalness: 0.75
+      });
+
+      // TOWER 1: Cylindrical / Elliptical High-Rise
+      const tower1Group = new THREE.Group();
+      const t1Floors = 24;
+      const t1FloorHeight = 1.1;
+      const t1RadiusX = 5.2;
+      const t1RadiusZ = 6.8;
+
+      const core1 = new THREE.Mesh(new THREE.BoxGeometry(4.0, t1Floors * t1FloorHeight + 4, 4.5), coreMat);
+      core1.position.set(0, (t1Floors * t1FloorHeight) / 2 + 1, 0);
+      core1.castShadow = true;
+      tower1Group.add(core1);
+
+      const colGeo = new THREE.CylinderGeometry(0.14, 0.14, t1FloorHeight, 10);
+      const rebarGeo = new THREE.CylinderGeometry(0.08, 0.08, 3.8, 8);
+
+      for (let f = 0; f < t1Floors; f++) {
+        const y = (f + 1) * t1FloorHeight;
+        const slabShape = new THREE.Shape();
+        const segments = 36;
+        for (let i = 0; i <= segments; i++) {
+          const theta = (i / segments) * Math.PI * 2;
+          const px = Math.cos(theta) * t1RadiusX;
+          const pz = Math.sin(theta) * t1RadiusZ;
+          if (i === 0) slabShape.moveTo(px, pz);
+          else slabShape.lineTo(px, pz);
+        }
+
+        const extrudeSettings = { depth: 0.18, bevelEnabled: true, bevelSegments: 2, steps: 1, bevelSize: 0.04, bevelThickness: 0.04 };
+        const slabGeometry = new THREE.ExtrudeGeometry(slabShape, extrudeSettings);
+        slabGeometry.rotateX(Math.PI / 2);
+
+        const slabMesh = new THREE.Mesh(slabGeometry, slabMat);
+        slabMesh.position.set(0, y, 0);
+        slabMesh.castShadow = true;
+        slabMesh.receiveShadow = true;
+        tower1Group.add(slabMesh);
+
+        const numCols = 18;
+        for (let c = 0; c < numCols; c++) {
+          const ang = (c / numCols) * Math.PI * 2;
+          const colX = Math.cos(ang) * (t1RadiusX - 0.4);
+          const colZ = Math.sin(ang) * (t1RadiusZ - 0.4);
+
+          const col = new THREE.Mesh(colGeo, columnSteelMat);
+          col.position.set(colX, y - t1FloorHeight / 2, colZ);
+          col.castShadow = true;
+          tower1Group.add(col);
+
+          if (f === t1Floors - 1) {
+            const rebar = new THREE.Mesh(rebarGeo, rebarMat);
+            rebar.position.set(colX, y + 1.9, colZ);
+            rebar.castShadow = true;
+            tower1Group.add(rebar);
+          }
+        }
+      }
+      tower1Group.position.set(19.5, 0, 3);
+      scene.add(tower1Group);
+
+      // TOWER 2: Center Stepped Tower
+      const tower2Group = new THREE.Group();
+      const t2Floors = 28;
+      const t2FloorHeight = 1.05;
+      const widthT2 = 6.8;
+      const depthT2 = 6.2;
+
+      for (let f = 0; f < t2Floors; f++) {
+        const y = (f + 1) * t2FloorHeight;
+        const stepFactor = f > 20 ? 0.8 : 1.0;
+        const curW = widthT2 * stepFactor;
+        const curD = depthT2 * stepFactor;
+
+        const slab = new THREE.Mesh(new THREE.BoxGeometry(curW, 0.16, curD), slabMat);
+        slab.position.set(0, y, 0);
+        slab.castShadow = true;
+        slab.receiveShadow = true;
+        tower2Group.add(slab);
+
+        const colsX = 6, colsZ = 5;
+        for (let ix = 0; ix <= colsX; ix++) {
+          for (let iz = 0; iz <= colsZ; iz++) {
+            if (ix === 0 || ix === colsX || iz === 0 || iz === colsZ) {
+              const px = -curW / 2 + (ix / colsX) * curW;
+              const pz = -curD / 2 + (iz / colsZ) * curD;
+              const cMesh = new THREE.Mesh(colGeo, columnSteelMat);
+              cMesh.position.set(px, y - t2FloorHeight / 2, pz);
+              cMesh.castShadow = true;
+              tower2Group.add(cMesh);
+
+              if (f === t2Floors - 1 && Math.random() > 0.3) {
+                const tallRebar = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 4.2 + Math.random() * 2, 8), rebarMat);
+                tallRebar.position.set(px, y + 2.4, pz);
+                tallRebar.castShadow = true;
+                tower2Group.add(tallRebar);
+              }
+            }
+          }
+        }
+      }
+
+      const core2 = new THREE.Mesh(new THREE.BoxGeometry(3.5, t2Floors * t2FloorHeight + 2, 3.5), coreMat);
+      core2.position.set(0, (t2Floors * t2FloorHeight) / 2 + 1, 0);
+      core2.castShadow = true;
+      tower2Group.add(core2);
+      tower2Group.position.set(10, 0, 0);
+      scene.add(tower2Group);
+
+      // TOWER 3: Mid-Left Stepped Skeleton Tower
+      const tower3Group = new THREE.Group();
+      const t3Floors = 18;
+      for (let f = 0; f < t3Floors; f++) {
+        const y = (f + 1) * t2FloorHeight;
+        const slab = new THREE.Mesh(new THREE.BoxGeometry(5.2, 0.16, 5.0), slabMat);
+        slab.position.set(0, y, 0);
+        slab.castShadow = true;
+        slab.receiveShadow = true;
+        tower3Group.add(slab);
+
+        const cols = 5;
+        for (let i = 0; i <= cols; i++) {
+          for (let j = 0; j <= cols; j++) {
+            if (i === 0 || i === cols || j === 0 || j === cols) {
+              const px = -2.6 + (i / cols) * 5.2;
+              const pz = -2.5 + (j / cols) * 5.0;
+              const c = new THREE.Mesh(colGeo, columnSteelMat);
+              c.position.set(px, y - t2FloorHeight / 2, pz);
+              c.castShadow = true;
+              tower3Group.add(c);
+            }
+          }
+        }
+      }
+      tower3Group.position.set(2.5, 0, -2);
+      scene.add(tower3Group);
+
+      // TOWER 4: Tall Core High-Rise
+      const tower4Group = new THREE.Group();
+      const t4Height = 36;
+      const coreTall = new THREE.Mesh(new THREE.BoxGeometry(4.2, t4Height, 3.8), coreMat);
+      coreTall.position.set(0, t4Height / 2, 0);
+      coreTall.castShadow = true;
+      tower4Group.add(coreTall);
+      tower4Group.position.set(17, 0, -8);
+      scene.add(tower4Group);
+
+      // Summit Girder Installation Group atop Tower 1
+      summitInstalledGirdersGroup = new THREE.Group();
+      summitInstalledGirdersGroup.position.set(18.0, 26.6, 2.5);
+      
+      const steelCrownSeatMat = new THREE.MeshStandardMaterial({ color: 0x3b82f6, roughness: 0.4, metalness: 0.8 });
+      // Structural bearing pads for precast landing
+      const padL = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.2, 0.8), steelCrownSeatMat);
+      padL.position.set(-1.8, 0.1, 0);
+      const padR = padL.clone();
+      padR.position.x = 1.8;
+      summitInstalledGirdersGroup.add(padL);
+      summitInstalledGirdersGroup.add(padR);
+
+      // Pre-installed girders from previous cycles
+      for (let i = 0; i < 3; i++) {
+        const pBeam = new THREE.Mesh(
+          new THREE.BoxGeometry(0.55, 0.6, 4.0),
+          new THREE.MeshStandardMaterial({ color: 0xd4d4d8, roughness: 0.82 })
+        );
+        pBeam.position.set((i - 1) * 1.4, 0.4, -1.2);
+        pBeam.castShadow = true;
+        summitInstalledGirdersGroup.add(pBeam);
+      }
+      scene.add(summitInstalledGirdersGroup);
+
+      // Integrated entrance podium
+      const podiumGroup = new THREE.Group();
+      for (let pl = 0; pl < 3; pl++) {
+        const py = (pl + 1) * 1.6;
+        const pSlab = new THREE.Mesh(new THREE.BoxGeometry(22, 0.22, 9.5), slabMat);
+        pSlab.position.set(13.5, py, 4.5);
+        pSlab.castShadow = true;
+        podiumGroup.add(pSlab);
+      }
+      scene.add(podiumGroup);
+
+      // ==============================================================
+      // TOWER 5: RIGHT-SIDE TALL ELLIPTICAL HIGH-RISE (34 Storeys)
+      // Active construction with external personnel hoist and safety mesh
+      // ==============================================================
+      const tower5Group = new THREE.Group();
+      const t5Floors = 34;
+      const t5FloorH = 1.08;
+      const t5RadiusX = 4.8;
+      const t5RadiusZ = 5.8;
+
+      const core5 = new THREE.Mesh(new THREE.BoxGeometry(3.6, t5Floors * t5FloorH + 4, 3.8), coreMat);
+      core5.position.set(0, (t5Floors * t5FloorH) / 2 + 1, 0);
+      core5.castShadow = true;
+      tower5Group.add(core5);
+
+      const safetyNetBlueMat = new THREE.MeshStandardMaterial({
+        color: 0x0284c7,
+        roughness: 0.6,
+        transparent: true,
+        opacity: 0.72
+      });
+
+      for (let f = 0; f < t5Floors; f++) {
+        const y = (f + 1) * t5FloorH;
+        const slabShape = new THREE.Shape();
+        const segments = 32;
+        for (let i = 0; i <= segments; i++) {
+          const theta = (i / segments) * Math.PI * 2;
+          const px = Math.cos(theta) * t5RadiusX;
+          const pz = Math.sin(theta) * t5RadiusZ;
+          if (i === 0) slabShape.moveTo(px, pz);
+          else slabShape.lineTo(px, pz);
+        }
+
+        const extrudeSettings = { depth: 0.16, bevelEnabled: true, bevelSegments: 2, steps: 1, bevelSize: 0.04, bevelThickness: 0.04 };
+        const slabGeometry = new THREE.ExtrudeGeometry(slabShape, extrudeSettings);
+        slabGeometry.rotateX(Math.PI / 2);
+
+        const slabMesh = new THREE.Mesh(slabGeometry, slabMat);
+        slabMesh.position.set(0, y, 0);
+        slabMesh.castShadow = true;
+        slabMesh.receiveShadow = true;
+        tower5Group.add(slabMesh);
+
+        // Columns around circumference
+        const numCols = 16;
+        for (let c = 0; c < numCols; c++) {
+          const ang = (c / numCols) * Math.PI * 2;
+          const colX = Math.cos(ang) * (t5RadiusX - 0.35);
+          const colZ = Math.sin(ang) * (t5RadiusZ - 0.35);
+
+          const col = new THREE.Mesh(colGeo, columnSteelMat);
+          col.position.set(colX, y - t5FloorH / 2, colZ);
+          col.castShadow = true;
+          tower5Group.add(col);
+
+          if (f === t5Floors - 1) {
+            const rebar = new THREE.Mesh(rebarGeo, rebarMat);
+            rebar.position.set(colX, y + 2.0, colZ);
+            rebar.castShadow = true;
+            tower5Group.add(rebar);
+          }
+        }
+
+        // Active blue safety debris netting around upper working floors
+        if (f >= t5Floors - 5 && f < t5Floors - 1) {
+          const netGeo = new THREE.CylinderGeometry(t5RadiusX + 0.1, t5RadiusX + 0.1, t5FloorH, 24, 1, true);
+          netGeo.scale(1.0, 1.0, t5RadiusZ / t5RadiusX);
+          const netMesh = new THREE.Mesh(netGeo, safetyNetBlueMat);
+          netMesh.position.set(0, y - t5FloorH / 2, 0);
+          tower5Group.add(netMesh);
+        }
+      }
+
+      // External Construction Hoist (Alimak Rack-and-Pinion Lift Mast) on Tower 5 flank
+      const hoistGroup = new THREE.Group();
+      const hoistMastHeight = t5Floors * t5FloorH + 2;
+      const hoistMast = new THREE.Mesh(
+        new THREE.BoxGeometry(0.5, hoistMastHeight, 0.5),
+        new THREE.MeshStandardMaterial({ color: 0xea580c, metalness: 0.6 })
+      );
+      hoistMast.position.set(t5RadiusX + 0.6, hoistMastHeight / 2, 0);
+      hoistMast.castShadow = true;
+      hoistGroup.add(hoistMast);
+
+      // Yellow passenger/cargo hoist car
+      const hoistCar = new THREE.Mesh(
+        new THREE.BoxGeometry(1.2, 1.8, 1.2),
+        new THREE.MeshStandardMaterial({ color: 0xfacc15, roughness: 0.4 })
+      );
+      hoistCar.position.set(t5RadiusX + 1.2, 18.5, 0);
+      hoistCar.castShadow = true;
+      hoistGroup.add(hoistCar);
+      tower5Group.add(hoistGroup);
+
+      tower5Group.position.set(29.5, 0, 2.0);
+      scene.add(tower5Group);
+
+      // ==============================================================
+      // TOWER 6: RIGHT STEPPED MEGA-TOWER WITH CLIMBING SCREEN (42 Storeys)
+      // ==============================================================
+      const tower6Group = new THREE.Group();
+      const t6Floors = 42;
+      const t6FloorH = 1.05;
+      const t6W = 7.4;
+      const t6D = 6.6;
+
+      const climbingScreenMat = new THREE.MeshStandardMaterial({
+        color: 0xf59e0b,
+        roughness: 0.45,
+        metalness: 0.2
+      });
+
+      for (let f = 0; f < t6Floors; f++) {
+        const y = (f + 1) * t6FloorH;
+        const stepFactor = f > 28 ? 0.76 : (f > 16 ? 0.88 : 1.0);
+        const curW = t6W * stepFactor;
+        const curD = t6D * stepFactor;
+
+        const slab = new THREE.Mesh(new THREE.BoxGeometry(curW, 0.18, curD), slabMat);
+        slab.position.set(0, y, 0);
+        slab.castShadow = true;
+        slab.receiveShadow = true;
+        tower6Group.add(slab);
+
+        // Grid columns
+        const colsX = 5, colsZ = 4;
+        for (let ix = 0; ix <= colsX; ix++) {
+          for (let iz = 0; iz <= colsZ; iz++) {
+            if (ix === 0 || ix === colsX || iz === 0 || iz === colsZ) {
+              const px = -curW / 2 + (ix / colsX) * curW;
+              const pz = -curD / 2 + (iz / colsZ) * curD;
+              const cMesh = new THREE.Mesh(colGeo, columnSteelMat);
+              cMesh.position.set(px, y - t6FloorH / 2, pz);
+              cMesh.castShadow = true;
+              tower6Group.add(cMesh);
+
+              if (f === t6Floors - 1 && Math.random() > 0.25) {
+                const tallRebar = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 4.5, 8), rebarMat);
+                tallRebar.position.set(px, y + 2.4, pz);
+                tallRebar.castShadow = true;
+                tower6Group.add(tallRebar);
+              }
+            }
+          }
+        }
+
+        // Hydraulic climbing formwork safety screens on top working levels
+        if (f >= t6Floors - 4) {
+          const screen = new THREE.Mesh(new THREE.BoxGeometry(curW + 0.15, t6FloorH * 0.95, curD + 0.15), climbingScreenMat);
+          screen.position.set(0, y - t6FloorH / 2, 0);
+          screen.castShadow = true;
+          tower6Group.add(screen);
+        }
+      }
+
+      // Concrete elevator shear core extending above
+      const core6H = t6Floors * t6FloorH + 4;
+      const core6 = new THREE.Mesh(new THREE.BoxGeometry(4.0, core6H, 3.8), coreMat);
+      core6.position.set(0, core6H / 2, 0);
+      core6.castShadow = true;
+      tower6Group.add(core6);
+
+      // Articulated concrete pump placing boom at summit
+      const pumpBase = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.35, 0.45, 3.2, 12),
+        new THREE.MeshStandardMaterial({ color: 0xef4444, metalness: 0.6 })
+      );
+      pumpBase.position.set(0.8, core6H + 1.6, 0.5);
+      pumpBase.castShadow = true;
+      tower6Group.add(pumpBase);
+
+      const boomSect1 = new THREE.Mesh(
+        new THREE.BoxGeometry(0.24, 0.24, 6.4),
+        new THREE.MeshStandardMaterial({ color: 0xef4444, metalness: 0.5 })
+      );
+      boomSect1.position.set(0.8, core6H + 3.4, 2.8);
+      boomSect1.rotation.x = -0.35;
+      tower6Group.add(boomSect1);
+
+      tower6Group.position.set(39.0, 0, -5.0);
+      scene.add(tower6Group);
+
+      // ==============================================================
+      // TOWER 7: FAR-RIGHT FACETED FRAMEWORK TOWER (24 Storeys)
+      // ==============================================================
+      const tower7Group = new THREE.Group();
+      const t7Floors = 24;
+      const t7FloorH = 1.05;
+      const t7W = 6.2;
+      const t7D = 5.4;
+
+      const yellowGuardrailMat = new THREE.MeshStandardMaterial({ color: 0xfacc15, roughness: 0.4 });
+
+      for (let f = 0; f < t7Floors; f++) {
+        const y = (f + 1) * t7FloorH;
+        const slab = new THREE.Mesh(new THREE.BoxGeometry(t7W, 0.16, t7D), slabMat);
+        slab.position.set(0, y, 0);
+        slab.castShadow = true;
+        slab.receiveShadow = true;
+        tower7Group.add(slab);
+
+        // Columns
+        const cOffsets = [
+          [-t7W / 2 + 0.3, -t7D / 2 + 0.3], [t7W / 2 - 0.3, -t7D / 2 + 0.3],
+          [-t7W / 2 + 0.3, t7D / 2 - 0.3], [t7W / 2 - 0.3, t7D / 2 - 0.3],
+          [0, -t7D / 2 + 0.3], [0, t7D / 2 - 0.3]
+        ];
+        cOffsets.forEach(([cx, cz]) => {
+          const col = new THREE.Mesh(colGeo, columnSteelMat);
+          col.position.set(cx, y - t7FloorH / 2, cz);
+          col.castShadow = true;
+          tower7Group.add(col);
+
+          if (f === t7Floors - 1) {
+            const rebar = new THREE.Mesh(rebarGeo, rebarMat);
+            rebar.position.set(cx, y + 2.2, cz);
+            rebar.castShadow = true;
+            tower7Group.add(rebar);
+          }
+        });
+
+        // Perimeter yellow safety guardrails on top floors
+        if (f >= t7Floors - 3) {
+          const railN = new THREE.Mesh(new THREE.BoxGeometry(t7W, 0.06, 0.06), yellowGuardrailMat);
+          railN.position.set(0, y + 0.45, t7D / 2 - 0.05);
+          const railS = railN.clone();
+          railS.position.z = -t7D / 2 + 0.05;
+          tower7Group.add(railN);
+          tower7Group.add(railS);
+        }
+      }
+
+      const core7 = new THREE.Mesh(new THREE.BoxGeometry(2.8, t7Floors * t7FloorH + 2, 2.8), coreMat);
+      core7.position.set(0, (t7Floors * t7FloorH) / 2 + 1, 0);
+      core7.castShadow = true;
+      tower7Group.add(core7);
+
+      tower7Group.position.set(48.5, 0, 3.5);
+      scene.add(tower7Group);
+
+      // ==============================================================
+      // TOWER 8: RIGHT-BACKGROUND DEEP MEGA-CORE TOWER (48 Storeys)
+      // Soaring background structural spine with outriggers
+      // ==============================================================
+      const tower8Group = new THREE.Group();
+      const t8Floors = 48;
+      const t8CoreH = t8Floors * 1.05 + 6;
+
+      const core8 = new THREE.Mesh(new THREE.BoxGeometry(5.2, t8CoreH, 4.6), coreMat);
+      core8.position.set(0, t8CoreH / 2, 0);
+      core8.castShadow = true;
+      tower8Group.add(core8);
+
+      for (let f = 0; f < t8Floors; f += 2) {
+        const y = (f + 1) * 1.05;
+        const slab = new THREE.Mesh(new THREE.BoxGeometry(8.2, 0.22, 7.2), slabMat);
+        slab.position.set(0, y, 0);
+        slab.castShadow = true;
+        slab.receiveShadow = true;
+        tower8Group.add(slab);
+      }
+
+      // Summit rebar crown
+      for (let rx = -2.2; rx <= 2.2; rx += 1.1) {
+        for (let rz = -1.8; rz <= 1.8; rz += 1.1) {
+          const spike = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 6.0, 8), rebarMat);
+          spike.position.set(rx, t8CoreH + 3.0, rz);
+          spike.castShadow = true;
+          tower8Group.add(spike);
+        }
+      }
+
+      tower8Group.position.set(33.0, 0, -15.0);
+      scene.add(tower8Group);
+    }
+
+    function buildTowerCrane() {
+      const craneGroup = new THREE.Group();
+      const craneYellowMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.4, metalness: 0.5 });
+      const steelDarkMat = new THREE.MeshStandardMaterial({ color: 0x374151, roughness: 0.5, metalness: 0.8 });
+      const concreteCounterweightMat = new THREE.MeshStandardMaterial({ color: 0x9ca3af, roughness: 0.9, metalness: 0.1 });
+
+      const mastHeight = 18;
+      const mastWidth = 0.9;
+      const mast = new THREE.Mesh(new THREE.BoxGeometry(mastWidth, mastHeight, mastWidth), craneYellowMat);
+      mast.position.set(0, mastHeight / 2, 0);
+      mast.castShadow = true;
+      craneGroup.add(mast);
+
+      const cabGroup = new THREE.Group();
+      cabGroup.position.set(0, mastHeight, 0);
+      const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.4, 1.2), craneYellowMat);
+      cabin.position.set(0.6, 0.7, 0.4);
+      cabin.castShadow = true;
+      cabGroup.add(cabin);
+
+      craneJibGroup = new THREE.Group();
+      craneJibGroup.position.set(0, mastHeight + 0.8, 0);
+
+      const apex = new THREE.Mesh(new THREE.ConeGeometry(0.8, 2.5, 4), steelDarkMat);
+      apex.position.set(0, 1.25, 0);
+      apex.rotation.y = Math.PI / 4;
+      craneJibGroup.add(apex);
+
+      const jibLength = 16;
+      const jib = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.6, jibLength), craneYellowMat);
+      jib.position.set(0, 0.3, jibLength / 2);
+      jib.castShadow = true;
+      craneJibGroup.add(jib);
+
+      const counterJibLength = 6.5;
+      const counterJib = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.6, counterJibLength), craneYellowMat);
+      counterJib.position.set(0, 0.3, -counterJibLength / 2);
+      counterJib.castShadow = true;
+      craneJibGroup.add(counterJib);
+
+      const ballast = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.2, 2.2), concreteCounterweightMat);
+      ballast.position.set(0, 0.9, -counterJibLength + 1.4);
+      ballast.castShadow = true;
+      craneJibGroup.add(ballast);
+
+      // Trolley, Dynamic Hoist Cables, and Rigged Hook Block Assembly
+      craneCableGroup = new THREE.Group();
+      craneTrolleyMesh = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.45, 0.9), steelDarkMat);
+      craneTrolleyMesh.castShadow = true;
+      craneCableGroup.add(craneTrolleyMesh);
+
+      // Dynamic 4-wire high-tensile steel hoist cables
+      const cableMat = new THREE.LineBasicMaterial({ color: 0x334155, linewidth: 2 });
+      const cableGeo = new THREE.BufferGeometry();
+      const cablePositions = new Float32Array(8 * 3); // 4 line segments = 8 vertices
+      cableGeo.setAttribute('position', new THREE.BufferAttribute(cablePositions, 3));
+      craneCablesLine = new THREE.LineSegments(cableGeo, cableMat);
+      craneCableGroup.add(craneCablesLine);
+
+      // Heavy Industrial Crane Hook Block
+      craneHookBlock = new THREE.Group();
+      const blockBody = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.8, 0.5), craneYellowMat);
+      blockBody.castShadow = true;
+      craneHookBlock.add(blockBody);
+
+      // Sheave Pulley Wheel on Hook Block
+      const sheave = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.15, 16), steelDarkMat);
+      sheave.rotation.z = Math.PI / 2;
+      sheave.position.y = 0.2;
+      craneHookBlock.add(sheave);
+
+      // Forged Steel Hook Shank
+      const hookRing = new THREE.Mesh(new THREE.TorusGeometry(0.24, 0.07, 10, 24, Math.PI * 1.5), steelDarkMat);
+      hookRing.position.set(0, -0.65, 0);
+      hookRing.rotation.z = -Math.PI / 4;
+      craneHookBlock.add(hookRing);
+
+      // 4 Wire Rope Slings connecting hook to precast girder
+      craneSlingsGroup = new THREE.Group();
+      const slingPoints = [
+        new THREE.Vector3(0, -0.85, 0), new THREE.Vector3(-1.8, -2.1, -0.2),
+        new THREE.Vector3(0, -0.85, 0), new THREE.Vector3(-1.8, -2.1, 0.2),
+        new THREE.Vector3(0, -0.85, 0), new THREE.Vector3(1.8, -2.1, -0.2),
+        new THREE.Vector3(0, -0.85, 0), new THREE.Vector3(1.8, -2.1, 0.2)
+      ];
+      const slingGeo = new THREE.BufferGeometry().setFromPoints(slingPoints);
+      const slingsLine = new THREE.LineSegments(slingGeo, new THREE.LineBasicMaterial({ color: 0x64748b }));
+      craneSlingsGroup.add(slingsLine);
+      craneHookBlock.add(craneSlingsGroup);
+
+      // Suspended Precast Structural Concrete Girder
+      const concreteTex = generateConcreteTexture();
+      const girderMat = new THREE.MeshStandardMaterial({
+        color: 0xefefef,
+        map: concreteTex,
+        roughness: 0.8,
+        metalness: 0.1
+      });
+      hoistedGirder = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.6, 4.0), girderMat);
+      hoistedGirder.position.set(0, -2.4, 0);
+      hoistedGirder.rotation.y = Math.PI / 2; // Aligned along tower framework
+      hoistedGirder.castShadow = true;
+      craneHookBlock.add(hoistedGirder);
+
+      craneCableGroup.add(craneHookBlock);
+      craneJibGroup.add(craneCableGroup);
+
+      craneGroup.add(cabGroup);
+      craneGroup.add(craneJibGroup);
+
+      craneGroup.position.set(11.2, 23.5, -0.5);
+      craneGroup.rotation.y = -0.4;
+      scene.add(craneGroup);
+    }
+
+    function buildConstructionVehicles() {
+      const yellowPaint = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.35, metalness: 0.4 });
+      const rubberMat = new THREE.MeshStandardMaterial({ color: 0x18181b, roughness: 0.85, metalness: 0.05 });
+      const chromeMat = new THREE.MeshStandardMaterial({ color: 0xe4e4e7, roughness: 0.2, metalness: 0.85 });
+
+      function createWheel(radius, width) {
+        const wGeo = new THREE.CylinderGeometry(radius, radius, width, 16);
+        wGeo.rotateZ(Math.PI / 2);
+        const mesh = new THREE.Mesh(wGeo, rubberMat);
+        mesh.castShadow = true;
+        return mesh;
+      }
+
+      // Dump Truck
+      const dumpTruck = new THREE.Group();
+      const dumpWheels = [];
+      const chassis = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.4, 5.0), rubberMat);
+      chassis.position.set(0, 0.8, 0);
+      dumpTruck.add(chassis);
+
+      const cab = new THREE.Mesh(new THREE.BoxGeometry(2.2, 1.5, 1.8), yellowPaint);
+      cab.position.set(0, 1.7, 1.4);
+      cab.castShadow = true;
+      dumpTruck.add(cab);
+
+      const dumpBedGroup = new THREE.Group();
+      dumpBedGroup.position.set(0, 1.3, -1.8);
+      const bed = new THREE.Mesh(new THREE.BoxGeometry(2.3, 1.2, 3.2), yellowPaint);
+      bed.position.set(0, 0.6, 1.2);
+      bed.castShadow = true;
+      dumpBedGroup.add(bed);
+      dumpTruck.add(dumpBedGroup);
+
+      const wheelPos = [
+        [-1.25, 0.6, 1.4], [1.25, 0.6, 1.4],
+        [-1.25, 0.6, -0.8], [1.25, 0.6, -0.8],
+        [-1.25, 0.6, -2.0], [1.25, 0.6, -2.0]
+      ];
+      wheelPos.forEach(pos => {
+        const w = createWheel(0.6, 0.45);
+        w.position.set(...pos);
+        dumpTruck.add(w);
+        dumpWheels.push(w);
+      });
+
+      dumpTruck.position.set(22, 0, 16);
+      dumpTruck.rotation.y = -Math.PI / 2;
+      dumpTruck.scale.set(0.9, 0.9, 0.9);
+      dumpTruck.userData = { type: 'dumpTruck', wheels: dumpWheels, bed: dumpBedGroup, baseX: 20, baseZ: 16.5 };
+      scene.add(dumpTruck);
+      animatedVehicles.push(dumpTruck);
+
+      const mixerTruck = new THREE.Group();
+      const mixerWheels = [];
+
+      const mChassis = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.45, 5.8), rubberMat);
+      mChassis.position.set(0, 0.8, 0);
+      mixerTruck.add(mChassis);
+
+      // Cab
+      const mCab = new THREE.Mesh(
+        new THREE.BoxGeometry(2.2, 1.6, 1.8),
+        new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.35, metalness: 0.3 })
+      );
+      mCab.position.set(0, 1.7, 1.8);
+      mCab.castShadow = true;
+      mixerTruck.add(mCab);
+
+      // Glass windshield
+      const mWindshield = new THREE.Mesh(
+        new THREE.PlaneGeometry(1.9, 0.85),
+        new THREE.MeshStandardMaterial({ color: 0x93c5fd, roughness: 0.1, metalness: 0.9, transparent: true, opacity: 0.7 })
+      );
+      mWindshield.position.set(0, 1.8, 2.71);
+      mixerTruck.add(mWindshield);
+
+      // Rotating concrete mixing drum
+      const drumGroup = new THREE.Group();
+      drumGroup.position.set(0, 2.05, -0.7);
+      drumGroup.rotation.x = 0.22;
+
+      const drumBody = new THREE.Mesh(
+        new THREE.CylinderGeometry(1.15, 1.35, 2.8, 24),
+        new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.45, metalness: 0.2 })
+      );
+      drumBody.rotation.x = Math.PI / 2;
+      drumBody.castShadow = true;
+      drumGroup.add(drumBody);
+
+      // Spiral stripe on the drum
+      const stripe = new THREE.Mesh(
+        new THREE.TorusGeometry(1.32, 0.08, 8, 24),
+        new THREE.MeshStandardMaterial({ color: 0xea580c, roughness: 0.4 })
+      );
+      stripe.rotation.x = 0.45;
+      drumGroup.add(stripe);
+      mixerTruck.add(drumGroup);
+
+      // Wheels
+      const mWheelCoords = [
+        [-1.2, 0.6, 1.8], [1.2, 0.6, 1.8],
+        [-1.2, 0.6, -0.6], [1.2, 0.6, -0.6],
+        [-1.2, 0.6, -1.9], [1.2, 0.6, -1.9]
+      ];
+      mWheelCoords.forEach(pos => {
+        const mw = createWheel(0.6, 0.42);
+        mw.position.set(...pos);
+        mixerTruck.add(mw);
+        mixerWheels.push(mw);
+      });
+
+      mixerTruck.position.set(-18, 0, 21.8);
+      mixerTruck.rotation.y = Math.PI / 2;
+      mixerTruck.scale.set(0.9, 0.9, 0.9);
+      mixerTruck.userData = {
+        type: 'mixerTruck',
+        drum: drumGroup,
+        wheels: mixerWheels,
+        pathXStart: -35,
+        pathXEnd: 48,
+        speed: 4.8
+      };
+      scene.add(mixerTruck);
+      animatedVehicles.push(mixerTruck);
+
+      // Hydraulic Excavator
+      const excavator = new THREE.Group();
+      const trackL = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.6, 3.2), rubberMat);
+      trackL.position.set(-0.9, 0.35, 0);
+      const trackR = trackL.clone();
+      trackR.position.x = 0.9;
+      excavator.add(trackL);
+      excavator.add(trackR);
+
+      const turret = new THREE.Group();
+      turret.position.set(0, 0.7, 0);
+      const house = new THREE.Mesh(new THREE.BoxGeometry(1.9, 1.1, 2.2), yellowPaint);
+      house.position.set(0, 0.6, -0.2);
+      house.castShadow = true;
+      turret.add(house);
+
+      const boomPivot = new THREE.Group();
+      boomPivot.position.set(0.5, 1.1, 0.8);
+      const boom = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.4, 2.6), yellowPaint);
+      boom.position.set(0, 0.8, 1.1);
+      boom.rotation.x = -0.55;
+      boomPivot.add(boom);
+
+      const stickPivot = new THREE.Group();
+      stickPivot.position.set(0, 1.6, 2.2);
+      const stick = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.3, 2.2), yellowPaint);
+      stick.position.set(0, -0.6, 0.8);
+      stick.rotation.x = 0.85;
+      stickPivot.add(stick);
+
+      const bucketArmPivot = new THREE.Group();
+      bucketArmPivot.position.set(0, -1.3, 1.6);
+      const digBucket = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.6, 0.6), chromeMat);
+      digBucket.position.set(0, 0, 0.1);
+      digBucket.castShadow = true;
+      bucketArmPivot.add(digBucket);
+
+      stickPivot.add(bucketArmPivot);
+      boomPivot.add(stickPivot);
+      turret.add(boomPivot);
+      excavator.add(turret);
+      excavator.position.set(7.5, 0, 13);
+      excavator.rotation.y = 0.2;
+      excavator.scale.set(0.85, 0.85, 0.85);
+      excavator.userData = { type: 'excavator', turret, boom: boomPivot, stick: stickPivot, bucket: bucketArmPivot };
+      scene.add(excavator);
+      animatedVehicles.push(excavator);
+    }
+
+    function buildSpatialBlueprintAroundBuildings() {
+      const spatialBlueprintGroup = new THREE.Group();
+
+      // (Background paper sheet scrim removed as requested for an unobstructed horizon view)
+
+      // Future Planned Wireframe Hologram atop Tower 1
+      const bimWireMat = new THREE.MeshBasicMaterial({ color: 0x0284c7, wireframe: true, transparent: true, opacity: 0.38 });
+      const t1GhostGeo = new THREE.CylinderGeometry(5.2, 5.2, 10, 24, 10, false);
+      t1GhostGeo.scale(1.0, 1.0, 1.3);
+      const t1GhostMesh = new THREE.Mesh(t1GhostGeo, bimWireMat);
+      t1GhostMesh.position.set(19.5, 31.4, 3);
+      spatialBlueprintGroup.add(t1GhostMesh);
+
+      // Future Planned Wireframe Hologram atop Right Tower 5
+      const t5GhostGeo = new THREE.CylinderGeometry(4.8, 4.8, 9, 20, 8, false);
+      t5GhostGeo.scale(1.0, 1.0, 1.2);
+      const t5GhostMesh = new THREE.Mesh(t5GhostGeo, bimWireMat);
+      t5GhostMesh.position.set(29.5, 41.5, 2.0);
+      spatialBlueprintGroup.add(t5GhostMesh);
+
+      scene.add(spatialBlueprintGroup);
+    }
+
+    function buildSitePropsAndMaterials() {
+      const palletMat = new THREE.MeshStandardMaterial({ color: 0x92400e, roughness: 0.9 });
+      const brickMat = new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.95 });
+
+      // Ground Precast Girder Supply Yard (Pickup Zone for automated hoisting cycle)
+      groundSupplyGirdersGroup = new THREE.Group();
+      groundSupplyGirdersGroup.position.set(3.2, 0, 10.8);
+
+      // Yellow/Black Hazard Staging Pad
+      const padGeo = new THREE.BoxGeometry(4.8, 0.08, 4.8);
+      const padMat = new THREE.MeshStandardMaterial({ color: 0xfacc15, roughness: 0.6 });
+      const padMesh = new THREE.Mesh(padGeo, padMat);
+      padMesh.position.y = 0.04;
+      groundSupplyGirdersGroup.add(padMesh);
+
+      // Timber dunnage support blocks
+      for (let s = -1.6; s <= 1.6; s += 1.6) {
+        const dunnage = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.18, 4.0), palletMat);
+        dunnage.position.set(s, 0.17, 0);
+        dunnage.castShadow = true;
+        groundSupplyGirdersGroup.add(dunnage);
+      }
+
+      // Stacked precast girders in storage ready to be hoisted
+      const reserveGirderMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.8 });
+      const g1 = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.6, 4.0), reserveGirderMat);
+      g1.position.set(-1.0, 0.56, 0);
+      g1.rotation.y = Math.PI / 2;
+      g1.castShadow = true;
+      groundSupplyGirdersGroup.add(g1);
+
+      const g2 = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.6, 4.0), reserveGirderMat);
+      g2.position.set(1.0, 0.56, 0);
+      g2.rotation.y = Math.PI / 2;
+      g2.castShadow = true;
+      groundSupplyGirdersGroup.add(g2);
+
+      scene.add(groundSupplyGirdersGroup);
+
+      function createPallet(x, z, rot) {
+        const pGroup = new THREE.Group();
+        const base = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.16, 1.6), palletMat);
+        base.position.y = 0.08;
+        pGroup.add(base);
+
+        const bricks = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.85, 1.4), brickMat);
+        bricks.position.y = 0.58;
+        bricks.castShadow = true;
+        pGroup.add(bricks);
+
+        pGroup.position.set(x, 0, z);
+        pGroup.rotation.y = rot;
+        scene.add(pGroup);
+      }
+      createPallet(0.5, 13, 0.2);
+      createPallet(2.0, 14.5, -0.4);
+    }
+
+    function buildFoliageTrees() {
+      const foliageTex = generateFoliageTexture();
+      const trunkMat = new THREE.MeshStandardMaterial({ color: 0x5c4033, roughness: 0.9 });
+      const leafMat = new THREE.MeshStandardMaterial({ color: 0x65a30d, map: foliageTex, roughness: 0.6 });
+
+      function createTree(x, z, scale = 1.0) {
+        const tree = new THREE.Group();
+        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.12 * scale, 0.22 * scale, 1.6 * scale, 8), trunkMat);
+        trunk.position.y = 0.8 * scale;
+        trunk.castShadow = true;
+        tree.add(trunk);
+
+        const canopies = [
+          [0, 2.2 * scale, 0, 1.1 * scale],
+          [-0.4 * scale, 2.7 * scale, 0.2 * scale, 0.9 * scale],
+          [0.35 * scale, 2.5 * scale, -0.3 * scale, 0.85 * scale]
+        ];
+        canopies.forEach(([cx, cy, cz, crad]) => {
+          const sphere = new THREE.Mesh(new THREE.SphereGeometry(crad, 12, 10), leafMat);
+          sphere.position.set(cx, cy, cz);
+          sphere.castShadow = true;
+          tree.add(sphere);
+        });
+
+        tree.position.set(x, 0, z);
+        scene.add(tree);
+      }
+
+      const treeCoords = [
+        [5.0, 8.5, 1.1], [7.2, 8.8, 1.2], [9.0, 9.2, 1.3],
+        [12.2, 9.8, 1.4], [14.5, 9.5, 1.2], [16.2, 9.0, 1.1]
+      ];
+      treeCoords.forEach(([tx, tz, ts]) => createTree(tx, tz, ts));
+    }
+
+    function setupInteraction() {
+      const camPresets = {
+        straight: { pos: [16.5, 3.2, 96], target: [16.5, 18.5, 2.0] },
+        cloud: { pos: [16.5, 95.0, 142.0], target: [16.5, 28.0, 12.0], duration: 4800 },
+        ultralow: { pos: [-42, 2.2, 74], target: [16.0, 17.0, 1.0] },
+        lowangle: { pos: [-24, 5.0, 58], target: [16.0, 15.0, 2.0] },
+        long: { pos: [-36, 24, 82], target: [16.0, 14.0, 2.0] },
+        hero: { pos: [22, 10.0, 44], target: [26.0, 16.0, 2.5] },
+        crane: { pos: [12, 32, 28], target: [11.2, 23.5, 0.0] },
+        blueprint: { pos: [-18, 9, 26], target: [-4.0, 1.5, 8.0] }
+      };
+
+      document.querySelectorAll('.cam-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const key = btn.dataset.cam;
+
+          document.querySelectorAll('.cam-btn').forEach(b => {
+            b.classList.remove('bg-neutral-900', 'text-white', 'shadow-sm');
+            b.classList.add('text-neutral-700');
+          });
+          btn.classList.add('bg-neutral-900', 'text-white', 'shadow-sm');
+          btn.classList.remove('text-neutral-700');
+
+          if (key === 'cloud') {
+            // Trigger cinematic cloud dive replay
+            playEntranceAnimation();
+            return;
+          }
+
+          const target = camPresets[key];
+          if (target) {
+            new TWEEN.Tween(camera.position)
+              .to({ x: target.pos[0], y: target.pos[1], z: target.pos[2] }, 1400)
+              .easing(TWEEN.Easing.Cubic.Out)
+              .start();
+
+            new TWEEN.Tween(controls.target)
+              .to({ x: target.target[0], y: target.target[1], z: target.target[2] }, 1400)
+              .easing(TWEEN.Easing.Cubic.Out)
+              .start();
+          }
+        });
+      });
+
+      document.querySelectorAll('.env-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.env-btn').forEach(b => {
+            b.classList.remove('bg-amber-500', 'text-white', 'shadow-sm');
+            b.classList.add('text-neutral-700');
+          });
+          btn.classList.add('bg-amber-500', 'text-white', 'shadow-sm');
+          btn.classList.remove('text-neutral-700');
+
+          const mode = btn.dataset.theme;
+          if (mode === 'studio') {
+            scene.background.set(0xf6f7f9);
+            scene.fog.color.set(0xf6f7f9);
+            keyLight.color.set(0xfffaf0);
+            keyLight.intensity = 2.2;
+            fillLight.color.set(0xe0f2fe);
+            renderer.toneMappingExposure = 1.15;
+            if (monumentalTitleMesh) monumentalTitleMesh.material.color.set(0xffffff);
+          } else if (mode === 'golden') {
+            scene.background.set(0xfef3c7);
+            scene.fog.color.set(0xfef3c7);
+            keyLight.color.set(0xf59e0b);
+            keyLight.intensity = 2.8;
+            fillLight.color.set(0x38bdf8);
+            renderer.toneMappingExposure = 1.05;
+            if (monumentalTitleMesh) monumentalTitleMesh.material.color.set(0xffffff);
+          } else if (mode === 'overcast') {
+            scene.background.set(0xe2e8f0);
+            scene.fog.color.set(0xe2e8f0);
+            keyLight.color.set(0xffffff);
+            keyLight.intensity = 1.6;
+            fillLight.color.set(0xcfd8dc);
+            renderer.toneMappingExposure = 1.0;
+            if (monumentalTitleMesh) monumentalTitleMesh.material.color.set(0xffffff);
+          }
+        });
+      });
+
+      const rotateBtn = document.getElementById('btn-toggle-orbit');
+      const rotateStatus = document.getElementById('rotate-status');
+      if (rotateBtn) {
+        rotateBtn.addEventListener('click', () => {
+          autoRotate = !autoRotate;
+          if (rotateStatus) {
+            rotateStatus.textContent = autoRotate ? 'ON' : 'OFF';
+            rotateStatus.className = autoRotate ? 'text-emerald-600 font-bold' : 'text-neutral-400 font-bold';
+          }
+        });
+      }
+
+      const resetCamBtn = document.getElementById('btn-reset-cam');
+      if (resetCamBtn) {
+        resetCamBtn.addEventListener('click', () => {
+          applyCameraStageProgress(0);
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ type: 'RESET_VIEW' }, '*');
+          }
+        });
+      }
+    }
+
+    function playEntranceAnimation() {
+      isEntranceAnimating = true;
+      controls.enabled = false;
+
+      // Position high in the clouds looking down across the skyscraper crowns
+      camera.position.set(16.5, 95.0, 142.0);
+      controls.target.set(16.5, 28.0, 12.0);
+
+      // Make upper cloud deck visible and fade as we dive through
+      if (cloudDeckGroup) {
+        cloudDeckGroup.children.forEach(c => { c.material.opacity = 0.65; });
+      }
+
+      // Smooth, slow cinematic swoop from cloud height to street-level straight shot
+      const swoopDuration = 5200; // 5.2 seconds for majestic slow cinematic feel
+
+      new TWEEN.Tween(camera.position)
+        .to({ x: 16.5, y: 3.2, z: 96.0 }, swoopDuration)
+        .easing(TWEEN.Easing.Cubic.InOut)
+        .start();
+
+      new TWEEN.Tween(controls.target)
+        .to({ x: 16.5, y: 18.5, z: 2.0 }, swoopDuration)
+        .easing(TWEEN.Easing.Cubic.InOut)
+        .onUpdate((obj) => {
+          // Gradual cloud layer dispersal as camera breaks through into ground atmosphere
+          if (cloudDeckGroup) {
+            const altitudeProgress = (camera.position.y - 3.2) / (95.0 - 3.2);
+            cloudDeckGroup.children.forEach(c => {
+              c.material.opacity = Math.max(0.08, altitudeProgress * 0.65);
+            });
+          }
+        })
+        .onComplete(() => {
+          isEntranceAnimating = false;
+          controls.enabled = true;
+
+          // Ensure active button is set to Straight Long-Frame
+          document.querySelectorAll('.cam-btn').forEach(b => {
+            b.classList.remove('bg-neutral-900', 'text-white', 'shadow-sm');
+            b.classList.add('text-neutral-700');
+          });
+          const straightBtn = document.querySelector('.cam-btn[data-cam="straight"]');
+          if (straightBtn) {
+            straightBtn.classList.add('bg-neutral-900', 'text-white', 'shadow-sm');
+            straightBtn.classList.remove('text-neutral-700');
+          }
+        })
+        .start();
+    }
+
+    function onWindowResize() {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      camera.aspect = width / height;
+      updateCameraOffset();
+      camera.updateProjectionMatrix();
+      renderer.setSize(width, height);
+    }
+
+    let clock = new THREE.Clock();
+    function animate() {
+      requestAnimationFrame(animate);
+
+      const delta = clock.getDelta();
+      const elapsedTime = clock.getElapsedTime();
+      TWEEN.update();
+
+      // Automated Ground-to-Summit Hoisting Kinematics & State Machine
+      craneCycle.timer += delta;
+
+      const JIB_WORLD_Y = 42.3; // Jib elevation in world coordinates
+      let actionText = "Crane 01 Slewing";
+      let statusText = "Active Hoist: Precast Girder C60";
+      let capacityValText = "78% Load (18.4t)";
+      let capacityBarWidth = "78%";
+      let capacityBarColor = "bg-amber-500";
+      let statusDotColor = "bg-emerald-500";
+
+      switch (craneCycle.phase) {
+        case HOIST_PHASES.SLEW_TO_YARD: {
+          actionText = "SLEW TO YARD // STAGING BAY 02";
+          statusText = "Repositioning Empty Hook to Ground Yard";
+          capacityValText = "14% Tare (2.1t)";
+          capacityBarWidth = "14%";
+          capacityBarColor = "bg-blue-500";
+
+          // Slew toward Ground Yard and retract hook to transit clearance
+          const slewSpeed = 0.5 * delta;
+          craneCycle.curAzimuth += (craneCycle.yardAzimuth - craneCycle.curAzimuth) * Math.min(1, slewSpeed * 2.5);
+          craneCycle.curRadius += (craneCycle.yardRadius - craneCycle.curRadius) * Math.min(1, slewSpeed * 2.5);
+          craneCycle.curHookDrop += (craneCycle.transitDrop - craneCycle.curHookDrop) * Math.min(1, delta * 2.0);
+
+          hoistedGirder.visible = false;
+          craneSlingsGroup.visible = true;
+
+          if (Math.abs(craneCycle.curAzimuth - craneCycle.yardAzimuth) < 0.02 &&
+              Math.abs(craneCycle.curRadius - craneCycle.yardRadius) < 0.15) {
+            craneCycle.phase = HOIST_PHASES.LOWER_TO_GROUND;
+            craneCycle.timer = 0;
+          }
+          break;
+        }
+
+        case HOIST_PHASES.LOWER_TO_GROUND: {
+          actionText = "HOIST DOWN // 35m DESCENT TO YARD";
+          statusText = "Unspooling Cables to Ground Supply Zone";
+          capacityValText = "16% Spool Tension";
+          capacityBarWidth = "18%";
+          capacityBarColor = "bg-cyan-500";
+
+          // Lower hook from transit (5.5m drop) to ground yard (41.2m drop) -> over 35m travel!
+          const dropSpeed = 10.5 * delta;
+          craneCycle.curHookDrop = Math.min(craneCycle.groundDrop, craneCycle.curHookDrop + dropSpeed);
+          hoistedGirder.visible = false;
+
+          if (craneCycle.curHookDrop >= craneCycle.groundDrop - 0.1) {
+            craneCycle.phase = HOIST_PHASES.RIG_GIRDER;
+            craneCycle.timer = 0;
+          }
+          break;
+        }
+
+        case HOIST_PHASES.RIG_GIRDER: {
+          actionText = "RIGGING // PRECAST GIRDER C60";
+          statusText = "Ground Riggers Coupling 4-Leg Slings";
+          capacityValText = "Tensioning Slings...";
+          capacityBarWidth = "45%";
+          capacityBarColor = "bg-amber-400";
+          statusDotColor = "bg-amber-400";
+
+          hoistedGirder.visible = craneCycle.timer > 0.6; // Girder latches onto hook
+
+          if (craneCycle.timer > 1.8) {
+            craneCycle.phase = HOIST_PHASES.HOIST_TO_SUMMIT;
+            craneCycle.timer = 0;
+            craneCycle.hasLoad = true;
+          }
+          break;
+        }
+
+        case HOIST_PHASES.HOIST_TO_SUMMIT: {
+          actionText = "VERTICAL HOIST // +35.7m HEAVY LIFT";
+          statusText = "Hoisting C60 Concrete Girder to Crown Clearance";
+          capacityValText = "78% Load (18.4t)";
+          capacityBarWidth = "78%";
+          capacityBarColor = "bg-amber-500";
+
+          // Hoist over 35m up to transit height
+          const hoistSpeed = 9.8 * delta;
+          craneCycle.curHookDrop = Math.max(craneCycle.transitDrop, craneCycle.curHookDrop - hoistSpeed);
+          hoistedGirder.visible = true;
+
+          if (craneCycle.curHookDrop <= craneCycle.transitDrop + 0.1) {
+            craneCycle.phase = HOIST_PHASES.SLEW_TO_CROWN;
+            craneCycle.timer = 0;
+          }
+          break;
+        }
+
+        case HOIST_PHASES.SLEW_TO_CROWN: {
+          actionText = "SLEWING TO CROWN // ZONE 4 SUMMIT";
+          statusText = "Transit to Tower 1 Superstructure Landing Bay";
+          capacityValText = "82% Dynamic Wind Load";
+          capacityBarWidth = "82%";
+          capacityBarColor = "bg-amber-500";
+
+          // Slew toward summit coordinates and rack trolley inward
+          const slewSpeed = 0.45 * delta;
+          craneCycle.curAzimuth += (craneCycle.summitAzimuth - craneCycle.curAzimuth) * Math.min(1, slewSpeed * 2.2);
+          craneCycle.curRadius += (craneCycle.summitRadius - craneCycle.curRadius) * Math.min(1, slewSpeed * 2.2);
+          hoistedGirder.visible = true;
+
+          if (Math.abs(craneCycle.curAzimuth - craneCycle.summitAzimuth) < 0.02 &&
+              Math.abs(craneCycle.curRadius - craneCycle.summitRadius) < 0.15) {
+            craneCycle.phase = HOIST_PHASES.LOWER_TO_INSTALL;
+            craneCycle.timer = 0;
+          }
+          break;
+        }
+
+        case HOIST_PHASES.LOWER_TO_INSTALL: {
+          actionText = "PRECISION SEATING // TOWER CROWN";
+          statusText = "Lowering Girder onto Structural Bearing Pads";
+          capacityValText = "75% Controlled Landing";
+          capacityBarWidth = "75%";
+          capacityBarColor = "bg-emerald-500";
+
+          // Lower hook from transit (5.5m drop) to crown level (15.2m drop)
+          const lowerSpeed = 6.0 * delta;
+          craneCycle.curHookDrop = Math.min(craneCycle.summitDrop, craneCycle.curHookDrop + lowerSpeed);
+          hoistedGirder.visible = true;
+
+          if (craneCycle.curHookDrop >= craneCycle.summitDrop - 0.1) {
+            craneCycle.phase = HOIST_PHASES.RELEASE_AND_RESET;
+            craneCycle.timer = 0;
+          }
+          break;
+        }
+
+        case HOIST_PHASES.RELEASE_AND_RESET: {
+          actionText = "RELEASE & DECOUPLING // SEATED OK";
+          statusText = "Structural Bolting Verified // Clearing Hook";
+          capacityValText = "14% Tare (2.1t)";
+          capacityBarWidth = "14%";
+          capacityBarColor = "bg-blue-500";
+
+          hoistedGirder.visible = false; // Transferred to summit structure
+
+          // Retract empty hook back to travel height
+          const retractSpeed = 8.0 * delta;
+          craneCycle.curHookDrop = Math.max(craneCycle.transitDrop, craneCycle.curHookDrop - retractSpeed);
+
+          if (craneCycle.timer > 2.0 && craneCycle.curHookDrop <= craneCycle.transitDrop + 0.2) {
+            placedGirderCount++;
+            craneCycle.phase = HOIST_PHASES.SLEW_TO_YARD;
+            craneCycle.timer = 0;
+            craneCycle.hasLoad = false;
+          }
+          break;
+        }
+      }
+
+      // Update Crane 3D Transforms based on state machine
+      if (craneJibGroup) {
+        craneJibGroup.rotation.y = craneCycle.curAzimuth;
+      }
+      if (craneCableGroup) {
+        craneCableGroup.position.set(0, 0, craneCycle.curRadius);
+      }
+      if (craneHookBlock) {
+        // Natural pendulum inertia sway on the suspended load
+        craneCycle.swayAngle = Math.sin(elapsedTime * 1.6) * (craneCycle.hasLoad ? 0.05 : 0.02);
+        craneHookBlock.position.set(
+          Math.sin(craneCycle.swayAngle) * 0.4,
+          -craneCycle.curHookDrop,
+          0
+        );
+        craneHookBlock.rotation.y = Math.sin(elapsedTime * 0.9) * 0.06;
+      }
+
+      // Dynamically stretch the 4 hoist cables between Trolley and Hook Block
+      if (craneCablesLine && craneTrolleyMesh && craneHookBlock) {
+        const posAttr = craneCablesLine.geometry.attributes.position;
+        const hY = -craneCycle.curHookDrop;
+        const tw = 0.35, td = 0.35; // Trolley wire spread
+        const hw = 0.18, hd = 0.18; // Hook block sheave wire spread
+
+        // Corner 1
+        posAttr.setXYZ(0, -tw, 0, -td);
+        posAttr.setXYZ(1, -hw, hY + 0.4, -hd);
+        // Corner 2
+        posAttr.setXYZ(2, tw, 0, -td);
+        posAttr.setXYZ(3, hw, hY + 0.4, -hd);
+        // Corner 3
+        posAttr.setXYZ(4, tw, 0, td);
+        posAttr.setXYZ(5, hw, hY + 0.4, hd);
+        // Corner 4
+        posAttr.setXYZ(6, -tw, 0, td);
+        posAttr.setXYZ(7, -hw, hY + 0.4, hd);
+
+        posAttr.needsUpdate = true;
+      }
+
+      // Real-time HUD Telemetry Synchronization (cached for high-FPS performance)
+      const hookWorldElevation = Math.max(0.6, JIB_WORLD_Y - craneCycle.curHookDrop);
+      const worldAzimuthDeg = (((craneCycle.curAzimuth - 0.4) * 180 / Math.PI) % 360 + 360) % 360;
+
+      if (!window._hudElements) {
+        window._hudElements = {
+          elAction: document.getElementById('hud-crane-action'),
+          elTelemetry: document.getElementById('hud-crane-telemetry'),
+          elStatus: document.getElementById('hud-hoist-status'),
+          elCapVal: document.getElementById('hud-capacity-val'),
+          elCapBar: document.getElementById('hud-capacity-bar'),
+          elElevation: document.getElementById('hud-hook-elevation'),
+          elCounter: document.getElementById('hud-cycle-counter'),
+          elDot: document.getElementById('hud-status-dot')
+        };
+      }
+      const { elAction, elTelemetry, elStatus, elCapVal, elCapBar, elElevation, elCounter, elDot } = window._hudElements;
+
+      if (elAction && elAction.textContent !== actionText) elAction.textContent = actionText;
+      if (elTelemetry) elTelemetry.textContent = `RAD ${craneCycle.curRadius.toFixed(1)}m | AZM ${worldAzimuthDeg.toFixed(0)}°`;
+      if (elStatus && elStatus.textContent !== statusText) elStatus.textContent = statusText;
+      if (elCapVal && elCapVal.textContent !== capacityValText) elCapVal.textContent = capacityValText;
+      if (elElevation) elElevation.textContent = `HOOK: EL +${hookWorldElevation.toFixed(1)}m`;
+      if (elCounter) elCounter.textContent = `GIRDERS PLACED: 0${placedGirderCount}`;
+      if (elCapBar) {
+        elCapBar.style.width = capacityBarWidth;
+        elCapBar.className = `${capacityBarColor} h-1.5 rounded-full transition-all duration-300`;
+      }
+      if (elDot) elDot.className = `w-1.5 h-1.5 rounded-full ${statusDotColor} animate-pulse`;
+
+      // Continuous kinematic simulation of site vehicles
+      for (let i = 0; i < animatedVehicles.length; i++) {
+        const v = animatedVehicles[i];
+        const u = v.userData;
+        if (!u) continue;
+
+        if (u.type === 'dumpTruck') {
+          const cycle = (elapsedTime * 0.35) % (Math.PI * 2);
+          const driveProgress = Math.sin(cycle);
+          v.position.x = u.baseX + driveProgress * 4.5;
+          u.wheels.forEach(w => { w.rotation.x += 0.05; });
+          if (Math.abs(driveProgress) > 0.82) {
+            u.bed.rotation.x = -((Math.abs(driveProgress) - 0.82) / 0.18) * 0.45;
+          } else {
+            u.bed.rotation.x = 0;
+          }
+        } else if (u.type === 'excavator') {
+          const slowTime = elapsedTime * 0.7;
+          u.turret.rotation.y = Math.sin(slowTime * 0.5) * 0.65;
+          u.boom.rotation.x = Math.sin(slowTime) * 0.18;
+          u.stick.rotation.x = Math.cos(slowTime) * 0.28;
+          u.bucket.rotation.x = Math.sin(slowTime + 0.8) * 0.45;
+        } else if (u.type === 'mixerTruck') {
+          // Front road cruising patrol along lane
+          const range = u.pathXEnd - u.pathXStart;
+          const cycleX = ((elapsedTime * u.speed) % range);
+          v.position.x = u.pathXStart + cycleX;
+
+          // Continuous drum rotation
+          u.drum.children[0].rotation.y += 0.05;
+          u.drum.children[1].rotation.z += 0.05;
+
+          // Rolling wheels
+          u.wheels.forEach(w => { w.rotation.x += 0.08; });
+        }
+      }
+
+      if (autoRotate && controls.state === -1) {
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 0.45;
+      } else {
+        controls.autoRotate = false;
+      }
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    // 4 Sequential Architectural Camera Keyframes:
+    // Stage 1 (Scroll Back End): Reset View - architectural straight axis
+    // Stage 2 (Scroll 1): Camera orbiting around the building (West Elevation)
+    // Stage 3 (Scroll 2): Camera continuing orbit around the building (Rear Skyline)
+    // Stage 4 (Scroll 3): Dramatic close-up zoom into the summit tower crane
+    const CAM_STAGES = [
+      { key: 'resetview', pos: [16.5, 3.2, 96.0], target: [16.5, 18.5, 2.0], zoom: 1.0, title: '01. Reset View' },
+      { key: 'orbit1', pos: [-32.0, 24.0, 52.0], target: [14.0, 20.0, -2.0], zoom: 1.05, title: '02. Orbit West Elevation' },
+      { key: 'orbit2', pos: [-42.0, 38.0, -28.0], target: [12.0, 24.0, -2.0], zoom: 1.1, title: '03. Orbit Rear Skyline' },
+      { key: 'crane', pos: [18.2, 45.8, 11.5], target: [11.2, 42.0, -0.5], zoom: 1.75, title: '04. Tower Crane Zoom' }
+    ];
+
+    let activeStageTweenCam = null;
+    let activeStageTweenTarget = null;
+    let activeStageTweenZoom = null;
+
+    function transitionToStage(index, duration = 1400) {
+      if (!camera || !controls || index < 0 || index >= CAM_STAGES.length) return;
+      const target = CAM_STAGES[index];
+
+      if (activeStageTweenCam) activeStageTweenCam.stop();
+      if (activeStageTweenTarget) activeStageTweenTarget.stop();
+      if (activeStageTweenZoom) activeStageTweenZoom.stop();
+
+      activeStageTweenCam = new TWEEN.Tween(camera.position)
+        .to({ x: target.pos[0], y: target.pos[1], z: target.pos[2] }, duration)
+        .easing(TWEEN.Easing.Cubic.InOut)
+        .start();
+
+      activeStageTweenTarget = new TWEEN.Tween(controls.target)
+        .to({ x: target.target[0], y: target.target[1], z: target.target[2] }, duration)
+        .easing(TWEEN.Easing.Cubic.InOut)
+        .onUpdate(() => {
+          if (cloudDeckGroup) {
+            const altitudeProgress = (camera.position.y - 3.2) / (95.0 - 3.2);
+            cloudDeckGroup.children.forEach(c => {
+              c.material.opacity = Math.max(0.04, altitudeProgress * 0.65);
+            });
+          }
+        })
+        .start();
+
+      activeStageTweenZoom = new TWEEN.Tween(camera)
+        .to({ zoom: target.zoom }, duration)
+        .easing(TWEEN.Easing.Cubic.InOut)
+        .onUpdate(() => {
+          camera.updateProjectionMatrix();
+        })
+        .start();
+
+      document.querySelectorAll('.cam-btn').forEach(b => {
+        if (b.dataset.cam === target.key) {
+          b.classList.add('bg-neutral-900', 'text-white', 'shadow-sm');
+          b.classList.remove('text-neutral-700');
+        } else {
+          b.classList.remove('bg-neutral-900', 'text-white', 'shadow-sm');
+          b.classList.add('text-neutral-700');
+        }
+      });
+    }
+
+    let camCurve = null;
+    let targetCurve = null;
+
+    function initCameraSpline() {
+      const camPoints = CAM_STAGES.map(s => new THREE.Vector3(s.pos[0], s.pos[1], s.pos[2]));
+      const targetPoints = CAM_STAGES.map(s => new THREE.Vector3(s.target[0], s.target[1], s.target[2]));
+      camCurve = new THREE.CatmullRomCurve3(camPoints, false, 'centripetal', 0.5);
+      targetCurve = new THREE.CatmullRomCurve3(targetPoints, false, 'centripetal', 0.5);
+    }
+
+    function applyCameraStageProgress(p) {
+      if (!camera || !controls) return;
+      if (!camCurve) initCameraSpline();
+
+      const clampedP = Math.max(0, Math.min(1, p));
+
+      // Ultra-smooth Catmull-Rom curved 3D flight path
+      const pos = camCurve.getPoint(clampedP);
+      camera.position.copy(pos);
+
+      const tgt = targetCurve.getPoint(clampedP);
+      controls.target.copy(tgt);
+
+      // Smooth cosine easing on camera optical zoom
+      const totalSegments = CAM_STAGES.length - 1;
+      const segProgress = clampedP * totalSegments;
+      const idx = Math.min(totalSegments - 1, Math.floor(segProgress));
+      const frac = segProgress - idx;
+      const easeFrac = 0.5 - 0.5 * Math.cos(frac * Math.PI);
+      const sA = CAM_STAGES[idx];
+      const sB = CAM_STAGES[idx + 1];
+
+      camera.zoom = sA.zoom + (sB.zoom - sA.zoom) * easeFrac;
+      camera.updateProjectionMatrix();
+      controls.update();
+
+      // Cloud layer opacity adjusts dynamically
+      if (cloudDeckGroup) {
+        const altitudeProgress = (camera.position.y - 3.2) / (95.0 - 3.2);
+        cloudDeckGroup.children.forEach(c => {
+          c.material.opacity = Math.max(0.04, altitudeProgress * 0.65);
+        });
+      }
+
+      // Sync active button highlight in iframe UI
+      const activeStage = frac > 0.5 ? sB : sA;
+      document.querySelectorAll('.cam-btn').forEach(b => {
+        if (b.dataset.cam === activeStage.key) {
+          b.classList.add('bg-neutral-900', 'text-white', 'shadow-sm');
+          b.classList.remove('text-neutral-700');
+        } else {
+          b.classList.remove('bg-neutral-900', 'text-white', 'shadow-sm');
+          b.classList.add('text-neutral-700');
+        }
+      });
+    }
+
+    let currentScrollProgress = 0;
+
+    // Interactive Scroll Stages Integration
+    window.addEventListener('message', function (event) {
+      if (event.data) {
+        if (event.data.type === 'GOTO_STAGE') {
+          if (isEntranceAnimating) {
+            TWEEN.removeAll();
+            isEntranceAnimating = false;
+            controls.enabled = true;
+          }
+          transitionToStage(event.data.index, event.data.duration || 1400);
+        } else if (event.data.type === 'SCROLL_STAGES' || event.data.type === 'SCROLL_ZOOM') {
+          var progress = Math.max(0, Math.min(1, event.data.progress || 0));
+          currentScrollProgress = progress;
+          if (isEntranceAnimating) {
+            TWEEN.removeAll();
+            isEntranceAnimating = false;
+            controls.enabled = true;
+          }
+          applyCameraStageProgress(progress);
+        }
+      }
+    });
+
+    // Forward mouse wheel events to parent to navigate the 4 scroll exploration stages
+    window.addEventListener('wheel', function (e) {
+      if (isEntranceAnimating && Math.abs(e.deltaY) > 1) {
+        TWEEN.removeAll();
+        isEntranceAnimating = false;
+        controls.enabled = true;
+      }
+
+      // While exploring the 3D tour (progress < 0.98), prevent page scroll so the 3D scene explores smoothly!
+      if (e.deltaY > 0 && currentScrollProgress < 0.98) {
+        if (e.cancelable) e.preventDefault();
+      } else if (e.deltaY < 0 && currentScrollProgress > 0.02) {
+        if (e.cancelable) e.preventDefault();
+      }
+
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+          type: 'IFRAME_WHEEL',
+          deltaY: e.deltaY
+        }, '*');
+      }
+    }, { passive: false });
+
+    // Forward mobile touch gestures continuously
+    let iframeTouchLastY = 0;
+    window.addEventListener('touchstart', function (e) {
+      if (e.touches && e.touches.length === 1) {
+        iframeTouchLastY = e.touches[0].clientY;
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchmove', function (e) {
+      if (e.touches && e.touches.length === 1 && window.parent && window.parent !== window) {
+        const deltaY = iframeTouchLastY - e.touches[0].clientY;
+        iframeTouchLastY = e.touches[0].clientY;
+
+        if (deltaY > 0 && currentScrollProgress < 0.98) {
+          if (e.cancelable) e.preventDefault();
+        }
+
+        window.parent.postMessage({
+          type: 'IFRAME_WHEEL',
+          deltaY: deltaY * 2.0
+        }, '*');
+      }
+    }, { passive: false });
+
+    window.onload = function () {
+      init();
+      animate();
+      setTimeout(function () {
+        playEntranceAnimation();
+      }, 100);
+    };
+  </script>
+</body>
+</html>
