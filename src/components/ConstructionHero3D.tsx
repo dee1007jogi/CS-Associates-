@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Phone, ArrowUpRight } from 'lucide-react';
 
 interface ConstructionHero3DProps {
   onOpenConsultation?: () => void;
@@ -14,7 +14,7 @@ const STAGES = [
 ];
 
 export const ConstructionHero3D: React.FC<ConstructionHero3DProps> = ({
-  onOpenConsultation: _onOpenConsultation,
+  onOpenConsultation,
   nextSectionId = 'stats-overview'
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -223,6 +223,8 @@ export const ConstructionHero3D: React.FC<ConstructionHero3DProps> = ({
           setActiveStage(0);
           isTourCompleteRef.current = false;
           setIsTourComplete(false);
+        } else if (event.data.type === 'OPEN_CONSULTATION') {
+          if (onOpenConsultation) onOpenConsultation();
         }
       }
     };
@@ -313,10 +315,30 @@ export const ConstructionHero3D: React.FC<ConstructionHero3DProps> = ({
           })}
         </div>
 
-        {/* Next Section / Explore CTA Button */}
+        {/* Mobile Action Buttons: Call & Consult (Bottom Side) */}
+        <div className="pointer-events-auto flex sm:hidden items-center justify-center gap-2.5 w-full max-w-xs">
+          <a
+            href="tel:8296266389"
+            className="flex-1 py-2.5 px-3.5 rounded-xl bg-neutral-900/95 backdrop-blur-md text-white font-bold text-xs flex items-center justify-center gap-1.5 border border-neutral-700/80 shadow-xl active:scale-95 transition-all"
+            title="Call CS Associates Desk"
+          >
+            <Phone className="w-3.5 h-3.5 text-orange-400" />
+            <span>Call Desk</span>
+          </a>
+          <button
+            onClick={onOpenConsultation}
+            className="flex-1 py-2.5 px-3.5 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-xs flex items-center justify-center gap-1 shadow-xl shadow-orange-500/30 active:scale-95 transition-all cursor-pointer"
+            title="Schedule Consultation"
+          >
+            <span>Consult</span>
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        {/* Next Section / Explore CTA Button - Desktop & Tablet */}
         <button
           onClick={handleExploreButtonClick}
-          className="pointer-events-auto group bg-white/95 hover:bg-white px-4 py-2 sm:py-2.5 rounded-2xl flex items-center gap-2 text-xs font-bold text-neutral-900 hover:text-orange-600 border border-white/80 shadow-xl transition-all hover:scale-105 active:scale-95 cursor-pointer backdrop-blur-xl shrink-0"
+          className="pointer-events-auto hidden sm:flex group bg-white/95 hover:bg-white px-4 py-2 sm:py-2.5 rounded-2xl items-center gap-2 text-xs font-bold text-neutral-900 hover:text-orange-600 border border-white/80 shadow-xl transition-all hover:scale-105 active:scale-95 cursor-pointer backdrop-blur-xl shrink-0"
           title={isTourComplete ? 'Continue to specifications' : 'Click or scroll down to explore 3D viewpoints'}
         >
           <span>{isTourComplete ? 'Explore Specifications' : 'Scroll Down to Explore'}</span>
