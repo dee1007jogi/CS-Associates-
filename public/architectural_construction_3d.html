@@ -2696,7 +2696,7 @@
       }
     }, { passive: false });
 
-    // Forward mobile touch gestures smoothly to parent scroll; no manual 3D rotating on mobile
+    // Forward mobile touch gestures along the predefined 3D path until complete
     let iframeTouchLastY = 0;
 
     window.addEventListener('touchstart', function (e) {
@@ -2711,15 +2711,21 @@
         const deltaY = iframeTouchLastY - curY;
         iframeTouchLastY = curY;
 
-        // On mobile, all touches exclusively scroll the parent document along the specified path
-        if (Math.abs(deltaY) > 0.3) {
-          window.parent.postMessage({
-            type: 'MOBILE_SCROLL',
-            deltaY: deltaY
-          }, '*');
+        if (Math.abs(deltaY) < 0.5) return;
+
+        // While exploring the predefined 3D path (< 0.98), lock page scroll to complete the tour
+        if (deltaY > 0 && currentScrollProgress < 0.98) {
+          if (e.cancelable) e.preventDefault();
+        } else if (deltaY < 0 && currentScrollProgress > 0.02) {
+          if (e.cancelable) e.preventDefault();
         }
+
+        window.parent.postMessage({
+          type: 'HERO_TOUCH_DELTA',
+          deltaY: deltaY
+        }, '*');
       }
-    }, { passive: true });
+    }, { passive: false });
 
     window.onload = function () {
       init();

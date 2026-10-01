@@ -115,12 +115,44 @@ export const ConstructionHero3D: React.FC<ConstructionHero3DProps> = ({
     }
   }, []);
 
-  // Sync scroll gestures: Desktop wheel + Mobile window scroll without scroll-locking
+  // Central touch controller for mobile swipes: completes predefined 3D path before releasing scroll
+  const handleTouchDelta = useCallback((deltaY: number, preventDefaultFn?: () => void) => {
+    if (window.scrollY > 25) return;
+    if (Math.abs(deltaY) < 0.5) return;
+
+    const TOUCH_SENSITIVITY = 0.0028;
+
+    if (deltaY > 0) {
+      // Swiping down to advance the 3D tour
+      if (targetProgressRef.current < 0.98) {
+        if (preventDefaultFn) preventDefaultFn();
+        targetProgressRef.current = Math.min(1.0, targetProgressRef.current + deltaY * TOUCH_SENSITIVITY);
+      } else {
+        // Predefined 3D path complete! Now smoothly release and scroll into the second section
+        if (!preventDefaultFn) {
+          if (window.__lenis) {
+            window.__lenis.scrollTo(window.scrollY + deltaY * 1.3, { immediate: false, duration: 0.5 });
+          } else {
+            window.scrollBy({ top: deltaY, behavior: 'smooth' });
+          }
+        }
+      }
+    } else if (deltaY < 0) {
+      // Swiping up to reverse the 3D tour
+      if (window.scrollY <= 15) {
+        if (targetProgressRef.current > 0.01) {
+          if (preventDefaultFn) preventDefaultFn();
+          const nextP = targetProgressRef.current + deltaY * TOUCH_SENSITIVITY;
+          targetProgressRef.current = nextP <= 0.01 ? 0 : Math.max(0, nextP);
+        }
+      }
+    }
+  }, []);
+
+  // Sync scroll & touch gestures without shaking or premature section skipping
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
-      // On mobile screens, disable mouse wheel interception
       if (window.innerWidth < 768) return;
-
       if (window.scrollY > 20) return;
 
       if (e.deltaY > 0 && targetProgressRef.current >= 0.98) {
@@ -136,28 +168,30 @@ export const ConstructionHero3D: React.FC<ConstructionHero3DProps> = ({
       });
     };
 
-    // Mobile-optimized window scroll sync: 3D scene smoothly progresses as the page scrolls
-    const handleWindowScroll = () => {
-      if (window.innerWidth < 768) {
-        const heroH = containerRef.current?.offsetHeight || window.innerHeight;
-        // Map 0 to 70% of hero height to progress 0 to 1
-        const p = Math.min(1.0, Math.max(0, window.scrollY / (heroH * 0.7)));
-        targetProgressRef.current = p;
+    let touchStartY = 0;
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches && e.touches.length === 1) {
+        touchStartY = e.touches[0].clientY;
       }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!e.touches || e.touches.length !== 1) return;
+      const curY = e.touches[0].clientY;
+      const deltaY = touchStartY - curY;
+      touchStartY = curY;
+
+      handleTouchDelta(deltaY, () => {
+        if (e.cancelable) e.preventDefault();
+      });
     };
 
     const handleIframeMessage = (event: MessageEvent) => {
       if (event.data) {
         if (event.data.type === 'IFRAME_WHEEL') {
           handleScrollDelta(event.data.deltaY);
-        } else if (event.data.type === 'MOBILE_SCROLL') {
-          // Native smooth mobile scroll forwarded from 3D viewport without locking
-          const dy = event.data.deltaY;
-          if (window.__lenis) {
-            window.__lenis.scrollTo(window.scrollY + dy * 1.15, { immediate: false, duration: 0.5 });
-          } else {
-            window.scrollBy({ top: dy * 1.15, behavior: 'smooth' });
-          }
+        } else if (event.data.type === 'HERO_TOUCH_DELTA') {
+          handleTouchDelta(event.data.deltaY);
         } else if (event.data.type === 'RESET_VIEW') {
           targetProgressRef.current = 0;
           currentProgressRef.current = 0;
@@ -171,16 +205,24 @@ export const ConstructionHero3D: React.FC<ConstructionHero3DProps> = ({
       }
     };
 
+    const containerEl = containerRef.current;
+    if (containerEl) {
+      containerEl.addEventListener('touchstart', handleTouchStart, { passive: true });
+      containerEl.addEventListener('touchmove', handleTouchMove, { passive: false });
+    }
+
     window.addEventListener('wheel', handleWheel, { passive: false });
-    window.addEventListener('scroll', handleWindowScroll, { passive: true });
     window.addEventListener('message', handleIframeMessage);
 
     return () => {
+      if (containerEl) {
+        containerEl.removeEventListener('touchstart', handleTouchStart);
+        containerEl.removeEventListener('touchmove', handleTouchMove);
+      }
       window.removeEventListener('wheel', handleWheel);
-      window.removeEventListener('scroll', handleWindowScroll);
       window.removeEventListener('message', handleIframeMessage);
     };
-  }, [handleScrollDelta]);
+  }, [handleScrollDelta, handleTouchDelta]);
 
   // Pause 3D WebGL rendering when hero canvas is scrolled off-screen to free 100% GPU/CPU
   useEffect(() => {
