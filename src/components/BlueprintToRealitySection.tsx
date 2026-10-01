@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowDown, Layers, Sparkles, Building2 } from 'lucide-react';
+import { ArrowDown, Layers, Sparkles } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -15,7 +15,6 @@ export const BlueprintToRealitySection: React.FC<BlueprintToRealitySectionProps>
   const wrapperRef = useRef<HTMLDivElement>(null);
   const canvasSectionRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [progress, setProgress] = useState(0);
 
   const postToIframe = (data: any) => {
@@ -40,24 +39,22 @@ export const BlueprintToRealitySection: React.FC<BlueprintToRealitySectionProps>
     }
 
     const isMobile = window.innerWidth < 768;
-    const pinDistance = isMobile ? 1800 : 2800;
+    const pinDistance = isMobile ? 1800 : 2600;
 
-    // GSAP ScrollTrigger: Pin container, expand to fullscreen, and scrub 3D progress
+    // GSAP ScrollTrigger: Pin container at top top (ZERO gap above) and scrub 3D progress
     const trigger = ScrollTrigger.create({
       trigger: wrapper,
-      start: 'top 70%', // Triggers snap/expansion when top reaches 70% of viewport
+      start: 'top top', // Pins seamlessly at viewport top with 0px gap
       end: `+=${pinDistance}`,
       pin: canvasSection,
       pinSpacing: true,
-      scrub: 1.0, // Buttery smooth scrubbing inertia
+      scrub: 1.0, // Smooth scrubbing inertia
       anticipatePin: 1,
       onEnter: () => {
-        setIsFullscreen(true);
         postToIframe({ type: 'SET_VISIBILITY', isVisible: true });
         postToIframe({ type: 'RESIZE' });
       },
       onLeaveBack: () => {
-        setIsFullscreen(false);
         postToIframe({ type: 'RESIZE' });
       },
       onUpdate: (self) => {
@@ -100,14 +97,12 @@ export const BlueprintToRealitySection: React.FC<BlueprintToRealitySectionProps>
     <div
       ref={wrapperRef}
       id="blueprint-assembly"
-      className="relative w-full bg-[#040810] py-6 md:py-12 overflow-visible select-none"
+      className="relative w-full p-0 m-0 bg-[#040810] overflow-hidden select-none"
     >
-      {/* 3D Scrollytelling Pinned Container */}
+      {/* 3D Scrollytelling Pinned Container - Full viewport with 0 gap */}
       <div
         ref={canvasSectionRef}
-        className={`canvas-section relative overflow-hidden transition-all duration-500 ease-out ${
-          isFullscreen ? 'is-fullscreen' : 'border border-orange-500/25 shadow-2xl shadow-orange-950/30'
-        }`}
+        className="relative w-full h-screen p-0 m-0 bg-[#040810] overflow-hidden"
       >
         {/* WebGL Iframe Container */}
         <iframe
