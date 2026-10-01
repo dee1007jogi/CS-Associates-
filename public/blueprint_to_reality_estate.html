@@ -108,42 +108,48 @@
   <div class="fixed inset-0 blueprint-grid-overlay pointer-events-none z-10"></div>
 
   <!-- ========================================================================
-       MINIMAL PROCESS HUD CALLOUTS (Left & Right Pointers towards 3D Structure)
+       MINIMAL PROCESS HUD CALLOUTS (Optimized: Top & Bottom on Mobile, Left & Right on Desktop)
        ======================================================================== -->
   
-  <!-- Left Side: Process Stage Milestone with Arrow pointing Right (──►) into structure -->
-  <div id="left-process-hud" class="fixed left-4 sm:left-8 top-1/2 -translate-y-1/2 z-30 pointer-events-none transition-all duration-500 max-w-[280px] sm:max-w-xs">
-    <div class="glass-panel p-3.5 sm:p-4 rounded-2xl border border-orange-500/40 shadow-[0_10px_35px_rgba(0,0,0,0.65)] flex items-center gap-3 backdrop-blur-xl bg-slate-950/85">
-      <div class="flex-1 space-y-1">
-        <div class="flex items-center gap-2">
+  <!-- Process Stage Milestone: Top on Mobile, Left Side on Desktop -->
+  <div id="left-process-hud" class="fixed left-3 right-3 sm:right-auto sm:left-8 top-3 sm:top-1/2 sm:-translate-y-1/2 z-30 pointer-events-none transition-all duration-500 max-w-none sm:max-w-xs">
+    <div class="glass-panel p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-orange-500/40 shadow-[0_10px_35px_rgba(0,0,0,0.65)] flex items-center gap-2.5 sm:gap-3 backdrop-blur-xl bg-slate-950/90">
+      <div class="flex-1 space-y-0.5 sm:space-y-1">
+        <div class="flex items-center gap-1.5 sm:gap-2">
           <span class="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
-          <span id="hud-left-stage" class="text-[10px] mono-font font-bold uppercase tracking-widest text-orange-400">STAGE 01 // SUBSTRUCTURE</span>
+          <span id="hud-left-stage" class="text-[9px] sm:text-[10px] mono-font font-bold uppercase tracking-widest text-orange-400">STAGE 01 // SUBSTRUCTURE</span>
         </div>
         <p id="hud-left-detail" class="text-xs sm:text-sm font-semibold text-white tracking-tight leading-snug">
-          Laser Rebar Alignment & Soil Bearing Audit
+          Laser Rebar Alignment &amp; Soil Bearing Audit
         </p>
       </div>
-      <!-- Minimal sleek right-pointing arrow -->
-      <div class="w-8 h-8 rounded-xl bg-orange-500/15 border border-orange-500/40 flex items-center justify-center text-orange-400 shrink-0 shadow-[0_0_12px_rgba(249,115,22,0.3)]">
-        <svg class="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <!-- Minimal sleek right/down arrow -->
+      <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-orange-500/15 border border-orange-500/40 flex items-center justify-center text-orange-400 shrink-0 shadow-[0_0_12px_rgba(249,115,22,0.3)]">
+        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-pulse hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+        </svg>
+        <svg class="w-3.5 h-3.5 animate-pulse sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
         </svg>
       </div>
     </div>
   </div>
 
-  <!-- Right Side: Engineering QA / Bill Audit with Arrow pointing Left (◄──) into structure -->
-  <div id="right-process-hud" class="fixed right-4 sm:right-8 top-1/2 -translate-y-1/2 z-30 pointer-events-none transition-all duration-500 max-w-[280px] sm:max-w-xs">
-    <div class="glass-panel p-3.5 sm:p-4 rounded-2xl border border-orange-500/40 shadow-[0_10px_35px_rgba(0,0,0,0.65)] flex items-center gap-3 backdrop-blur-xl bg-slate-950/85">
-      <!-- Minimal sleek left-pointing arrow -->
-      <div class="w-8 h-8 rounded-xl bg-orange-500/15 border border-orange-500/40 flex items-center justify-center text-orange-400 shrink-0 shadow-[0_0_12px_rgba(249,115,22,0.3)]">
-        <svg class="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <!-- Engineering QA / Bill Audit: Bottom on Mobile, Right Side on Desktop -->
+  <div id="right-process-hud" class="fixed left-3 right-3 sm:left-auto sm:right-8 bottom-12 sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2 z-30 pointer-events-none transition-all duration-500 max-w-none sm:max-w-xs">
+    <div class="glass-panel p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-orange-500/40 shadow-[0_10px_35px_rgba(0,0,0,0.65)] flex items-center gap-2.5 sm:gap-3 backdrop-blur-xl bg-slate-950/90">
+      <!-- Minimal sleek left/up arrow -->
+      <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-orange-500/15 border border-orange-500/40 flex items-center justify-center text-orange-400 shrink-0 shadow-[0_0_12px_rgba(249,115,22,0.3)]">
+        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-pulse hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
         </svg>
+        <svg class="w-3.5 h-3.5 animate-pulse sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+        </svg>
       </div>
-      <div class="flex-1 space-y-1 text-right">
-        <div class="flex items-center justify-end gap-2">
-          <span id="hud-right-tag" class="text-[10px] mono-font font-bold uppercase tracking-widest text-orange-400">QUALITY AUDIT</span>
+      <div class="flex-1 space-y-0.5 sm:space-y-1 text-right">
+        <div class="flex items-center justify-end gap-1.5 sm:gap-2">
+          <span id="hud-right-tag" class="text-[9px] sm:text-[10px] mono-font font-bold uppercase tracking-widest text-orange-400">QUALITY AUDIT</span>
           <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
         </div>
         <p id="hud-right-detail" class="text-xs sm:text-sm font-semibold text-white tracking-tight leading-snug">
@@ -154,9 +160,9 @@
   </div>
 
   <!-- Bottom Floating Scroll Hint -->
-  <div id="scroll-prompt" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-none flex flex-col items-center space-y-2 transition-opacity duration-500">
-    <span class="text-[10px] mono-font uppercase tracking-widest text-orange-400 font-semibold drop-shadow">Scroll to Inspect Process Assembly</span>
-    <div class="w-4 h-7 rounded-full border border-orange-500/60 p-0.5 flex justify-center bg-orange-950/40 backdrop-blur-sm shadow-[0_0_12px_rgba(249,115,22,0.35)]">
+  <div id="scroll-prompt" class="fixed bottom-2 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-none flex flex-col items-center space-y-1 sm:space-y-2 transition-opacity duration-500">
+    <span class="text-[9px] sm:text-[10px] mono-font uppercase tracking-widest text-orange-400 font-semibold drop-shadow">Scroll to Inspect Assembly</span>
+    <div class="w-3.5 sm:w-4 h-6 sm:h-7 rounded-full border border-orange-500/60 p-0.5 flex justify-center bg-orange-950/40 backdrop-blur-sm shadow-[0_0_12px_rgba(249,115,22,0.35)]">
       <div class="w-1 h-2 rounded-full bg-orange-500 animate-bounce"></div>
     </div>
   </div>
