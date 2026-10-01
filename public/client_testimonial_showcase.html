@@ -8,10 +8,10 @@
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+  <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -21,7 +21,7 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+            sans: ['Inter', 'sans-serif'],
           },
           colors: {
             brand: {
@@ -37,25 +37,68 @@
   </script>
 
   <style>
-    /* Dark Dot Matrix Pattern */
+    /* Dark Dot Matrix Pattern for Testimonials Section */
     .bg-dot-matrix-dark {
       background-color: #0b0b0c;
       background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1.2px, transparent 1.2px);
       background-size: 26px 26px;
     }
 
-    /* Light Dot Matrix Pattern */
+    /* Light Dot Matrix Pattern for Consultation Section */
     .bg-dot-matrix-light {
-      background-color: #f6f7fa;
+      background-color: #ffffff;
       background-image: radial-gradient(rgba(0, 0, 0, 0.065) 1.2px, transparent 1.2px);
       background-size: 26px 26px;
     }
 
-    /* Solid opaque testimonial card */
+    /* Ambient Static Axis Guide Line */
+    .vertical-guide-ambient {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 2px;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, 
+        rgba(255, 85, 0, 0.5) 0%, 
+        rgba(255, 85, 0, 0.25) 15%, 
+        rgba(255, 85, 0, 0.4) 50%, 
+        rgba(255, 85, 0, 0.15) 85%, 
+        transparent 100%
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Full-page SVG Canvas:
+       Kept at background layer z-[5] so ALL text headers,
+       testimonial contents, and consultation form elements sit cleanly on top */
+    #laserCanvasOverlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+      overflow: visible;
+    }
+
+    .laser-glow {
+      filter: drop-shadow(0 0 6px rgba(255, 85, 0, 0.95)) 
+              drop-shadow(0 0 16px rgba(255, 85, 0, 0.6)) 
+              drop-shadow(0 0 28px rgba(255, 106, 0, 0.35));
+    }
+
+    .laser-head-node {
+      filter: drop-shadow(0 0 8px #ff772e) drop-shadow(0 0 20px #ff5500);
+    }
+
+    /* Solid opaque testimonial card that conceals the laser on its backside */
     .testimonial-solid-card {
       background-color: #161617;
-      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.95),
-                  0 0 0 1px rgba(255, 255, 255, 0.1);
+      box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.92),
+                  0 0 0 1px rgba(255, 255, 255, 0.08);
     }
 
     .slide-fade {
@@ -65,73 +108,85 @@
 </head>
 <body class="bg-[#0b0b0c] text-neutral-100 font-sans antialiased relative overflow-x-hidden selection:bg-orange-500 selection:text-white">
 
-  <!-- Interactive Controls Bar for Quick Testing -->
-  <aside class="fixed top-3 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2.5 bg-neutral-900/90 backdrop-blur-md px-4 py-2 rounded-full border border-neutral-700 shadow-2xl text-xs font-medium text-white">
-    <a href="#testimonials-section" class="px-2.5 py-1 rounded-full bg-neutral-800 hover:bg-neutral-700 text-neutral-200 hover:text-white transition">
-      ↑ Testimonials
-    </a>
-    <a href="#consultation-section" class="px-2.5 py-1 rounded-full bg-orange-600 hover:bg-orange-500 text-white font-semibold transition shadow-sm">
-      ↓ Site Consultation
-    </a>
-    <span class="text-neutral-600">|</span>
-    <span class="text-[11px] text-orange-400 font-mono flex items-center gap-1.5">
-      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-      CS Associates PMC
-    </span>
-  </aside>
+  <!-- ================= SCROLL-ANIMATED LASER CANVAS ================= -->
+  <!-- Layered strictly behind cards, text headers, and interactive UI -->
+  <svg id="laserCanvasOverlay" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="ambientLaserGlow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur1"/>
+        <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur2"/>
+        <feMerge>
+          <feMergeNode in="blur2"/>
+          <feMergeNode in="blur1"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+
+    <!-- 1. Central Vertical Trunk: starts at (centerX, 0) top of page -> travels down behind testimonial -> stops above consultation card -->
+    <path id="trunkGlow" fill="none" stroke="#ff5500" stroke-width="7" opacity="0.38" stroke-linecap="round" />
+    <path id="trunkCore" fill="none" stroke="#ff772e" stroke-width="2.5" stroke-linecap="round" class="laser-glow" />
+
+    <!-- 2. Left Branch: from split point -> travels horizontally left to edge -> turns 90deg down -->
+    <path id="leftBranchGlow" fill="none" stroke="#ff5500" stroke-width="7" opacity="0.38" stroke-linecap="round" />
+    <path id="leftBranchCore" fill="none" stroke="#ff772e" stroke-width="2.5" stroke-linecap="round" class="laser-glow" />
+
+    <!-- 3. Right Branch: from split point -> travels horizontally right with outward offset -> turns 90deg down -->
+    <path id="rightBranchGlow" fill="none" stroke="#ff5500" stroke-width="7" opacity="0.38" stroke-linecap="round" />
+    <path id="rightBranchCore" fill="none" stroke="#ff772e" stroke-width="2.5" stroke-linecap="round" class="laser-glow" />
+
+    <!-- Leading Glowing Spark Nodes -->
+    <circle id="trunkTip" r="4.5" fill="#ffffff" stroke="#ff5500" stroke-width="2.5" class="laser-head-node opacity-0" />
+    <circle id="leftTip" r="4.5" fill="#ffffff" stroke="#ff5500" stroke-width="2.5" class="laser-head-node opacity-0" />
+    <circle id="rightTip" r="4.5" fill="#ffffff" stroke="#ff5500" stroke-width="2.5" class="laser-head-node opacity-0" />
+  </svg>
 
   <!-- ================= SECTION 1: WHAT OUR CLIENTS SAY ================= -->
-  <section id="testimonials-section" class="min-h-screen relative flex flex-col justify-between bg-dot-matrix-dark pb-12 pt-6">
-    
+  <section class="min-h-screen relative flex flex-col justify-between bg-dot-matrix-dark pb-10">
     <!-- Ambient Radial Light at the top -->
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[720px] h-[340px] bg-orange-600/15 blur-[140px] rounded-full pointer-events-none z-0"></div>
 
-    <!-- Section Header -->
-    <header class="relative z-30 pt-16 md:pt-20 pb-4 text-center px-4 max-w-4xl mx-auto pointer-events-auto">
-      <div class="inline-block px-6 sm:px-10 py-5 rounded-3xl bg-[#0b0b0c]/95 backdrop-blur-md border border-neutral-800/90 shadow-2xl shadow-black/80">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/30 text-orange-500 text-xs font-mono font-bold uppercase tracking-wider mb-3">
-          <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
-          Verified Client Endorsements
-        </div>
-        <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold uppercase tracking-tight text-white mb-2 drop-shadow-md">
-          WHAT OUR CLIENTS SAY
-        </h1>
-        <p class="text-neutral-400 text-xs sm:text-sm md:text-base max-w-xl mx-auto font-normal leading-relaxed">
-          Hear directly from homeowners whose investments, quality, and timelines were safeguarded by CS Associates.
-        </p>
-      </div>
+    <!-- Static Background Guide Line -->
+    <div class="vertical-guide-ambient"></div>
+
+    <!-- Section Header (Elevated to top z-30) -->
+    <header class="relative z-30 pt-14 md:pt-20 pb-6 text-center px-4 max-w-4xl mx-auto pointer-events-auto">
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-white mb-3 drop-shadow-md">
+        WHAT OUR CLIENTS SAY
+      </h1>
+      <p class="text-neutral-400 text-sm sm:text-base max-w-xl mx-auto font-normal leading-relaxed">
+        Hear directly from homeowners whose investments, quality, and timelines were safeguarded by CS Associates.
+      </p>
     </header>
 
-    <!-- Main Carousel Card Wrapper -->
-    <main class="relative z-30 flex-1 flex flex-col items-center justify-center px-4 sm:px-6 my-auto py-4">
+    <!-- Main Carousel Card Wrapper (Layered at top z-20) -->
+    <main class="relative z-20 flex-1 flex flex-col items-center justify-center px-4 sm:px-6 my-auto py-4">
       <div class="relative w-full max-w-4xl flex items-center justify-center">
 
         <!-- Navigation Arrow: Previous -->
         <button 
           id="prevBtn" 
-          type="button"
           aria-label="Previous testimonial"
-          class="absolute -left-3 sm:-left-6 md:-left-8 z-40 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#ff5500] hover:bg-[#e04c00] active:scale-95 text-white flex items-center justify-center shadow-lg shadow-orange-600/35 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-400">
+          class="absolute -left-3 sm:-left-6 md:-left-8 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#ff5500] hover:bg-[#e04c00] active:scale-95 text-white flex items-center justify-center shadow-lg shadow-orange-600/35 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-400">
           <i data-lucide="chevron-left" class="w-6 h-6 stroke-[2.5]"></i>
         </button>
 
         <!-- Navigation Arrow: Next -->
         <button 
           id="nextBtn" 
-          type="button"
           aria-label="Next testimonial"
-          class="absolute -right-3 sm:-right-6 md:-right-8 z-40 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#ff5500] hover:bg-[#e04c00] active:scale-95 text-white flex items-center justify-center shadow-lg shadow-orange-600/35 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-400">
+          class="absolute -right-3 sm:-right-6 md:-right-8 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#ff5500] hover:bg-[#e04c00] active:scale-95 text-white flex items-center justify-center shadow-lg shadow-orange-600/35 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-400">
           <i data-lucide="chevron-right" class="w-6 h-6 stroke-[2.5]"></i>
         </button>
 
-        <!-- Testimonial Dark Card -->
-        <div class="w-full rounded-2xl border border-neutral-800/90 p-5 sm:p-7 md:p-8 testimonial-solid-card relative z-30">
+        <!-- Testimonial Dark Card (Fully opaque background covering laser on the back) -->
+        <div class="w-full rounded-2xl border border-neutral-800/90 p-5 sm:p-7 md:p-8 testimonial-solid-card relative z-20">
           
           <div id="slideContent" class="slide-fade grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 items-center">
             
             <!-- Left Column: Portrait & 5-Star Overlay -->
             <div class="md:col-span-5 relative flex justify-center">
-              <div class="relative w-full max-w-[280px] md:max-w-none aspect-[4/5] rounded-xl overflow-hidden shadow-2xl bg-neutral-900 border border-neutral-800">
+              <div class="relative w-full max-w-[280px] md:max-w-none aspect-[4/5] rounded-xl overflow-hidden shadow-xl bg-neutral-900 border border-neutral-800">
                 <img 
                   id="clientImage" 
                   src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=700&q=80" 
@@ -196,8 +251,12 @@
 
       </div>
 
-      <!-- Pagination Dots -->
+      <!-- Crosshair Accent & Pagination Dots -->
       <div class="relative z-30 flex flex-col items-center mt-6">
+        <div class="relative flex items-center justify-center my-2">
+          <div class="w-8 h-[2px] bg-[#ff5500] shadow-[0_0_10px_#ff5500]"></div>
+        </div>
+
         <div id="dotsContainer" class="flex items-center space-x-2.5 mt-2">
           <!-- Rendered via JS -->
         </div>
@@ -214,28 +273,21 @@
   </section>
 
   <!-- ================= SECTION 2: LET'S BUILD WITH QUALITY & TRUST ================= -->
-  <section id="consultation-section" class="text-neutral-900 py-16 md:py-24 px-4 sm:px-6 relative border-t border-neutral-300 bg-dot-matrix-light">
-    
-    <div class="max-w-6xl mx-auto relative z-30">
+  <section id="consultation-section" class="bg-dot-matrix-light text-neutral-900 py-16 md:py-24 px-4 sm:px-6 relative border-t border-neutral-200">
+    <div class="max-w-6xl mx-auto relative z-20">
       
-      <!-- Section Header -->
+      <!-- Section Header (Elevated to top layer z-30) -->
       <div class="text-center mb-10 md:mb-14 relative z-30">
-        <div class="inline-block px-6 sm:px-10 py-5 rounded-3xl bg-white/95 backdrop-blur-md border border-neutral-200/90 shadow-xl shadow-black/5">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 border border-orange-300 text-orange-700 text-xs font-mono font-bold uppercase tracking-wider mb-3">
-            <span class="w-1.5 h-1.5 rounded-full bg-orange-600 animate-pulse"></span>
-            Turnkey Civil Audit Desk
-          </div>
-          <h2 class="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-neutral-950 max-w-3xl mx-auto leading-tight">
-            LET’S BUILD WITH QUALITY &amp; COMPLETE TRUST
-          </h2>
-          <p class="text-neutral-600 text-sm sm:text-base max-w-2xl mx-auto mt-3 font-normal leading-relaxed">
-            Discuss your site parameters directly with Principal Consultant Mr. Kiran Dikshit L and our senior civil engineering auditors.
-          </p>
-        </div>
+        <h2 class="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-neutral-950 max-w-3xl mx-auto leading-tight">
+          LET’S BUILD WITH QUALITY &amp; COMPLETE TRUST
+        </h2>
+        <p class="text-neutral-600 text-sm sm:text-base max-w-2xl mx-auto mt-3 font-normal leading-relaxed">
+          Discuss your site parameters directly with Principal Consultant Mr. Kiran Dikshit L and our senior civil engineering auditors.
+        </p>
       </div>
 
       <!-- Main Dual-Pane Consultation Card -->
-      <div id="consultationCard" class="bg-white rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.18)] border border-neutral-300/80 overflow-hidden grid grid-cols-1 lg:grid-cols-12 items-stretch relative z-30">
+      <div id="consultationCard" class="bg-white rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.14)] border border-neutral-200/90 overflow-hidden grid grid-cols-1 lg:grid-cols-12 items-stretch relative z-20">
         
         <!-- Left Column: Architectural Visual & Trust Proof -->
         <div class="lg:col-span-5 relative flex flex-col justify-between p-6 sm:p-8 bg-neutral-950 text-white overflow-hidden min-h-[520px]">
@@ -253,7 +305,7 @@
           </div>
 
           <!-- Top Metadata Badges -->
-          <div class="relative z-10 flex items-center justify-between flex-wrap gap-2 text-[11px] font-bold tracking-wider uppercase font-mono">
+          <div class="relative z-10 flex items-center justify-between flex-wrap gap-2 text-[11px] font-bold tracking-wider uppercase">
             <span class="text-[#ff6a00]">
               SELECTED WORKS &bull; BENGALURU HQ
             </span>
@@ -277,7 +329,7 @@
                 <path d="M30 75 V45 L50 30 L70 45 V75" stroke="currentColor"/>
                 <path d="M42 75 V55 H58 V75" stroke="currentColor"/>
                 <circle cx="50" cy="50" r="3" fill="currentColor"/>
-                <text x="50" y="87" font-size="7.5" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" fill="#ff772e" text-anchor="middle" stroke="none">CS ASSOCIATES</text>
+                <text x="50" y="87" font-size="7.5" font-family="Inter, sans-serif" font-weight="900" fill="#ff772e" text-anchor="middle" stroke="none">CS ASSOCIATES</text>
               </svg>
             </div>
 
@@ -294,25 +346,25 @@
           </div>
 
           <!-- Bottom Metric Cards -->
-          <div class="relative z-10 grid grid-cols-3 gap-2 text-center pt-3 border-t border-white/10 font-mono">
+          <div class="relative z-10 grid grid-cols-3 gap-2 text-center pt-3 border-t border-white/10">
             <div class="bg-black/60 backdrop-blur-md py-2 px-1 rounded-lg border border-neutral-700/60">
-              <span class="text-[10px] sm:text-[11px] font-bold text-neutral-200 block truncate">100% Quality Audits</span>
+              <span class="text-[11px] font-bold text-neutral-200 block truncate">100% Quality Audits</span>
             </div>
             <div class="bg-black/60 backdrop-blur-md py-2 px-1 rounded-lg border border-neutral-700/60">
-              <span class="text-[10px] sm:text-[11px] font-bold text-neutral-200 block truncate">8%–15% Cost Savings</span>
+              <span class="text-[11px] font-bold text-neutral-200 block truncate">8%–15% Cost Savings</span>
             </div>
             <div class="bg-black/60 backdrop-blur-md py-2 px-1 rounded-lg border border-neutral-700/60">
-              <span class="text-[10px] sm:text-[11px] font-bold text-neutral-200 block truncate">Zero Snag Handover</span>
+              <span class="text-[11px] font-bold text-neutral-200 block truncate">Zero Snag Handover</span>
             </div>
           </div>
 
         </div>
 
         <!-- Right Column: Schedule Site Consultation Form -->
-        <div class="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between bg-white relative z-30">
+        <div class="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between bg-white relative z-20">
           <div>
             <!-- Top Bar: CS Associates PMC badge on left, working hours on right -->
-            <div class="flex items-center justify-between pb-3.5 border-b border-neutral-200 gap-2 mb-4">
+            <div class="flex items-center justify-between pb-3.5 border-b border-neutral-100 gap-2 mb-4">
               <div class="flex items-center gap-2">
                 <div class="w-6 h-6 rounded-md bg-[#fff2eb] border border-[#ffcca8] flex items-center justify-center shadow-xs">
                   <span class="text-[10px] font-black text-[#ff5500]">CS</span>
@@ -321,7 +373,7 @@
                   CS ASSOCIATES PMC
                 </span>
               </div>
-              <span class="text-xs text-neutral-500 font-medium whitespace-nowrap font-mono">
+              <span class="text-xs text-neutral-400 font-medium whitespace-nowrap">
                 Mon – Sat &bull; 9 AM – 7:30 PM
               </span>
             </div>
@@ -345,7 +397,7 @@
                     id="formName" 
                     required 
                     placeholder="e.g. Dr. Lakshmi / Arvind Kumar"
-                    class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-neutral-900 text-xs sm:text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition bg-neutral-50/60 hover:bg-white"
+                    class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-900 text-xs sm:text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition bg-neutral-50/60 hover:bg-white"
                   />
                 </div>
                 <div>
@@ -357,7 +409,7 @@
                     id="formPhone" 
                     required 
                     placeholder="e.g. +91 9845012345"
-                    class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-neutral-900 text-xs sm:text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition bg-neutral-50/60 hover:bg-white"
+                    class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-900 text-xs sm:text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition bg-neutral-50/60 hover:bg-white"
                   />
                 </div>
               </div>
@@ -371,7 +423,7 @@
                     type="email" 
                     id="formEmail" 
                     placeholder="e.g. client@example.com"
-                    class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-neutral-900 text-xs sm:text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition bg-neutral-50/60 hover:bg-white"
+                    class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-900 text-xs sm:text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition bg-neutral-50/60 hover:bg-white"
                   />
                 </div>
                 <div>
@@ -380,7 +432,7 @@
                   </label>
                   <select 
                     id="formSector"
-                    class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-neutral-900 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition bg-neutral-50/60 hover:bg-white cursor-pointer"
+                    class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-900 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition bg-neutral-50/60 hover:bg-white cursor-pointer"
                   >
                     <option value="Individual Luxury Villa">Individual Luxury Villa</option>
                     <option value="Commercial Complex / Office">Commercial Complex / Office</option>
@@ -400,7 +452,7 @@
                     type="text" 
                     id="formLocation" 
                     placeholder="e.g. Abbigere / Kanakapura Rd / Whitefield"
-                    class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-neutral-900 text-xs sm:text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition bg-neutral-50/60 hover:bg-white"
+                    class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-900 text-xs sm:text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition bg-neutral-50/60 hover:bg-white"
                   />
                 </div>
                 <div>
@@ -411,7 +463,7 @@
                     type="text" 
                     id="formArea" 
                     placeholder="e.g. 5,000 sq.ft."
-                    class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-neutral-900 text-xs sm:text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition bg-neutral-50/60 hover:bg-white"
+                    class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-900 text-xs sm:text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition bg-neutral-50/60 hover:bg-white"
                   />
                 </div>
               </div>
@@ -424,7 +476,7 @@
                   id="formBrief" 
                   rows="2.5" 
                   placeholder="Mention whether drawings are ready, contractor quotes being compared, or site excavation starting..."
-                  class="w-full px-3.5 py-2 rounded-lg border border-neutral-300 text-neutral-900 text-xs sm:text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition resize-none bg-neutral-50/60 hover:bg-white"
+                  class="w-full px-3.5 py-2 rounded-lg border border-neutral-200 text-neutral-900 text-xs sm:text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition resize-none bg-neutral-50/60 hover:bg-white"
                 ></textarea>
               </div>
 
@@ -445,14 +497,14 @@
               <a 
                 href="https://wa.me/918296266389?text=Hello%20CS%20Associates%2C%20I%20would%20like%20to%20schedule%20a%20site%20consultation." 
                 target="_blank" 
-                rel="noopener noreferrer"
-                class="w-full py-2.5 px-5 rounded-xl border border-emerald-300 bg-emerald-50/80 hover:bg-emerald-100 text-emerald-800 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition cursor-pointer"
+                rel="noopener noreferrer" 
+                class="w-full py-2.5 px-5 rounded-xl border border-emerald-300 bg-emerald-50/70 hover:bg-emerald-100 text-emerald-800 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition cursor-pointer"
               >
                 <i data-lucide="message-circle" class="w-4 h-4 fill-emerald-600 text-emerald-600"></i>
                 <span>CHAT DIRECTLY ON WHATSAPP (+91 8296266389)</span>
               </a>
 
-              <div class="pt-1 text-center flex items-center justify-center gap-1.5 text-[10px] sm:text-[11px] font-bold text-amber-700 tracking-wider uppercase font-mono">
+              <div class="pt-1 text-center flex items-center justify-center gap-1.5 text-[10px] sm:text-[11px] font-bold text-amber-700 tracking-wider uppercase">
                 <i data-lucide="lock" class="w-3.5 h-3.5 text-amber-600"></i>
                 <span>STRICT CLIENT FIDUCIARY PRIVACY &bull; NO SUBCONTRACTOR LEAKS</span>
               </div>
@@ -618,6 +670,164 @@
       if (touchEndX > touchStartX + 40) updateSlide(currentIndex - 1);
     }, { passive: true });
 
+    // ================= LASER ANIMATION ENGINE =================
+    const overlaySvg = document.getElementById("laserCanvasOverlay");
+    const trunkCore = document.getElementById("trunkCore");
+    const trunkGlow = document.getElementById("trunkGlow");
+    const leftBranchCore = document.getElementById("leftBranchCore");
+    const leftBranchGlow = document.getElementById("leftBranchGlow");
+    const rightBranchCore = document.getElementById("rightBranchCore");
+    const rightBranchGlow = document.getElementById("rightBranchGlow");
+
+    const trunkTip = document.getElementById("trunkTip");
+    const leftTip = document.getElementById("leftTip");
+    const rightTip = document.getElementById("rightTip");
+    const consultationCard = document.getElementById("consultationCard");
+
+    let trunkLength = 0;
+    let branchLengthLeft = 0;
+    let branchLengthRight = 0;
+
+    let currentScroll = 0;
+    let targetScroll = 0;
+    const cornerRadius = 24;
+    const splitMarginAboveCard = 32;
+
+    function recalculateLaserGeometry() {
+      if (!consultationCard) return;
+
+      const pageHeight = Math.max(
+        document.body.scrollHeight, 
+        document.documentElement.scrollHeight,
+        document.body.offsetHeight
+      );
+      overlaySvg.setAttribute("viewBox", `0 0 ${window.innerWidth} ${pageHeight}`);
+      overlaySvg.style.height = `${pageHeight}px`;
+
+      const cardRect = consultationCard.getBoundingClientRect();
+      const cardAbsoluteTop = cardRect.top + window.scrollY;
+      const cardAbsoluteBottom = cardAbsoluteTop + cardRect.height;
+      const cardAbsoluteLeft = cardRect.left + window.scrollX;
+      const cardAbsoluteRight = cardRect.left + window.scrollX + cardRect.width;
+
+      const centerX = window.innerWidth / 2;
+      const splitY = cardAbsoluteTop - splitMarginAboveCard;
+
+      // 1. Trunk Path: Starts at (centerX, 0) top of page -> travels straight down behind testimonial -> split point
+      const trunkD = `M ${centerX} 0 L ${centerX} ${splitY}`;
+      trunkCore.setAttribute("d", trunkD);
+      trunkGlow.setAttribute("d", trunkD);
+      trunkLength = trunkCore.getTotalLength();
+
+      trunkCore.style.strokeDasharray = trunkLength;
+      trunkGlow.style.strokeDasharray = trunkLength;
+
+      // 2. Left Branch: From split point -> moves left to outer border -> turns 90deg down
+      const leftTargetX = cardAbsoluteLeft;
+      const leftD = `M ${centerX} ${splitY} 
+                     L ${leftTargetX + cornerRadius} ${splitY} 
+                     A ${cornerRadius} ${cornerRadius} 0 0 0 ${leftTargetX} ${splitY + cornerRadius} 
+                     L ${leftTargetX} ${cardAbsoluteBottom}`;
+      leftBranchCore.setAttribute("d", leftD);
+      leftBranchGlow.setAttribute("d", leftD);
+      branchLengthLeft = leftBranchCore.getTotalLength();
+
+      leftBranchCore.style.strokeDasharray = branchLengthLeft;
+      leftBranchGlow.style.strokeDasharray = branchLengthLeft;
+
+      // 3. Right Branch: Offset further outward to the right side (+20px outside card edge)
+      const rightSideOffset = 20;
+      const rightTargetX = Math.min(cardAbsoluteRight + rightSideOffset, window.innerWidth - 12);
+      const rightD = `M ${centerX} ${splitY} 
+                      L ${rightTargetX - cornerRadius} ${splitY} 
+                      A ${cornerRadius} ${cornerRadius} 0 0 1 ${rightTargetX} ${splitY + cornerRadius} 
+                      L ${rightTargetX} ${cardAbsoluteBottom}`;
+      rightBranchCore.setAttribute("d", rightD);
+      rightBranchGlow.setAttribute("d", rightD);
+      branchLengthRight = rightBranchCore.getTotalLength();
+
+      rightBranchCore.style.strokeDasharray = branchLengthRight;
+      rightBranchGlow.style.strokeDasharray = branchLengthRight;
+    }
+
+    // Scroll listener
+    window.addEventListener("scroll", () => {
+      targetScroll = window.scrollY;
+    }, { passive: true });
+
+    window.addEventListener("resize", () => {
+      recalculateLaserGeometry();
+    });
+
+    // Render loop with smooth cinematic glide
+    function renderLaserFrame() {
+      currentScroll += (targetScroll - currentScroll) * 0.10;
+
+      if (!consultationCard || trunkLength === 0) {
+        requestAnimationFrame(renderLaserFrame);
+        return;
+      }
+
+      const cardRect = consultationCard.getBoundingClientRect();
+      const cardAbsoluteTop = cardRect.top + window.scrollY;
+      const splitY = cardAbsoluteTop - splitMarginAboveCard;
+
+      // Split threshold: when top of Section 2 card is ~45% into viewport
+      const scrollSplitThreshold = splitY - (window.innerHeight * 0.45);
+      const scrollEndThreshold = scrollSplitThreshold + cardRect.height * 0.85;
+
+      // Central Trunk progress (starts advancing smoothly right from the top of Section 1)
+      const trunkProgress = Math.min(Math.max((currentScroll + window.innerHeight * 0.3) / (scrollSplitThreshold + window.innerHeight * 0.3), 0.04), 1);
+
+      // Apply to trunk
+      const trunkOffset = trunkLength * (1 - trunkProgress);
+      trunkCore.style.strokeDashoffset = trunkOffset;
+      trunkGlow.style.strokeDashoffset = trunkOffset;
+
+      if (trunkProgress > 0.03 && trunkProgress < 0.998) {
+        trunkTip.classList.remove("opacity-0");
+        const pt = trunkCore.getPointAtLength(trunkLength * trunkProgress);
+        trunkTip.setAttribute("cx", pt.x);
+        trunkTip.setAttribute("cy", pt.y);
+      } else {
+        trunkTip.classList.add("opacity-0");
+      }
+
+      // Branch Progress: only active once trunk has arrived at split point
+      let branchProgress = 0;
+      if (currentScroll > scrollSplitThreshold) {
+        branchProgress = Math.min(Math.max((currentScroll - scrollSplitThreshold) / (scrollEndThreshold - scrollSplitThreshold), 0), 1);
+      }
+
+      // Apply to left & right branches
+      const leftOffset = branchLengthLeft * (1 - branchProgress);
+      leftBranchCore.style.strokeDashoffset = leftOffset;
+      leftBranchGlow.style.strokeDashoffset = leftOffset;
+
+      const rightOffset = branchLengthRight * (1 - branchProgress);
+      rightBranchCore.style.strokeDashoffset = rightOffset;
+      rightBranchGlow.style.strokeDashoffset = rightOffset;
+
+      // Position glowing tip sparks
+      if (branchProgress > 0.02 && branchProgress < 0.99) {
+        leftTip.classList.remove("opacity-0");
+        rightTip.classList.remove("opacity-0");
+
+        const leftPt = leftBranchCore.getPointAtLength(branchLengthLeft * branchProgress);
+        leftTip.setAttribute("cx", leftPt.x);
+        leftTip.setAttribute("cy", leftPt.y);
+
+        const rightPt = rightBranchCore.getPointAtLength(branchLengthRight * branchProgress);
+        rightTip.setAttribute("cx", rightPt.x);
+        rightTip.setAttribute("cy", rightPt.y);
+      } else {
+        leftTip.classList.add("opacity-0");
+        rightTip.classList.add("opacity-0");
+      }
+
+      requestAnimationFrame(renderLaserFrame);
+    }
+
     // Form submission feedback
     const consultationForm = document.getElementById("consultationForm");
     const toast = document.getElementById("toastNotification");
@@ -637,10 +847,16 @@
       });
     }
 
-    // Startup initialization
+    // Startup
     window.addEventListener("DOMContentLoaded", () => {
       buildDots();
       lucide.createIcons();
+      recalculateLaserGeometry();
+      requestAnimationFrame(renderLaserFrame);
+    });
+
+    window.addEventListener("load", () => {
+      recalculateLaserGeometry();
     });
   </script>
 </body>
