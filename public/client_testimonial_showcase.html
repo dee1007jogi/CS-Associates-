@@ -877,11 +877,11 @@
       trunkAura.style.strokeDasharray = trunkLength;
 
       // 2. Left Branch: From Splitter -> smooth fillet turn -> runs down along the left flank of Consultation Card
-      const leftTargetX = Math.max(16, cardAbsoluteLeft - cardBorderOffset);
+      const leftTargetX_ = Math.max(16, cardAbsoluteLeft - cardBorderOffset);
       const leftD = `M ${centerX} ${splitY} 
-                     L ${leftTargetX + cornerRadius} ${splitY} 
-                     A ${cornerRadius} ${cornerRadius} 0 0 0 ${leftTargetX} ${splitY + cornerRadius} 
-                     L ${leftTargetX} ${cardAbsoluteBottom}`;
+                     L ${leftTargetX_ + cornerRadius} ${splitY} 
+                     A ${cornerRadius} ${cornerRadius} 0 0 0 ${leftTargetX_} ${splitY + cornerRadius} 
+                     L ${leftTargetX_} ${cardAbsoluteBottom}`;
       leftBranchCore.setAttribute("d", leftD);
       leftBranchGlow.setAttribute("d", leftD);
       leftBranchAura.setAttribute("d", leftD);
@@ -892,11 +892,11 @@
       leftBranchAura.style.strokeDasharray = branchLengthLeft;
 
       // 3. Right Branch: From Splitter -> smooth fillet turn -> runs down along the right flank of Consultation Card
-      const rightTargetX = Math.min(clientWidth - 16, cardAbsoluteRight + cardBorderOffset);
+      const rightTargetX_ = Math.min(clientWidth - 16, cardAbsoluteRight + cardBorderOffset);
       const rightD = `M ${centerX} ${splitY} 
-                      L ${rightTargetX - cornerRadius} ${splitY} 
-                      A ${cornerRadius} ${cornerRadius} 0 0 1 ${rightTargetX} ${splitY + cornerRadius} 
-                      L ${rightTargetX} ${cardAbsoluteBottom}`;
+                      L ${rightTargetX_ - cornerRadius} ${splitY} 
+                      A ${cornerRadius} ${cornerRadius} 0 0 1 ${rightTargetX_} ${splitY + cornerRadius} 
+                      L ${rightTargetX_} ${cardAbsoluteBottom}`;
       rightBranchCore.setAttribute("d", rightD);
       rightBranchGlow.setAttribute("d", rightD);
       rightBranchAura.setAttribute("d", rightD);
