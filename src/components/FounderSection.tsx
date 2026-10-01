@@ -1,5 +1,5 @@
-import React from 'react';
-import { Send, PhoneCall, Globe, MessageCircle, Mail, Award, CheckCircle2, ArrowUpRight } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Send, PhoneCall, Globe, MessageCircle, Mail, Award, CheckCircle2, ArrowUpRight, RotateCcw } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface FounderSectionProps {
@@ -13,6 +13,72 @@ export const FounderSection: React.FC<FounderSectionProps> = ({
   theme = 'white',
   founderImage = '/src/assets/images/kiran_dikshit_founder.jpg'
 }) => {
+  const [isUnrolled, setIsUnrolled] = useState(false);
+  const [cylinderTop, setCylinderTop] = useState('0%');
+  const [cylinderOpacity, setCylinderOpacity] = useState(1);
+  const [isRolling, setIsRolling] = useState(false);
+  const sheetWrapperRef = useRef<HTMLDivElement>(null);
+
+  const unrollSheet = useCallback(() => {
+    if (isRolling) return;
+    setIsRolling(true);
+
+    setCylinderTop('0%');
+    setCylinderOpacity(1);
+    setIsUnrolled(false);
+
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        setIsUnrolled(true);
+        setCylinderTop('100%');
+
+        setTimeout(() => {
+          setCylinderOpacity(0);
+          setIsRolling(false);
+        }, 2800);
+      }, 120);
+    });
+  }, [isRolling]);
+
+  const rollUpSheet = useCallback((callback?: () => void) => {
+    if (isRolling) return;
+    setIsRolling(true);
+    setCylinderOpacity(1);
+    setCylinderTop('100%');
+
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        setIsUnrolled(false);
+        setCylinderTop('0%');
+
+        setTimeout(() => {
+          setIsRolling(false);
+          if (callback) callback();
+        }, 2600);
+      }, 80);
+    });
+  }, [isRolling]);
+
+  useEffect(() => {
+    const el = sheetWrapperRef.current;
+    if (!el || !('IntersectionObserver' in window)) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            unrollSheet();
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [unrollSheet]);
+
   return (
     <section 
       id="about" 
@@ -44,7 +110,7 @@ export const FounderSection: React.FC<FounderSectionProps> = ({
         >
           <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[620px] lg:min-h-[720px] flex-1">
             
-            {/* LEFT HALF: Deep Obsidian & Walnut Wood Column with Founder Portrait (ENTRANCE FROM LEFT) */}
+            {/* LEFT HALF: Deep Obsidian & Walnut Wood Column with Founder Portrait */}
             <motion.div 
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -111,136 +177,157 @@ export const FounderSection: React.FC<FounderSectionProps> = ({
 
             </motion.div>
 
-            {/* RIGHT HALF: Crisp Pure White Column with Halftone Orange Dots & Typography (ENTRANCE FROM RIGHT) */}
-            <motion.div 
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.15 }}
-              transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
-              className="lg:col-span-6 bg-white p-6 sm:p-10 lg:p-14 flex flex-col justify-between relative overflow-hidden text-neutral-900"
+            {/* RIGHT HALF: Architectural Rolled Sheet Unfurl */}
+            <div 
+              ref={sheetWrapperRef}
+              className="lg:col-span-6 relative sheet-wrapper bg-white flex flex-col justify-between overflow-hidden"
             >
-              
-              {/* Halftone / Dot Matrix Pattern Overlay */}
+              {/* Dynamic 3D Roller Rod / Paper Cylinder that rolls down along the sheet edge */}
               <div 
-                aria-hidden="true" 
-                className="absolute top-0 right-0 w-64 h-64 opacity-20 pointer-events-none [background-image:radial-gradient(#dd6c02_1.5px,transparent_1.5px)] [background-size:16px_16px]"
-              />
-              <div 
-                aria-hidden="true" 
-                className="absolute bottom-0 right-0 w-52 h-52 opacity-15 pointer-events-none [background-image:radial-gradient(#dd6c02_1.5px,transparent_1.5px)] [background-size:16px_16px]"
-              />
-
-              {/* Top-Right: Social Action Links in Orange (ENTRANCE FROM TOP) */}
-              <motion.div 
-                initial={{ opacity: 0, y: -20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="flex items-center justify-end gap-2.5 relative z-10"
+                className="roll-cylinder pointer-events-none"
+                style={{
+                  top: cylinderTop,
+                  opacity: cylinderOpacity
+                }}
               >
-                <a
-                  href="https://wa.me/918296266389"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 text-white flex items-center justify-center shadow-md shadow-orange-500/20 hover:scale-110 transition-all cursor-pointer"
-                  title="WhatsApp Chat"
-                >
-                  <MessageCircle className="w-4 h-4 fill-white" />
-                </a>
-                <a
-                  href="mailto:csassociates321@gmail.com"
-                  className="w-9 h-9 rounded-full bg-orange-50 text-orange-800 border border-orange-300 flex items-center justify-center shadow-sm hover:scale-110 hover:bg-orange-500 hover:text-white transition-all cursor-pointer"
-                  title="Send Email"
-                >
-                  <Mail className="w-4 h-4" />
-                </a>
-                <a
-                  href="tel:+918095823483"
-                  className="w-9 h-9 rounded-full bg-orange-50 text-orange-800 border border-orange-300 flex items-center justify-center shadow-sm hover:scale-110 hover:bg-orange-500 hover:text-white transition-all cursor-pointer"
-                  title="Call Office"
-                >
-                  <PhoneCall className="w-4 h-4" />
-                </a>
-              </motion.div>
-
-              {/* Center Content: Main Bold Typography Stack */}
-              <div className="my-auto py-8 sm:py-12 relative z-10 space-y-5">
-                
-                {/* Main Heading Stack */}
-                <div className="space-y-1.5">
-                  <h3 className="text-3xl sm:text-4xl lg:text-5xl font-black text-neutral-950 font-display leading-[1.02] tracking-tight">
-                    Civil &amp; PMC
-                  </h3>
-                  <div className="inline-block px-3 py-1 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 text-white font-mono font-black text-base sm:text-xl tracking-widest uppercase shadow-lg shadow-orange-500/25">
-                    EXPERT
-                  </div>
-                </div>
-
-                {/* Subtitle / Bio Paragraph from official docx */}
-                <p className="text-sm sm:text-base text-neutral-600 leading-relaxed font-sans max-w-lg pt-1">
-                  Under the personal stewardship of <strong className="text-neutral-950 font-semibold">Mr. Kiran Dikshit L</strong> with over <strong className="text-orange-600 font-semibold">25+ years</strong> of hands-on civil & architectural PMC mastery across residential villas, commercial complexes, and healthcare projects.
-                </p>
-
-                {/* Trust Points in Orange */}
-                <div className="grid grid-cols-2 gap-3 pt-2 text-xs sm:text-sm text-neutral-700 font-medium font-sans">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-orange-600 shrink-0" />
-                    <span>300K+ Sq.Ft. Constructed</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-orange-600 shrink-0" />
-                    <span>8%–15% Direct Savings</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-orange-600 shrink-0" />
-                    <span>7-Stage Civil Governance</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-orange-600 shrink-0" />
-                    <span>Zero-Leakage Handover</span>
-                  </div>
-                </div>
-
-                {/* Register / Consultation Action Button */}
-                <div className="pt-3">
-                  <button
-                    onClick={onOpenConsultation}
-                    className="px-8 py-3.5 rounded-xl bg-gradient-to-r from-orange-500 via-orange-600 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-black text-xs sm:text-sm tracking-wider uppercase transition-all duration-300 shadow-xl shadow-orange-500/25 hover:shadow-orange-500/40 hover:scale-105 active:scale-95 cursor-pointer font-sans flex items-center gap-2"
-                  >
-                    <span>SCHEDULE A CONSULTATION</span>
-                    <ArrowUpRight className="w-4 h-4" />
-                  </button>
-                </div>
+                <div className="roll-cylinder-cap-left" />
+                <div className="roll-cylinder-cap-right" />
+                <div className="absolute inset-x-8 top-1/2 -translate-y-1/2 h-[2px] bg-white/40" />
               </div>
 
-              {/* Bottom-Right: Website & Physical Office Badge (ENTRANCE FROM BOTTOM) */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.25 }}
-                className="relative z-10 pt-4 border-t border-neutral-200 flex items-center justify-between"
+              {/* Main Rolled Sheet Card */}
+              <div 
+                className={`rolled-sheet ${isUnrolled ? 'is-unrolled' : 'is-rolled'} w-full h-full relative overflow-hidden bg-white p-6 sm:p-10 lg:p-14 flex flex-col justify-between text-neutral-900`}
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-orange-50 text-orange-700 flex items-center justify-center border border-orange-200">
-                    <Globe className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <div className="text-[10px] text-neutral-400 font-mono">
-                      csassociates321@gmail.com
-                    </div>
-                    <div className="text-xs font-bold text-orange-800 uppercase tracking-wider font-mono">
-                      BENGALURU HEADQUARTERS
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="text-[10px] font-mono text-neutral-400 hidden sm:block">
-                  BENGALURU · EST. 25+ YRS
-                </div>
-              </motion.div>
+                {/* Background Dot Pattern (Top & Right) */}
+                <div className="absolute inset-0 bg-dot-matrix opacity-40 pointer-events-none [mask-image:radial-gradient(ellipse_65%_60%_at_85%_25%,#000_30%,transparent_100%)]" />
+                <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-stone-100/40 via-transparent to-stone-200/30" />
 
-            </motion.div>
+                {/* Inner Sheet Content */}
+                <div className="sheet-content relative z-10 flex flex-col justify-between h-full space-y-6">
+                  
+                  {/* Top Header Row with Re-Roll trigger & Action Icons */}
+                  <div className="flex items-center justify-between gap-3 mb-2">
+                    <button
+                      onClick={() => rollUpSheet(() => setTimeout(unrollSheet, 200))}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-stone-100 hover:bg-stone-200 border border-stone-300 text-stone-700 text-xs font-semibold tracking-wide transition-all active:scale-95 cursor-pointer shadow-sm"
+                      title="Replay Architectural Unfurl Animation"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5 text-[#f25400]" />
+                      <span className="hidden sm:inline">Re-Roll Blueprint</span>
+                    </button>
+
+                    {/* Top Right Action Icons */}
+                    <div className="flex items-center gap-2.5">
+                      <button 
+                        onClick={onOpenConsultation}
+                        aria-label="Direct Chat"
+                        title="Direct Chat"
+                        className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#f25400] text-white flex items-center justify-center hover:bg-[#d94700] hover:scale-105 active:scale-95 transition-all shadow-md cursor-pointer"
+                      >
+                        <MessageCircle className="w-5 h-5 fill-current" />
+                      </button>
+
+                      <a 
+                        href="mailto:csassociates321@gmail.com"
+                        aria-label="Send Email"
+                        title="Email Office"
+                        className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-orange-200 bg-white text-[#f25400] flex items-center justify-center hover:bg-orange-50 hover:border-[#f25400] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                      >
+                        <Mail className="w-5 h-5" />
+                      </a>
+
+                      <a 
+                        href="tel:+918296266389"
+                        aria-label="Call Office"
+                        title="Direct Call"
+                        className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-orange-200 bg-white text-[#f25400] flex items-center justify-center hover:bg-orange-50 hover:border-[#f25400] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                      >
+                        <PhoneCall className="w-5 h-5" />
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Main Title Group */}
+                  <div className="space-y-3 my-auto py-2">
+                    <div className="space-y-2">
+                      <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-neutral-900 leading-none">
+                        Civil &amp; PMC
+                      </h2>
+                      <div className="inline-block">
+                        <span className="inline-flex items-center px-4 py-1.5 rounded-lg bg-[#f25400] text-white text-sm sm:text-base font-bold tracking-wider uppercase orange-badge-glow">
+                          EXPERT
+                        </span>
+                      </div>
+                    </div>
+
+                    <p className="text-stone-700 text-sm sm:text-base md:text-lg font-normal leading-relaxed max-w-2xl pt-2">
+                      Under the personal stewardship of <strong className="text-neutral-900 font-bold">Mr. Kiran Dikshit L</strong> with over <strong className="text-[#f25400] font-bold">25+ years</strong> of hands-on civil &amp; architectural PMC mastery across residential villas, commercial complexes, and healthcare projects.
+                    </p>
+
+                    {/* Trust Metrics Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 max-w-2xl py-3 text-stone-700 text-sm sm:text-base font-medium">
+                      <div className="flex items-center gap-2.5">
+                        <CheckCircle2 className="w-5 h-5 shrink-0 text-[#f25400]" />
+                        <span>300K+ Sq.Ft. Constructed</span>
+                      </div>
+                      <div className="flex items-center gap-2.5">
+                        <CheckCircle2 className="w-5 h-5 shrink-0 text-[#f25400]" />
+                        <span>8%–15% Direct Savings</span>
+                      </div>
+                      <div className="flex items-center gap-2.5">
+                        <CheckCircle2 className="w-5 h-5 shrink-0 text-[#f25400]" />
+                        <span>7-Stage Civil Governance</span>
+                      </div>
+                      <div className="flex items-center gap-2.5">
+                        <CheckCircle2 className="w-5 h-5 shrink-0 text-[#f25400]" />
+                        <span>Zero-Leakage Handover</span>
+                      </div>
+                    </div>
+
+                    {/* Schedule Consultation Button */}
+                    <div className="pt-2">
+                      <button 
+                        onClick={onOpenConsultation}
+                        type="button"
+                        className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 sm:py-4 rounded-xl bg-[#f25400] text-white font-bold text-xs sm:text-sm md:text-base tracking-wider uppercase orange-glow hover:bg-[#d94700] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer group"
+                      >
+                        <span>SCHEDULE A CONSULTATION</span>
+                        <ArrowUpRight className="w-5 h-5 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Bottom Footer Info & WhatsApp Trigger */}
+                  <div className="pt-4 border-t border-stone-200 flex flex-wrap items-center justify-between gap-3 relative">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-orange-50 text-orange-700 flex items-center justify-center border border-orange-200">
+                        <Globe className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="text-[10px] text-neutral-500 font-mono">
+                          csassociates321@gmail.com
+                        </div>
+                        <div className="text-xs font-bold text-[#f25400] uppercase tracking-wider font-mono">
+                          BENGALURU HEADQUARTERS
+                        </div>
+                      </div>
+                    </div>
+
+                    <a 
+                      href="https://wa.me/918296266389?text=Hello%20CS%20Associates%2C%20I%20would%20like%20to%20consult%20for%20my%20construction%20project."
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-3.5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold rounded-full shadow-lg transition-transform hover:scale-105 active:scale-95 cursor-pointer"
+                    >
+                      <MessageCircle className="w-4 h-4 fill-current" />
+                      <span>Chat on WhatsApp</span>
+                    </a>
+                  </div>
+
+                </div>
+              </div>
+            </div>
 
           </div>
 
