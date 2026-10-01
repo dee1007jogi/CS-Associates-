@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What Our Clients Say &amp; Site Consultation - CS Associates</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              orange: '#ff5500',
+              accent: '#ff6a00',
+              deep: '#e04c00',
+              glow: 'rgba(255, 85, 0, 0.55)',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Dark Dot Matrix Pattern for Testimonials Section */
+    .bg-dot-matrix-dark {
+      background-color: #0b0b0c;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1.2px, transparent 1.2px);
+      background-size: 26px 26px;
+    }
+
+    /* Light Dot Matrix Pattern for Consultation Section */
+    .bg-dot-matrix-light {
+      background-color: #f8f9fb;
+      background-image: radial-gradient(rgba(0, 0, 0, 0.065) 1.2px, transparent 1.2px);
+      background-size: 26px 26px;
+    }
+
+    /* Ambient Static Axis Guide Line */
+    .vertical-guide-ambient {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 2px;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, 
+        rgba(255, 85, 0, 0.5) 0%, 
+        rgba(255, 85, 0, 0.2) 15%, 
+        rgba(255, 85, 0, 0.35) 50%, 
+        rgba(255, 85, 0, 0.15) 85%, 
+        transparent 100%
+      );
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Full-page SVG Canvas:
+       Layered at z-20 so it sits ABOVE section backgrounds (which are at z-0/z-10),
+       but BEHIND the opaque testimonial card (z-30) and header plate (z-30),
+       while framing the consultation card (z-30) with laser precision! */
+    #laserCanvasOverlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 20;
+      overflow: visible;
+    }
+
+    .laser-glow {
+      filter: drop-shadow(0 0 6px rgba(255, 85, 0, 0.95)) 
+              drop-shadow(0 0 16px rgba(255, 85, 0, 0.6)) 
+              drop-shadow(0 0 28px rgba(255, 106, 0, 0.35));
+    }
+
+    .laser-head-node {
+      filter: drop-shadow(0 0 8px #ffffff) drop-shadow(0 0 18px #ff5500) drop-shadow(0 0 30px #ff6a00);
+    }
+
+    /* Solid opaque testimonial card that conceals the laser on its backside */
+    .testimonial-solid-card {
+      background-color: #161617;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.95),
+                  0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    .slide-fade {
+      transition: opacity 0.28s ease, transform 0.28s ease;
+    }
+
+    /* Pulse animation for prism splitter */
+    @keyframes prismPulse {
+      0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        filter: drop-shadow(0 0 10px #ff5500);
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(1.1);
+        filter: drop-shadow(0 0 22px #ff6a00);
+      }
+    }
+    .prism-active {
+      animation: prismPulse 2.8s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="bg-[#0b0b0c] text-neutral-100 font-sans antialiased relative overflow-x-hidden selection:bg-orange-500 selection:text-white">
+
+  <!-- Interactive Controls Bar for Quick Testing -->
+  <aside class="fixed top-3 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2.5 bg-neutral-900/90 backdrop-blur-md px-4 py-2 rounded-full border border-neutral-700 shadow-2xl text-xs font-medium text-white">
+    <a href="#testimonials-section" class="px-2.5 py-1 rounded-full bg-neutral-800 hover:bg-neutral-700 text-neutral-200 hover:text-white transition">
+      ↑ Testimonials
+    </a>
+    <a href="#consultation-section" class="px-2.5 py-1 rounded-full bg-orange-600 hover:bg-orange-500 text-white font-semibold transition shadow-sm">
+      ↓ Site Consultation
+    </a>
+    <span class="text-neutral-600">|</span>
+    <span id="laserStatusIndicator" class="text-[11px] text-orange-400 font-mono flex items-center gap-1.5">
+      <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
+      Laser Audit: Active
+    </span>
+  </aside>
+
+  <!-- ================= SCROLL-ANIMATED LASER CANVAS ================= -->
+  <!-- Positioned at z-20: Sits cleanly behind testimonial card (z-30) and header (z-30),
+       and visible over Section 2's background (z-0) framing the Consultation Card (z-30) -->
+  <svg id="laserCanvasOverlay" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <!-- Intense ambient glow filter -->
+      <filter id="ambientLaserGlow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur1"/>
+        <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur2"/>
+        <feMerge>
+          <feMergeNode in="blur2"/>
+          <feMergeNode in="blur1"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+
+      <!-- Gradient for the high-intensity core -->
+      <linearGradient id="laserGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#ffffff"/>
+        <stop offset="30%" stop-color="#ff9a5b"/>
+        <stop offset="70%" stop-color="#ff5500"/>
+        <stop offset="100%" stop-color="#ea580c"/>
+      </linearGradient>
+    </defs>
+
+    <!-- 1. Central Vertical Trunk: Starts at Top Aperture -> Travels down behind testimonial -> Stops at Optical Beam Splitter -->
+    <path id="trunkAura" fill="none" stroke="#ff5500" stroke-width="10" opacity="0.25" stroke-linecap="round" filter="url(#ambientLaserGlow)" />
+    <path id="trunkGlow" fill="none" stroke="#ff5500" stroke-width="5" opacity="0.65" stroke-linecap="round" />
+    <path id="trunkCore" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" class="laser-glow" />
+
+    <!-- 2. Left Branch: From Splitter -> Travels Left with Fillet Curve -> Runs down along Left Edge of Consultation Card -->
+    <path id="leftBranchAura" fill="none" stroke="#ff5500" stroke-width="10" opacity="0.25" stroke-linecap="round" filter="url(#ambientLaserGlow)" />
+    <path id="leftBranchGlow" fill="none" stroke="#ff5500" stroke-width="5" opacity="0.65" stroke-linecap="round" />
+    <path id="leftBranchCore" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" class="laser-glow" />
+
+    <!-- 3. Right Branch: From Splitter -> Travels Right with Fillet Curve -> Runs down along Right Edge of Consultation Card -->
+    <path id="rightBranchAura" fill="none" stroke="#ff5500" stroke-width="10" opacity="0.25" stroke-linecap="round" filter="url(#ambientLaserGlow)" />
+    <path id="rightBranchGlow" fill="none" stroke="#ff5500" stroke-width="5" opacity="0.65" stroke-linecap="round" />
+    <path id="rightBranchCore" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" class="laser-glow" />
+
+    <!-- Leading Glowing Spark Nodes with Multi-Ring Plasma Radiance -->
+    <g id="trunkTipGroup" class="opacity-0 transition-opacity duration-200">
+      <circle id="trunkTipAura" r="14" fill="#ff5500" opacity="0.3" filter="url(#ambientLaserGlow)" />
+      <circle id="trunkTipMid" r="7" fill="#ff6a00" opacity="0.8" />
+      <circle id="trunkTip" r="3.5" fill="#ffffff" class="laser-head-node" />
+    </g>
+
+    <g id="leftTipGroup" class="opacity-0 transition-opacity duration-200">
+      <circle id="leftTipAura" r="14" fill="#ff5500" opacity="0.3" filter="url(#ambientLaserGlow)" />
+      <circle id="leftTipMid" r="7" fill="#ff6a00" opacity="0.8" />
+      <circle id="leftTip" r="3.5" fill="#ffffff" class="laser-head-node" />
+    </g>
+
+    <g id="rightTipGroup" class="opacity-0 transition-opacity duration-200">
+      <circle id="rightTipAura" r="14" fill="#ff5500" opacity="0.3" filter="url(#ambientLaserGlow)" />
+      <circle id="rightTipMid" r="7" fill="#ff6a00" opacity="0.8" />
+      <circle id="rightTip" r="3.5" fill="#ffffff" class="laser-head-node" />
+    </g>
+  </svg>
+
+  <!-- ================= SECTION 1: WHAT OUR CLIENTS SAY ================= -->
+  <section id="testimonials-section" class="min-h-screen relative flex flex-col justify-between bg-dot-matrix-dark pb-12 pt-6">
+    
+    <!-- Top Ceiling Laser Emitter Pod -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center pointer-events-none">
+      <div class="w-12 h-3.5 bg-neutral-900 border-x border-b border-orange-500/60 rounded-b-lg shadow-lg flex items-center justify-center">
+        <div class="w-4 h-1.5 rounded-full bg-orange-500 animate-pulse shadow-[0_0_8px_#ff5500]"></div>
+      </div>
+      <div class="w-1.5 h-1 bg-gradient-to-b from-orange-500 to-transparent"></div>
+    </div>
+
+    <!-- Ambient Radial Light at the top -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[720px] h-[340px] bg-orange-600/15 blur-[140px] rounded-full pointer-events-none z-0"></div>
+
+    <!-- Static Background Guide Line -->
+    <div class="vertical-guide-ambient"></div>
+
+    <!-- Section Header Protected with Dark Optical Shield Backdrop:
+         Laser passes BEHIND this plate so it NEVER cuts through the text! -->
+    <header class="relative z-30 pt-16 md:pt-20 pb-4 text-center px-4 max-w-4xl mx-auto pointer-events-auto">
+      <div class="inline-block px-6 sm:px-10 py-5 rounded-3xl bg-[#0b0b0c]/95 backdrop-blur-md border border-neutral-800/90 shadow-2xl shadow-black/80">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/30 text-orange-500 text-xs font-mono font-bold uppercase tracking-wider mb-3">
+          <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
+          Verified Client Endorsements
+        </div>
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold uppercase tracking-tight text-white mb-2 drop-shadow-md">
+          WHAT OUR CLIENTS SAY
+        </h1>
+        <p class="text-neutral-400 text-xs sm:text-sm md:text-base max-w-xl mx-auto font-normal leading-relaxed">
+          Hear directly from homeowners whose investments, quality, and timelines were safeguarded by CS Associates.
+        </p>
+      </div>
+    </header>
+
+    <!-- Main Carousel Card Wrapper (Layered at z-30) -->
+    <main class="relative z-30 flex-1 flex flex-col items-center justify-center px-4 sm:px-6 my-auto py-4">
+      <div class="relative w-full max-w-4xl flex items-center justify-center">
+
+        <!-- Navigation Arrow: Previous -->
+        <button 
+          id="prevBtn" 
+          type="button"
+          aria-label="Previous testimonial"
+          class="absolute -left-3 sm:-left-6 md:-left-8 z-40 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#ff5500] hover:bg-[#e04c00] active:scale-95 text-white flex items-center justify-center shadow-lg shadow-orange-600/35 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-400">
+          <i data-lucide="chevron-left" class="w-6 h-6 stroke-[2.5]"></i>
+        </button>
+
+        <!-- Navigation Arrow: Next -->
+        <button 
+          id="nextBtn" 
+          type="button"
+          aria-label="Next testimonial"
+          class="absolute -right-3 sm:-right-6 md:-right-8 z-40 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#ff5500] hover:bg-[#e04c00] active:scale-95 text-white flex items-center justify-center shadow-lg shadow-orange-600/35 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-400">
+          <i data-lucide="chevron-right" class="w-6 h-6 stroke-[2.5]"></i>
+        </button>
+
+        <!-- Testimonial Dark Card (Fully opaque background covering laser on the back) -->
+        <div class="w-full rounded-2xl border border-neutral-800/90 p-5 sm:p-7 md:p-8 testimonial-solid-card relative z-30">
+          
+          <div id="slideContent" class="slide-fade grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 items-center">
+            
+            <!-- Left Column: Portrait & 5-Star Overlay -->
+            <div class="md:col-span-5 relative flex justify-center">
+              <div class="relative w-full max-w-[280px] md:max-w-none aspect-[4/5] rounded-xl overflow-hidden shadow-2xl bg-neutral-900 border border-neutral-800">
+                <img 
+                  id="clientImage" 
+                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=700&q=80" 
+                  alt="Client portrait"
+                  class="w-full h-full object-cover object-top grayscale filter contrast-115 brightness-95 transition-transform duration-500 hover:scale-105"
+                  onerror="this.src='https://placehold.co/400x500/18181b/fafafa?text=Client+Photo'"
+                />
+
+                <!-- Star Rating Badge -->
+                <div class="absolute bottom-3 left-3 bg-neutral-900/95 backdrop-blur-md px-3 py-1.5 rounded-lg border border-neutral-700/60 flex items-center gap-1.5 shadow-md">
+                  <div class="flex text-[#ff5500]">
+                    <i data-lucide="star" class="w-3.5 h-3.5 fill-[#ff5500]"></i>
+                    <i data-lucide="star" class="w-3.5 h-3.5 fill-[#ff5500]"></i>
+                    <i data-lucide="star" class="w-3.5 h-3.5 fill-[#ff5500]"></i>
+                    <i data-lucide="star" class="w-3.5 h-3.5 fill-[#ff5500]"></i>
+                    <i data-lucide="star" class="w-3.5 h-3.5 fill-[#ff5500]"></i>
+                  </div>
+                  <span id="clientRating" class="text-xs font-bold text-white ml-0.5">5.0</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column: Details & Verified Savings Quote -->
+            <div class="md:col-span-7 flex flex-col justify-between h-full">
+              <div>
+                <!-- Client Name with Orange Underline -->
+                <div class="inline-block mb-1.5">
+                  <h2 id="clientName" class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                    Dr. Lakshmi K.
+                  </h2>
+                  <div class="h-1 w-12 bg-[#ff5500] rounded-full mt-1.5"></div>
+                </div>
+
+                <!-- Role & Project -->
+                <p class="text-xs sm:text-sm font-semibold tracking-wide mt-2 mb-4">
+                  <span id="clientRole" class="text-[#ff6a00]">Chief Medical Consultant</span><span class="text-neutral-500">, </span><span id="clientProject" class="text-neutral-400 font-medium">Dr Lakshmi Residence</span>
+                </p>
+
+                <!-- Quote Paragraph -->
+                <p id="clientQuote" class="text-neutral-300 text-sm sm:text-base leading-relaxed font-normal mb-6 sm:mb-8">
+                  "CS Associates gave me total peace of mind. Every single evening, I received their WhatsApp DPR with verified photos of steel binding, waterproofing tests, and slump checks. They caught multiple contractor over-billing attempts and audited over ₹12 Lakhs in direct savings on our 7,400 sq.ft. estate."
+                </p>
+              </div>
+
+              <!-- Card Bottom Bar: Location & Savings Badge -->
+              <div class="flex items-center justify-between pt-4 border-t border-neutral-800/80 flex-wrap gap-3">
+                <div class="flex items-center gap-1.5 text-xs sm:text-sm text-neutral-400">
+                  <i data-lucide="map-pin" class="w-4 h-4 text-pink-500 stroke-[2.5]"></i>
+                  <span id="clientLocation">Abbigere, Bengaluru</span>
+                </div>
+
+                <div class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-[#ff5500]/15 border border-[#ff5500]/30 text-[#ff772e] text-xs sm:text-sm font-bold tracking-wide">
+                  <span id="clientSavings">₹12.4L Audited Savings</span>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Crosshair Accent & Pagination Dots -->
+      <div class="relative z-30 flex flex-col items-center mt-6">
+        <!-- Precision Laser Reticle Indicator -->
+        <div class="relative flex items-center justify-center my-2">
+          <div class="w-8 h-[2px] bg-[#ff5500] shadow-[0_0_12px_#ff5500]"></div>
+          <div class="absolute w-2 h-2 rounded-full border border-orange-400 bg-white shadow-[0_0_8px_#ff5500]"></div>
+        </div>
+
+        <div id="dotsContainer" class="flex items-center space-x-2.5 mt-2">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+    </main>
+
+    <!-- Scroll Down CTA Prompt -->
+    <div class="relative z-30 text-center pt-2">
+      <a href="#consultation-section" class="inline-flex flex-col items-center gap-1 text-neutral-400 hover:text-white transition-colors group">
+        <span class="text-[11px] tracking-wider uppercase font-semibold text-neutral-500 group-hover:text-neutral-300">Scroll to Site Consultation</span>
+        <i data-lucide="chevron-down" class="w-4 h-4 animate-bounce text-[#ff5500]"></i>
+      </a>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 2: LET'S BUILD WITH QUALITY & TRUST ================= -->
+  <!-- Note: Background is kept at z-0, while content is elevated to z-30 so the SVG laser at z-20 is 100% VISIBLE! -->
+  <section id="consultation-section" class="bg-dot-matrix-light text-neutral-900 py-16 md:py-24 px-4 sm:px-6 relative border-t border-neutral-300">
+    
+    <!-- Optical Beam Splitter Prism (Positioned dynamically above the card by JS) -->
+    <div id="beamSplitterNode" class="absolute left-1/2 -translate-x-1/2 z-25 pointer-events-none opacity-0 transition-opacity duration-300 flex flex-col items-center" style="top: 0px;">
+      <div class="w-7 h-7 rounded-lg bg-neutral-950 border-2 border-orange-500 shadow-[0_0_20px_#ff5500] flex items-center justify-center transform rotate-45">
+        <div class="w-2.5 h-2.5 bg-white rounded-sm shadow-[0_0_8px_#ffffff]"></div>
+      </div>
+      <div class="text-[9px] font-mono font-extrabold uppercase tracking-widest text-orange-600 bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-full border border-orange-300 shadow-sm mt-1 whitespace-nowrap">
+        BEAM SPLITTER // DUAL AUDIT
+      </div>
+    </div>
+
+    <!-- Terminal Ground Nodes (Left & Right Bottom of Consultation Card) -->
+    <div id="leftGroundNode" class="absolute z-25 pointer-events-none opacity-0 transition-opacity duration-300 flex items-center gap-1.5" style="top: 0px; left: 0px;">
+      <div class="w-4 h-4 rounded-full bg-neutral-950 border-2 border-orange-500 flex items-center justify-center shadow-[0_0_12px_#ff5500]">
+        <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+      </div>
+    </div>
+    <div id="rightGroundNode" class="absolute z-25 pointer-events-none opacity-0 transition-opacity duration-300 flex items-center gap-1.5" style="top: 0px; left: 0px;">
+      <div class="w-4 h-4 rounded-full bg-neutral-950 border-2 border-orange-500 flex items-center justify-center shadow-[0_0_12px_#ff5500]">
+        <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+      </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto relative z-30">
+      
+      <!-- Section Header -->
+      <div class="text-center mb-10 md:mb-14 relative z-30">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 border border-orange-300 text-orange-700 text-xs font-mono font-bold uppercase tracking-wider mb-3">
+          <span class="w-1.5 h-1.5 rounded-full bg-orange-600 animate-pulse"></span>
+          Turnkey Civil Audit Desk
+        </div>
+        <h2 class="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-neutral-950 max-w-3xl mx-auto leading-tight">
+          LET’S BUILD WITH QUALITY &amp; COMPLETE TRUST
+        </h2>
+        <p class="text-neutral-600 text-sm sm:text-base max-w-2xl mx-auto mt-3 font-normal leading-relaxed">
+          Discuss your site parameters directly with Principal Consultant Mr. Kiran Dikshit L and our senior civil engineering auditors.
+        </p>
+      </div>
+
+      <!-- Main Dual-Pane Consultation Card (Elevated to z-30) -->
+      <div id="consultationCard" class="bg-white rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.18)] border border-neutral-300/80 overflow-hidden grid grid-cols-1 lg:grid-cols-12 items-stretch relative z-30">
+        
+        <!-- Left Column: Architectural Visual & Trust Proof -->
+        <div class="lg:col-span-5 relative flex flex-col justify-between p-6 sm:p-8 bg-neutral-950 text-white overflow-hidden min-h-[520px]">
+          
+          <!-- Background Image with Overlay -->
+          <div class="absolute inset-0 z-0">
+            <img 
+              src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80" 
+              alt="Luxury Villa Construction Project" 
+              class="w-full h-full object-cover object-center filter brightness-60 contrast-110"
+              onerror="this.src='https://placehold.co/800x1000/18181b/fafafa?text=Luxury+Villa+Project'"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/75"></div>
+            <div class="absolute inset-0 opacity-15 bg-[radial-gradient(rgba(255,255,255,0.4)_1px,transparent_1px)] [background-size:18px_18px]"></div>
+          </div>
+
+          <!-- Top Metadata Badges -->
+          <div class="relative z-10 flex items-center justify-between flex-wrap gap-2 text-[11px] font-bold tracking-wider uppercase font-mono">
+            <span class="text-[#ff6a00]">
+              SELECTED WORKS &bull; BENGALURU HQ
+            </span>
+            <div class="flex items-center gap-2">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-neutral-900/85 backdrop-blur-md border border-neutral-700 text-neutral-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                Site Desk Active
+              </span>
+              <span class="px-2.5 py-1 rounded-full bg-[#ff5500] text-white font-extrabold text-[10px]">
+                25+ YRS
+              </span>
+            </div>
+          </div>
+
+          <!-- Center Emblem & Slogan -->
+          <div class="relative z-10 my-auto py-8 text-center flex flex-col items-center">
+            
+            <div class="w-20 h-20 rounded-2xl bg-neutral-900/95 border border-orange-500/40 p-2 shadow-2xl shadow-orange-950/50 flex items-center justify-center mb-4 backdrop-blur-md">
+              <svg viewBox="0 0 100 100" class="w-full h-full text-[#ff5500] fill-none stroke-current" stroke-width="3">
+                <polygon points="50,15 85,35 85,75 50,95 15,75 15,35" stroke="currentColor" fill="rgba(255,85,0,0.12)"/>
+                <path d="M30 75 V45 L50 30 L70 45 V75" stroke="currentColor"/>
+                <path d="M42 75 V55 H58 V75" stroke="currentColor"/>
+                <circle cx="50" cy="50" r="3" fill="currentColor"/>
+                <text x="50" y="87" font-size="7.5" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" fill="#ff772e" text-anchor="middle" stroke="none">CS ASSOCIATES</text>
+              </svg>
+            </div>
+
+            <h3 class="text-2xl sm:text-3xl font-black tracking-tight text-white uppercase">
+              CS ASSOCIATES
+            </h3>
+            <p class="text-xs sm:text-sm font-bold tracking-widest text-[#ff6a00] uppercase mt-1">
+              A TRADITION OF TRUST &bull; PMC
+            </p>
+
+            <p class="text-xs sm:text-sm text-neutral-300 max-w-xs mt-3 leading-relaxed font-normal">
+              Comprehensive Project Management, Multi-Stage Civil Quality Audits &amp; Contractor Bill Verification.
+            </p>
+          </div>
+
+          <!-- Bottom Metric Cards -->
+          <div class="relative z-10 grid grid-cols-3 gap-2 text-center pt-3 border-t border-white/10 font-mono">
+            <div class="bg-black/60 backdrop-blur-md py-2 px-1 rounded-lg border border-neutral-700/60">
+              <span class="text-[10px] sm:text-[11px] font-bold text-neutral-200 block truncate">100% Quality Audits</span>
+            </div>
+            <div class="bg-black/60 backdrop-blur-md py-2 px-1 rounded-lg border border-neutral-700/60">
+              <span class="text-[10px] sm:text-[11px] font-bold text-neutral-200 block truncate">8%–15% Cost Savings</span>
+            </div>
+            <div class="bg-black/60 backdrop-blur-md py-2 px-1 rounded-lg border border-neutral-700/60">
+              <span class="text-[10px] sm:text-[11px] font-bold text-neutral-200 block truncate">Zero Snag Handover</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Column: Schedule Site Consultation Form -->
+        <div class="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between bg-white relative z-30">
+          <div>
+            <!-- Top Bar: CS Associates PMC badge on left, working hours on right -->
+            <div class="flex items-center justify-between pb-3.5 border-b border-neutral-200 gap-2 mb-4">
+              <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded-md bg-[#fff2eb] border border-[#ffcca8] flex items-center justify-center shadow-xs">
+                  <span class="text-[10px] font-black text-[#ff5500]">CS</span>
+                </div>
+                <span class="font-extrabold text-xs sm:text-sm tracking-wider uppercase text-neutral-900">
+                  CS ASSOCIATES PMC
+                </span>
+              </div>
+              <span class="text-xs text-neutral-500 font-medium whitespace-nowrap font-mono">
+                Mon – Sat &bull; 9 AM – 7:30 PM
+              </span>
+            </div>
+
+            <h3 class="text-2xl sm:text-3xl font-extrabold text-neutral-950 tracking-tight leading-tight">
+              Schedule Site Consultation
+            </h3>
+            <p class="text-xs sm:text-sm text-neutral-500 mt-1 mb-5 font-normal">
+              Fill in your project details for an itemized feasibility analysis and PMC scope review.
+            </p>
+
+            <form id="consultationForm" class="space-y-3.5">
+              
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div>
+                  <label class="block text-xs font-bold text-neutral-800 mb-1">
+                    Your Full Name <span class="text-[#ff5500]">*</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    id="formName" 
+                    required 
+                    placeholder="e.g. Dr. Lakshmi / Arvind Kumar"
+                    class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-neutral-900 text-xs sm:text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition bg-neutral-50/60 hover:bg-white"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-neutral-800 mb-1">
+                    Phone / WhatsApp Number <span class="text-[#ff5500]">*</span>
+                  </label>
+                  <input 
+                    type="tel" 
+                    id="formPhone" 
+                    required 
+                    placeholder="e.g. +91 9845012345"
+                    class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-neutral-900 text-xs sm:text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition bg-neutral-50/60 hover:bg-white"
+                  />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div>
+                  <label class="block text-xs font-bold text-neutral-800 mb-1">
+                    Email Address
+                  </label>
+                  <input 
+                    type="email" 
+                    id="formEmail" 
+                    placeholder="e.g. client@example.com"
+                    class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-neutral-900 text-xs sm:text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition bg-neutral-50/60 hover:bg-white"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-neutral-800 mb-1">
+                    Project Sector
+                  </label>
+                  <select 
+                    id="formSector"
+                    class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-neutral-900 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition bg-neutral-50/60 hover:bg-white cursor-pointer"
+                  >
+                    <option value="Individual Luxury Villa">Individual Luxury Villa</option>
+                    <option value="Commercial Complex / Office">Commercial Complex / Office</option>
+                    <option value="Residential Apartment / Enclave">Residential Apartment / Enclave</option>
+                    <option value="Hospitality & Resort">Hospitality & Resort</option>
+                    <option value="Turnkey Interior / Renovation">Turnkey Interior / Renovation</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div>
+                  <label class="block text-xs font-bold text-neutral-800 mb-1">
+                    Site Location (Bengaluru / Region)
+                  </label>
+                  <input 
+                    type="text" 
+                    id="formLocation" 
+                    placeholder="e.g. Abbigere / Kanakapura Rd / Whitefield"
+                    class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-neutral-900 text-xs sm:text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition bg-neutral-50/60 hover:bg-white"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-neutral-800 mb-1">
+                    Approximate Area (Sq.Ft.)
+                  </label>
+                  <input 
+                    type="text" 
+                    id="formArea" 
+                    placeholder="e.g. 5,000 sq.ft."
+                    class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-neutral-900 text-xs sm:text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition bg-neutral-50/60 hover:bg-white"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-neutral-800 mb-1">
+                  Project Brief or Current Site Status
+                </label>
+                <textarea 
+                  id="formBrief" 
+                  rows="2.5" 
+                  placeholder="Mention whether drawings are ready, contractor quotes being compared, or site excavation starting..."
+                  class="w-full px-3.5 py-2 rounded-lg border border-neutral-300 text-neutral-900 text-xs sm:text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition resize-none bg-neutral-50/60 hover:bg-white"
+                ></textarea>
+              </div>
+
+              <button 
+                type="submit" 
+                class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-[#ff5500] to-[#ff6a00] hover:from-[#e04c00] hover:to-[#eb5900] text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-orange-500/30 transition-all transform active:scale-[0.99] cursor-pointer"
+              >
+                <i data-lucide="send" class="w-4 h-4"></i>
+                <span>REQUEST CONSULTATION &amp; SITE AUDIT</span>
+              </button>
+
+              <div class="relative flex py-0.5 items-center">
+                <div class="flex-grow border-t border-neutral-200"></div>
+                <span class="flex-shrink mx-3 text-neutral-400 text-xs lowercase">or</span>
+                <div class="flex-grow border-t border-neutral-200"></div>
+              </div>
+
+              <a 
+                href="https://wa.me/918296266389?text=Hello%20CS%20Associates%2C%20I%20would%20like%20to%20schedule%20a%20site%20consultation." 
+                target="_blank" 
+                rel="noopener noreferrer"
+                class="w-full py-2.5 px-5 rounded-xl border border-emerald-300 bg-emerald-50/80 hover:bg-emerald-100 text-emerald-800 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition cursor-pointer"
+              >
+                <i data-lucide="message-circle" class="w-4 h-4 fill-emerald-600 text-emerald-600"></i>
+                <span>CHAT DIRECTLY ON WHATSAPP (+91 8296266389)</span>
+              </a>
+
+              <div class="pt-1 text-center flex items-center justify-center gap-1.5 text-[10px] sm:text-[11px] font-bold text-amber-700 tracking-wider uppercase font-mono">
+                <i data-lucide="lock" class="w-3.5 h-3.5 text-amber-600"></i>
+                <span>STRICT CLIENT FIDUCIARY PRIVACY &bull; NO SUBCONTRACTOR LEAKS</span>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer Contacts -->
+      <div class="mt-8 pt-6 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs sm:text-sm text-neutral-600 font-medium">
+        <a href="tel:+918296266389" class="flex items-center gap-2 hover:text-[#ff5500] transition-colors">
+          <i data-lucide="phone" class="w-4 h-4 text-orange-500"></i>
+          <span>+91 8296266389</span>
+        </a>
+        <a href="tel:+918086823483" class="flex items-center gap-2 hover:text-[#ff5500] transition-colors">
+          <i data-lucide="phone" class="w-4 h-4 text-orange-500"></i>
+          <span>+91 8086823483</span>
+        </a>
+        <a href="mailto:csassociates321@gmail.com" class="flex items-center gap-2 hover:text-[#ff5500] transition-colors">
+          <i data-lucide="mail" class="w-4 h-4 text-orange-500"></i>
+          <span>csassociates321@gmail.com</span>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Toast Confirmation -->
+  <div id="toastNotification" class="fixed top-6 right-6 z-50 transform translate-y-[-150%] opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="bg-neutral-900 border border-neutral-700 text-white px-5 py-4 rounded-xl shadow-2xl flex items-center gap-3">
+      <div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+        <i data-lucide="check" class="w-5 h-5"></i>
+      </div>
+      <div>
+        <p class="font-bold text-sm">Consultation Request Received!</p>
+        <p class="text-xs text-neutral-400">Our civil engineering auditor will contact you shortly.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating WhatsApp CTA Button (Bottom Right) -->
+  <aside class="fixed bottom-6 right-6 z-40">
+    <a 
+      href="https://wa.me/918296266389?text=Hello%20CS%20Associates%2C%20I%20would%20like%20to%20consult%20about%20my%20construction%20project." 
+      target="_blank" 
+      rel="noopener noreferrer" 
+      class="group inline-flex items-center gap-2.5 bg-[#1cd463] hover:bg-[#18be57] text-white font-medium text-xs sm:text-sm px-4 py-2.5 rounded-full shadow-lg shadow-green-900/40 hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5 active:scale-95 cursor-pointer"
+    >
+      <i data-lucide="message-circle" class="w-4 h-4 fill-white stroke-none"></i>
+      <span>Chat on WhatsApp</span>
+    </a>
+  </aside>
+
+  <script>
+    // Testimonial Data
+    const testimonials = [
+      {
+        name: "Dr. Lakshmi K.",
+        role: "Chief Medical Consultant",
+        project: "Dr Lakshmi Residence",
+        quote: `"CS Associates gave me total peace of mind. Every single evening, I received their WhatsApp DPR with verified photos of steel binding, waterproofing tests, and slump checks. They caught multiple contractor over-billing attempts and audited over ₹12 Lakhs in direct savings on our 7,400 sq.ft. estate."`,
+        location: "Abbigere, Bengaluru",
+        savings: "₹12.4L Audited Savings",
+        rating: "5.0",
+        image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=700&q=80"
+      },
+      {
+        name: "Rajesh & Sunita Menon",
+        role: "VP of Engineering",
+        project: "Menon Villa",
+        quote: `"Managing construction while working 60-hour weeks felt impossible until CS Associates stepped in. Their strict quality audits flagged substandard cement batches and honeycombing before slab casting. Saved us ₹8.7 Lakhs in rework and finished 3 weeks ahead of schedule."`,
+        location: "Whitefield, Bengaluru",
+        savings: "₹8.7L Audited Savings",
+        rating: "5.0",
+        image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=700&q=80"
+      },
+      {
+        name: "Vikramaditya Reddy",
+        role: "Managing Director",
+        project: "Reddy Sky-Villa",
+        quote: `"The transparency is unmatched. Detailed material testing reports, daily drone progress footage, and foolproof vendor bill reconciliation. They uncovered inflated steel reinforcement billing that would have cost us dearly. A true shield for any high-value construction."`,
+        location: "Sarjapur Road, Bengaluru",
+        savings: "₹16.2L Audited Savings",
+        rating: "5.0",
+        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=700&q=80"
+      }
+    ];
+
+    let currentIndex = 0;
+
+    // DOM Elements for Carousel
+    const clientName = document.getElementById("clientName");
+    const clientRole = document.getElementById("clientRole");
+    const clientProject = document.getElementById("clientProject");
+    const clientQuote = document.getElementById("clientQuote");
+    const clientLocation = document.getElementById("clientLocation");
+    const clientSavings = document.getElementById("clientSavings");
+    const clientImage = document.getElementById("clientImage");
+    const clientRating = document.getElementById("clientRating");
+    const slideContent = document.getElementById("slideContent");
+    const dotsContainer = document.getElementById("dotsContainer");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+    function buildDots() {
+      dotsContainer.innerHTML = '';
+      testimonials.forEach((_, idx) => {
+        const dot = document.createElement("button");
+        dot.className = `w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+          idx === currentIndex ? 'bg-[#ff5500] w-6' : 'bg-neutral-600 hover:bg-neutral-400'
+        }`;
+        dot.setAttribute("aria-label", `Go to testimonial slide ${idx + 1}`);
+        dot.addEventListener("click", () => updateSlide(idx));
+        dotsContainer.appendChild(dot);
+      });
+    }
+
+    function updateSlide(newIndex) {
+      if (newIndex === currentIndex) return;
+
+      slideContent.style.opacity = '0';
+      slideContent.style.transform = 'translateY(6px)';
+
+      setTimeout(() => {
+        currentIndex = (newIndex + testimonials.length) % testimonials.length;
+        const data = testimonials[currentIndex];
+
+        clientName.textContent = data.name;
+        clientRole.textContent = data.role;
+        clientProject.textContent = data.project;
+        clientQuote.textContent = data.quote;
+        clientLocation.textContent = data.location;
+        clientSavings.textContent = data.savings;
+        clientRating.textContent = data.rating;
+        clientImage.src = data.image;
+
+        buildDots();
+
+        slideContent.style.opacity = '1';
+        slideContent.style.transform = 'translateY(0)';
+      }, 160);
+    }
+
+    prevBtn.addEventListener("click", () => updateSlide(currentIndex - 1));
+    nextBtn.addEventListener("click", () => updateSlide(currentIndex + 1));
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") updateSlide(currentIndex - 1);
+      if (e.key === "ArrowRight") updateSlide(currentIndex + 1);
+    });
+
+    // Touch swipe support
+    let touchStartX = 0;
+    let touchEndX = 0;
+    slideContent.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    slideContent.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      if (touchEndX < touchStartX - 40) updateSlide(currentIndex + 1);
+      if (touchEndX > touchStartX + 40) updateSlide(currentIndex - 1);
+    }, { passive: true });
+
+    // ================= LASER ANIMATION ENGINE =================
+    const overlaySvg = document.getElementById("laserCanvasOverlay");
+    
+    // Central Trunk Paths
+    const trunkCore = document.getElementById("trunkCore");
+    const trunkGlow = document.getElementById("trunkGlow");
+    const trunkAura = document.getElementById("trunkAura");
+    
+    // Left Branch Paths
+    const leftBranchCore = document.getElementById("leftBranchCore");
+    const leftBranchGlow = document.getElementById("leftBranchGlow");
+    const leftBranchAura = document.getElementById("leftBranchAura");
+    
+    // Right Branch Paths
+    const rightBranchCore = document.getElementById("rightBranchCore");
+    const rightBranchGlow = document.getElementById("rightBranchGlow");
+    const rightBranchAura = document.getElementById("rightBranchAura");
+
+    // Tip Node Groups
+    const trunkTipGroup = document.getElementById("trunkTipGroup");
+    const leftTipGroup = document.getElementById("leftTipGroup");
+    const rightTipGroup = document.getElementById("rightTipGroup");
+
+    // DOM Nodes
+    const consultationCard = document.getElementById("consultationCard");
+    const beamSplitterNode = document.getElementById("beamSplitterNode");
+    const leftGroundNode = document.getElementById("leftGroundNode");
+    const rightGroundNode = document.getElementById("rightGroundNode");
+    const laserStatusIndicator = document.getElementById("laserStatusIndicator");
+
+    let trunkLength = 0;
+    let branchLengthLeft = 0;
+    let branchLengthRight = 0;
+
+    let currentScroll = 0;
+    let targetScroll = 0;
+    const cornerRadius = 26;
+    const splitMarginAboveCard = 44;
+    const cardBorderOffset = 10; // Clearance outside consultation card boundary
+
+    function recalculateLaserGeometry() {
+      if (!consultationCard) return;
+
+      const pageHeight = Math.max(
+        document.body.scrollHeight, 
+        document.documentElement.scrollHeight,
+        document.body.offsetHeight
+      );
+      overlaySvg.setAttribute("viewBox", `0 0 ${window.innerWidth} ${pageHeight}`);
+      overlaySvg.style.height = `${pageHeight}px`;
+
+      const cardRect = consultationCard.getBoundingClientRect();
+      const cardAbsoluteTop = cardRect.top + window.scrollY;
+      const cardAbsoluteBottom = cardAbsoluteTop + cardRect.height;
+      const cardAbsoluteLeft = cardRect.left + window.scrollX;
+      const cardAbsoluteRight = cardRect.left + window.scrollX + cardRect.width;
+
+      const centerX = window.innerWidth / 2;
+      const splitY = cardAbsoluteTop - splitMarginAboveCard;
+
+      // Position Optical Beam Splitter Prism
+      if (beamSplitterNode) {
+        beamSplitterNode.style.top = `${splitY}px`;
+      }
+
+      // Position Ground Terminal Nodes
+      if (leftGroundNode) {
+        leftGroundNode.style.top = `${cardAbsoluteBottom}px`;
+        leftGroundNode.style.left = `${cardAbsoluteLeft - cardBorderOffset - 8}px`;
+      }
+      if (rightGroundNode) {
+        rightGroundNode.style.top = `${cardAbsoluteBottom}px`;
+        rightGroundNode.style.left = `${cardAbsoluteRight + cardBorderOffset - 8}px`;
+      }
+
+      // 1. Trunk Path: Starts at (centerX, 0) top of page -> travels straight down behind testimonial -> split point
+      const trunkD = `M ${centerX} 0 L ${centerX} ${splitY}`;
+      trunkCore.setAttribute("d", trunkD);
+      trunkGlow.setAttribute("d", trunkD);
+      trunkAura.setAttribute("d", trunkD);
+      trunkLength = trunkCore.getTotalLength();
+
+      trunkCore.style.strokeDasharray = trunkLength;
+      trunkGlow.style.strokeDasharray = trunkLength;
+      trunkAura.style.strokeDasharray = trunkLength;
+
+      // 2. Left Branch: From Splitter -> smooth fillet turn -> runs down along the left flank of Consultation Card
+      const leftTargetX = Math.max(14, cardAbsoluteLeft - cardBorderOffset);
+      const leftD = `M ${centerX} ${splitY} 
+                     L ${leftTargetX + cornerRadius} ${splitY} 
+                     A ${cornerRadius} ${cornerRadius} 0 0 0 ${leftTargetX} ${splitY + cornerRadius} 
+                     L ${leftTargetX} ${cardAbsoluteBottom}`;
+      leftBranchCore.setAttribute("d", leftD);
+      leftBranchGlow.setAttribute("d", leftD);
+      leftBranchAura.setAttribute("d", leftD);
+      branchLengthLeft = leftBranchCore.getTotalLength();
+
+      leftBranchCore.style.strokeDasharray = branchLengthLeft;
+      leftBranchGlow.style.strokeDasharray = branchLengthLeft;
+      leftBranchAura.style.strokeDasharray = branchLengthLeft;
+
+      // 3. Right Branch: From Splitter -> smooth fillet turn -> runs down along the right flank of Consultation Card
+      const rightTargetX = Math.min(window.innerWidth - 14, cardAbsoluteRight + cardBorderOffset);
+      const rightD = `M ${centerX} ${splitY} 
+                      L ${rightTargetX - cornerRadius} ${splitY} 
+                      A ${cornerRadius} ${cornerRadius} 0 0 1 ${rightTargetX} ${splitY + cornerRadius} 
+                      L ${rightTargetX} ${cardAbsoluteBottom}`;
+      rightBranchCore.setAttribute("d", rightD);
+      rightBranchGlow.setAttribute("d", rightD);
+      rightBranchAura.setAttribute("d", rightD);
+      branchLengthRight = rightBranchCore.getTotalLength();
+
+      rightBranchCore.style.strokeDasharray = branchLengthRight;
+      rightBranchGlow.style.strokeDasharray = branchLengthRight;
+      rightBranchAura.style.strokeDasharray = branchLengthRight;
+    }
+
+    // Scroll listener with immediate event capture
+    window.addEventListener("scroll", () => {
+      targetScroll = window.scrollY || document.documentElement.scrollTop;
+    }, { passive: true });
+
+    window.addEventListener("resize", () => {
+      recalculateLaserGeometry();
+    });
+
+    // Render loop with buttery smooth damping lerp (0.075 for slow, silky tracking)
+    function renderLaserFrame() {
+      currentScroll += (targetScroll - currentScroll) * 0.085;
+
+      if (!consultationCard || trunkLength === 0) {
+        requestAnimationFrame(renderLaserFrame);
+        return;
+      }
+
+      const cardRect = consultationCard.getBoundingClientRect();
+      const cardAbsoluteTop = cardRect.top + window.scrollY;
+      const splitY = cardAbsoluteTop - splitMarginAboveCard;
+
+      // Split threshold: when optical splitter is near upper center of viewport
+      const scrollSplitThreshold = splitY - (window.innerHeight * 0.42);
+      const scrollEndThreshold = scrollSplitThreshold + cardRect.height * 0.9;
+
+      // Central Trunk progress: Starts advancing smoothly from the top of Section 1
+      const trunkProgress = Math.min(Math.max((currentScroll + window.innerHeight * 0.35) / (scrollSplitThreshold + window.innerHeight * 0.35), 0.04), 1);
+
+      // Apply stroke dash offset to trunk layers
+      const trunkOffset = trunkLength * (1 - trunkProgress);
+      trunkCore.style.strokeDashoffset = trunkOffset;
+      trunkGlow.style.strokeDashoffset = trunkOffset;
+      trunkAura.style.strokeDashoffset = trunkOffset;
+
+      // Position trunk spark head
+      if (trunkProgress > 0.03 && trunkProgress < 0.995) {
+        trunkTipGroup.classList.remove("opacity-0");
+        const pt = trunkCore.getPointAtLength(trunkLength * trunkProgress);
+        trunkTipGroup.setAttribute("transform", `translate(${pt.x}, ${pt.y})`);
+      } else {
+        trunkTipGroup.classList.add("opacity-0");
+      }
+
+      // Branch Progress: Initiates as trunk reaches the Optical Splitter Node
+      let branchProgress = 0;
+      if (currentScroll > scrollSplitThreshold) {
+        branchProgress = Math.min(Math.max((currentScroll - scrollSplitThreshold) / (scrollEndThreshold - scrollSplitThreshold), 0), 1);
+        
+        // Illuminate beam splitter
+        if (beamSplitterNode) {
+          beamSplitterNode.classList.remove("opacity-0");
+        }
+      } else {
+        if (beamSplitterNode) {
+          beamSplitterNode.classList.add("opacity-0");
+        }
+      }
+
+      // Apply stroke dash offset to branch layers
+      const leftOffset = branchLengthLeft * (1 - branchProgress);
+      leftBranchCore.style.strokeDashoffset = leftOffset;
+      leftBranchGlow.style.strokeDashoffset = leftOffset;
+      leftBranchAura.style.strokeDashoffset = leftOffset;
+
+      const rightOffset = branchLengthRight * (1 - branchProgress);
+      rightBranchCore.style.strokeDashoffset = rightOffset;
+      rightBranchGlow.style.strokeDashoffset = rightOffset;
+      rightBranchAura.style.strokeDashoffset = rightOffset;
+
+      // Position branch tip sparks
+      if (branchProgress > 0.02 && branchProgress < 0.995) {
+        leftTipGroup.classList.remove("opacity-0");
+        rightTipGroup.classList.remove("opacity-0");
+
+        const leftPt = leftBranchCore.getPointAtLength(branchLengthLeft * branchProgress);
+        leftTipGroup.setAttribute("transform", `translate(${leftPt.x}, ${leftPt.y})`);
+
+        const rightPt = rightBranchCore.getPointAtLength(branchLengthRight * branchProgress);
+        rightTipGroup.setAttribute("transform", `translate(${rightPt.x}, ${rightPt.y})`);
+
+        laserStatusIndicator.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Dual Perimeter Laser Tracing`;
+      } else {
+        leftTipGroup.classList.add("opacity-0");
+        rightTipGroup.classList.add("opacity-0");
+
+        if (branchProgress >= 0.995) {
+          if (leftGroundNode) leftGroundNode.classList.remove("opacity-0");
+          if (rightGroundNode) rightGroundNode.classList.remove("opacity-0");
+          laserStatusIndicator.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span> Ground Anchored: Dual Circuit Closed`;
+        } else {
+          if (leftGroundNode) leftGroundNode.classList.add("opacity-0");
+          if (rightGroundNode) rightGroundNode.classList.add("opacity-0");
+          laserStatusIndicator.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span> Laser Audit: Active`;
+        }
+      }
+
+      requestAnimationFrame(renderLaserFrame);
+    }
+
+    // Form submission feedback
+    const consultationForm = document.getElementById("consultationForm");
+    const toast = document.getElementById("toastNotification");
+
+    if (consultationForm) {
+      consultationForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        toast.classList.remove("translate-y-[-150%]", "opacity-0");
+        toast.classList.add("translate-y-0", "opacity-100");
+
+        setTimeout(() => {
+          toast.classList.remove("translate-y-0", "opacity-100");
+          toast.classList.add("translate-y-[-150%]", "opacity-0");
+        }, 4000);
+
+        consultationForm.reset();
+      });
+    }
+
+    // Startup initialization
+    window.addEventListener("DOMContentLoaded", () => {
+      buildDots();
+      lucide.createIcons();
+      recalculateLaserGeometry();
+      requestAnimationFrame(renderLaserFrame);
+    });
+
+    window.addEventListener("load", () => {
+      recalculateLaserGeometry();
+    });
+  </script>
+</body>
+</html>

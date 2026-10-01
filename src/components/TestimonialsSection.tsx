@@ -128,24 +128,26 @@ export const TestimonialsSection: React.FC = () => {
 
       <div className="max-w-5xl mx-auto px-4 sm:px-8 lg:px-12 relative z-10">
         
-        {/* Section Header (ENTRANCE FROM TOP) */}
+        {/* Section Header with Optical Shield Backdrop (Laser passes cleanly behind) */}
         <motion.div 
           initial={{ opacity: 0, y: -30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.15 }}
           transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
-          className="text-center max-w-2xl mx-auto mb-12 sm:mb-16 relative z-10"
+          className="text-center max-w-2xl mx-auto mb-12 sm:mb-16 relative z-20"
         >
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-orange-500 text-[11px] font-mono font-bold uppercase tracking-widest shadow-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
-            <span>CLIENT ENDORSEMENTS</span>
+          <div className="inline-block px-6 sm:px-10 py-5 rounded-3xl bg-neutral-950/95 backdrop-blur-md border border-white/10 shadow-2xl">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-orange-500 text-[11px] font-mono font-bold uppercase tracking-widest shadow-sm mb-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
+              <span>CLIENT ENDORSEMENTS</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display tracking-tight uppercase">
+              WHAT OUR CLIENTS SAY
+            </h2>
+            <p className="mt-2 text-xs sm:text-sm md:text-base text-neutral-400 font-sans max-w-xl mx-auto">
+              Hear directly from homeowners whose investments, quality, and timelines were safeguarded by CS Associates.
+            </p>
           </div>
-          <h2 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display tracking-tight uppercase">
-            WHAT OUR CLIENTS SAY
-          </h2>
-          <p className="mt-2 text-sm sm:text-base text-neutral-400 font-sans">
-            Hear directly from homeowners whose investments, quality, and timelines were safeguarded by CS Associates.
-          </p>
         </motion.div>
 
         {/* Carousel Showcase Container (ENTRANCE FROM BOTTOM) */}
