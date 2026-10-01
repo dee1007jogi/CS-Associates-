@@ -37,7 +37,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'white' 
   return (
     <section 
       id="contact" 
-      className="text-neutral-900 py-16 md:py-24 px-4 sm:px-6 relative border-t border-neutral-300 bg-[#f6f7fa] select-none"
+      className="text-neutral-900 py-16 md:py-24 px-4 sm:px-6 relative border-t border-neutral-200 bg-white select-none"
     >
       {/* Background Dot Matrix Layer */}
       <div 
@@ -47,26 +47,20 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'white' 
 
       <div className="max-w-6xl mx-auto relative z-30">
         
-        {/* Section Header with Optical Shield Backdrop (Laser passes cleanly behind) */}
+        {/* Section Header */}
         <div className="text-center mb-10 md:mb-14 relative z-30">
-          <div className="inline-block px-6 sm:px-10 py-5 rounded-3xl bg-white/95 backdrop-blur-md border border-neutral-200/90 shadow-xl shadow-black/5">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 border border-orange-300 text-orange-700 text-xs font-mono font-bold uppercase tracking-wider mb-3">
-              <span className="w-1.5 h-1.5 rounded-full bg-orange-600 animate-pulse" />
-              Turnkey Civil Audit Desk
-            </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-neutral-950 max-w-3xl mx-auto leading-tight font-display">
-              LET’S BUILD WITH QUALITY &amp; COMPLETE TRUST
-            </h2>
-            <p className="text-neutral-600 text-sm sm:text-base max-w-2xl mx-auto mt-3 font-normal leading-relaxed">
-              Discuss your site parameters directly with Principal Consultant Mr. Kiran Dikshit L and our senior civil engineering auditors.
-            </p>
-          </div>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-neutral-950 max-w-3xl mx-auto leading-tight font-display">
+            LET’S BUILD WITH QUALITY &amp; COMPLETE TRUST
+          </h2>
+          <p className="text-neutral-600 text-sm sm:text-base max-w-2xl mx-auto mt-3 font-normal leading-relaxed">
+            Discuss your site parameters directly with Principal Consultant Mr. Kiran Dikshit L and our senior civil engineering auditors.
+          </p>
         </div>
 
         {/* Main Dual-Pane Consultation Card */}
         <div 
           id="consultationCard" 
-          className="bg-white rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.18)] border border-neutral-300/80 overflow-hidden grid grid-cols-1 lg:grid-cols-12 items-stretch relative z-30"
+          className="bg-white rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.14)] border border-neutral-200/90 overflow-hidden grid grid-cols-1 lg:grid-cols-12 items-stretch relative z-30"
         >
           
           {/* Left Column: Architectural Visual & Trust Proof */}
