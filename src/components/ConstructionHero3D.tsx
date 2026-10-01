@@ -287,9 +287,9 @@ export const ConstructionHero3D: React.FC<ConstructionHero3DProps> = ({
       <div className="h-10 pointer-events-none" />
 
       {/* Bottom Action HUD: Stage Viewpoint Switcher & Explore Navigation */}
-      <div className="relative z-20 px-3.5 sm:px-6 pointer-events-none pb-20 sm:pb-8 flex flex-col sm:flex-row items-center justify-between gap-3">
-        {/* Architectural Viewpoint Switcher Pills */}
-        <div className="pointer-events-auto flex items-center gap-1 sm:gap-1.5 p-1 rounded-2xl bg-neutral-900/85 backdrop-blur-xl border border-white/10 shadow-lg">
+      <div className="relative z-20 px-3.5 sm:px-6 pointer-events-none pb-6 sm:pb-8 flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-3">
+        {/* Architectural Viewpoint Switcher Pills - Hidden on mobile */}
+        <div className="pointer-events-auto hidden sm:flex items-center gap-1 sm:gap-1.5 p-1 rounded-2xl bg-neutral-900/85 backdrop-blur-xl border border-white/10 shadow-lg">
           <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-400 px-2 hidden lg:inline">
             3D Angles:
           </span>
