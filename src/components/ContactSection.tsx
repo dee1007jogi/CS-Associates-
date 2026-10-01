@@ -1,330 +1,569 @@
 import React, { useState } from 'react';
-import { Send, MessageCircle, Lock, Phone, Mail, Check } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { 
+  Phone, 
+  Mail, 
+  MapPin, 
+  MessageCircle, 
+  Send, 
+  CheckCircle2, 
+  Instagram, 
+  Facebook, 
+  ArrowRight,
+  ShieldCheck,
+  Building2,
+  Sparkles
+} from 'lucide-react';
 
 interface ContactSectionProps {
-  theme?: 'white' | 'dark';
+  theme?: 'dark' | 'white';
 }
 
-export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'white' }) => {
+export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }) => {
+  const isDark = theme === 'dark';
+
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
     email: '',
-    sector: 'Individual Luxury Villa',
+    projectType: 'Luxury Residential Villa',
     location: '',
     area: '',
-    brief: ''
+    message: ''
   });
-  const [showToast, setShowToast] = useState(false);
+
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-    }, 4000);
-    setFormData({
-      name: '',
-      phone: '',
-      email: '',
-      sector: 'Individual Luxury Villa',
-      location: '',
-      area: '',
-      brief: ''
-    });
+    if (!formData.name || !formData.phone) return;
+    setSubmitted(true);
   };
+
+  const handleSendToWhatsApp = () => {
+    const text = `Hello CS Associates,%0A%0AMy Name: ${formData.name}%0APhone: ${formData.phone}%0AEmail: ${formData.email || 'N/A'}%0AProject Sector: ${formData.projectType}%0ALocation: ${formData.location || 'Bengaluru'}%0AApprox Area: ${formData.area || 'N/A'}%0AMessage: ${formData.message || 'I would like to schedule a PMC consultation.'}`;
+    window.open(`https://wa.me/918296266389?text=${text}`, '_blank');
+  };
+
+  const inputClass = isDark
+    ? "w-full rounded-xl px-4 py-2.5 text-xs bg-neutral-950 border border-neutral-800 focus:bg-neutral-950 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 text-neutral-100 placeholder:text-neutral-500 transition-all outline-none"
+    : "w-full rounded-xl px-4 py-2.5 text-xs bg-neutral-50 border border-neutral-200 focus:bg-white focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 text-neutral-900 transition-all outline-none";
+
+  const labelClass = isDark
+    ? "block text-xs font-semibold text-neutral-300 mb-1 font-sans"
+    : "block text-xs font-semibold text-neutral-700 mb-1 font-sans";
 
   return (
     <section 
       id="contact" 
-      className="text-neutral-900 py-16 md:py-24 px-4 sm:px-6 relative border-t border-neutral-200 bg-white select-none"
+      className={`py-16 sm:py-24 lg:py-28 relative overflow-hidden select-none transition-colors duration-300 ${
+        isDark 
+          ? 'bg-neutral-950 text-neutral-100 border-t border-neutral-850' 
+          : 'bg-white text-neutral-900 border-t border-neutral-200'
+      }`}
     >
-      {/* Background Dot Matrix Layer */}
+      {/* Background Architectural Grid Pattern */}
       <div 
         aria-hidden="true" 
-        className="absolute inset-0 pointer-events-none opacity-50 bg-[radial-gradient(rgba(0,0,0,0.065)_1.2px,transparent_1.2px)] [background-size:26px_26px] z-0" 
+        className={`absolute inset-0 pointer-events-none [background-size:24px_24px] ${
+          isDark 
+            ? 'opacity-[0.04] bg-[radial-gradient(#ffffff_1px,transparent_1px)]' 
+            : 'opacity-[0.035] bg-[radial-gradient(#000000_1px,transparent_1px)]'
+        }`} 
       />
 
-      <div className="max-w-6xl mx-auto relative z-30">
-        
-        {/* Section Header */}
-        <div className="text-center mb-10 md:mb-14 relative z-30">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-neutral-950 max-w-3xl mx-auto leading-tight font-display">
-            LET’S BUILD WITH QUALITY &amp; COMPLETE TRUST
-          </h2>
-          <p className="text-neutral-600 text-sm sm:text-base max-w-2xl mx-auto mt-3 font-normal leading-relaxed">
-            Discuss your site parameters directly with Principal Consultant Mr. Kiran Dikshit L and our senior civil engineering auditors.
-          </p>
-        </div>
-
-        {/* Main Dual-Pane Consultation Card */}
+      {isDark && (
         <div 
-          id="consultationCard" 
-          className="bg-white rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.14)] border border-neutral-200/90 overflow-hidden grid grid-cols-1 lg:grid-cols-12 items-stretch relative z-30"
+          aria-hidden="true" 
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-[radial-gradient(ellipse_at_top,rgba(249,115,22,0.08),transparent_70%)] pointer-events-none"
+        />
+      )}
+
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        
+        {/* Section Header (ENTRANCE FROM TOP) */}
+        <motion.div 
+          initial={{ opacity: 0, y: -30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.15 }}
+          transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+          className="text-center max-w-3xl mx-auto mb-10 sm:mb-14"
         >
-          
-          {/* Left Column: Architectural Visual & Trust Proof */}
-          <div className="lg:col-span-5 relative flex flex-col justify-between p-6 sm:p-8 bg-neutral-950 text-white overflow-hidden min-h-[520px]">
-            
-            {/* Background Image with Overlay */}
-            <div className="absolute inset-0 z-0">
-              <img 
-                src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80" 
-                alt="Luxury Villa Construction Project" 
-                className="w-full h-full object-cover object-center filter brightness-60 contrast-110"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/75" />
-              <div className="absolute inset-0 opacity-15 bg-[radial-gradient(rgba(255,255,255,0.4)_1px,transparent_1px)] [background-size:18px_18px]" />
-            </div>
-
-            {/* Top Metadata Badges */}
-            <div className="relative z-10 flex items-center justify-between flex-wrap gap-2 text-[11px] font-bold tracking-wider uppercase font-mono">
-              <span className="text-[#ff6a00]">
-                SELECTED WORKS &bull; BENGALURU HQ
-              </span>
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-neutral-900/85 backdrop-blur-md border border-neutral-700 text-neutral-200">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  Site Desk Active
-                </span>
-                <span className="px-2.5 py-1 rounded-full bg-[#ff5500] text-white font-extrabold text-[10px]">
-                  25+ YRS
-                </span>
-              </div>
-            </div>
-
-            {/* Center Emblem & Slogan */}
-            <div className="relative z-10 my-auto py-8 text-center flex flex-col items-center">
-              <div className="w-20 h-20 rounded-2xl bg-neutral-900/95 border border-orange-500/40 p-2 shadow-2xl shadow-orange-950/50 flex items-center justify-center mb-4 backdrop-blur-md">
-                <svg viewBox="0 0 100 100" className="w-full h-full text-[#ff5500] fill-none stroke-current" strokeWidth="3">
-                  <polygon points="50,15 85,35 85,75 50,95 15,75 15,35" stroke="currentColor" fill="rgba(255,85,0,0.12)" />
-                  <path d="M30 75 V45 L50 30 L70 45 V75" stroke="currentColor" />
-                  <path d="M42 75 V55 H58 V75" stroke="currentColor" />
-                  <circle cx="50" cy="50" r="3" fill="currentColor" />
-                  <text x="50" y="87" fontSize="7.5" fontFamily="'Plus Jakarta Sans', sans-serif" fontWeight="900" fill="#ff772e" textAnchor="middle" stroke="none">CS ASSOCIATES</text>
-                </svg>
-              </div>
-
-              <h3 className="text-2xl sm:text-3xl font-black tracking-tight text-white uppercase">
-                CS ASSOCIATES
-              </h3>
-              <p className="text-xs sm:text-sm font-bold tracking-widest text-[#ff6a00] uppercase mt-1">
-                A TRADITION OF TRUST &bull; PMC
-              </p>
-
-              <p className="text-xs sm:text-sm text-neutral-300 max-w-xs mt-3 leading-relaxed font-normal">
-                Comprehensive Project Management, Multi-Stage Civil Quality Audits &amp; Contractor Bill Verification.
-              </p>
-            </div>
-
-            {/* Bottom Metric Cards */}
-            <div className="relative z-10 grid grid-cols-3 gap-2 text-center pt-3 border-t border-white/10 font-mono">
-              <div className="bg-black/60 backdrop-blur-md py-2 px-1 rounded-lg border border-neutral-700/60">
-                <span className="text-[10px] sm:text-[11px] font-bold text-neutral-200 block truncate">100% Quality Audits</span>
-              </div>
-              <div className="bg-black/60 backdrop-blur-md py-2 px-1 rounded-lg border border-neutral-700/60">
-                <span className="text-[10px] sm:text-[11px] font-bold text-neutral-200 block truncate">8%–15% Cost Savings</span>
-              </div>
-              <div className="bg-black/60 backdrop-blur-md py-2 px-1 rounded-lg border border-neutral-700/60">
-                <span className="text-[10px] sm:text-[11px] font-bold text-neutral-200 block truncate">Zero Snag Handover</span>
-              </div>
-            </div>
-
+          <div className={`inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-[11px] font-mono font-bold uppercase tracking-widest shadow-sm ${
+            isDark 
+              ? 'bg-neutral-900/90 border border-neutral-800 text-orange-400' 
+              : 'bg-orange-500/10 border border-orange-500/25 text-orange-600'
+          }`}>
+            <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
+            <span>DIRECT PMC ENGAGEMENT DESK</span>
           </div>
 
-          {/* Right Column: Schedule Site Consultation Form */}
-          <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between bg-white relative z-30">
-            <div>
-              {/* Top Bar: CS Associates PMC badge on left, working hours on right */}
-              <div className="flex items-center justify-between pb-3.5 border-b border-neutral-200 gap-2 mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-md bg-[#fff2eb] border border-[#ffcca8] flex items-center justify-center shadow-xs">
-                    <span className="text-[10px] font-black text-[#ff5500]">CS</span>
-                  </div>
-                  <span className="font-extrabold text-xs sm:text-sm tracking-wider uppercase text-neutral-900">
-                    CS ASSOCIATES PMC
-                  </span>
+          <h2 className={`mt-3 text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight font-display uppercase ${
+            isDark ? 'text-white' : 'text-neutral-950'
+          }`}>
+            LET’S BUILD WITH QUALITY & COMPLETE TRUST
+          </h2>
+
+          <p className={`mt-2 text-sm sm:text-base font-sans max-w-2xl mx-auto ${
+            isDark ? 'text-neutral-400' : 'text-neutral-600'
+          }`}>
+            Discuss your site parameters directly with Principal Consultant Mr. Kiran Dikshit L and our senior civil engineering auditors.
+          </p>
+        </motion.div>
+
+        {/* ======================================================== */}
+        {/* MAIN UNIFIED CARD CONTAINER                               */}
+        {/* ======================================================== */}
+        <div className={`w-full rounded-[2.5rem] overflow-hidden transition-all duration-300 ${
+          isDark 
+            ? 'bg-neutral-900/95 shadow-[0_25px_70px_-15px_rgba(0,0,0,0.85)] border border-neutral-800' 
+            : 'bg-white shadow-[0_25px_70px_-15px_rgba(0,0,0,0.08)] border border-neutral-200'
+        }`}>
+          <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[640px]">
+            
+            {/* ======================================================== */}
+            {/* LEFT COLUMN: Relevant Luxury Estate Visual + Brand Logo (ENTRANCE FROM LEFT) */}
+            {/* ======================================================== */}
+            <motion.div 
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, amount: 0.15 }}
+              transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+              className="lg:col-span-6 relative overflow-hidden flex flex-col justify-between p-6 sm:p-10 text-white min-h-[420px] lg:min-h-full"
+            >
+              
+              {/* High-Resolution Luxury Architectural Background */}
+              <img
+                src="/src/assets/images/opulence_kanakapura_1790599663999.jpg"
+                alt="CS Associates Delivered Luxury Estate"
+                className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.92] contrast-[1.05] transition-transform duration-700 hover:scale-105"
+              />
+
+              {/* Rich Multi-Layer Gradient Overlay for Optimal Text Legibility */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-black/40 pointer-events-none" />
+              <div 
+                aria-hidden="true" 
+                className="absolute inset-0 opacity-[0.12] pointer-events-none bg-[radial-gradient(#ffffff_1.2px,transparent_1.2px)] [background-size:20px_20px]" 
+              />
+
+              {/* Top Bar over Image */}
+              <div className="relative z-10 flex items-center justify-between gap-3">
+                <div className="inline-flex items-center gap-2 text-xs font-mono font-bold tracking-wider text-orange-400 uppercase">
+                  <span>Selected Works</span>
+                  <span>·</span>
+                  <span className="text-white/80">Bengaluru HQ</span>
                 </div>
-                <span className="text-xs text-neutral-500 font-medium whitespace-nowrap font-mono">
-                  Mon – Sat &bull; 9 AM – 7:30 PM
-                </span>
+
+                <div className="flex items-center gap-2">
+                  <div className="px-3 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white text-[11px] font-mono flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span>Site Desk Active</span>
+                  </div>
+                  <div className="px-2.5 py-1 rounded-lg bg-orange-500 text-white font-black text-[10px] font-mono tracking-wider shadow-sm">
+                    25+ YRS
+                  </div>
+                </div>
               </div>
 
-              <h3 className="text-2xl sm:text-3xl font-extrabold text-neutral-950 tracking-tight leading-tight">
-                Schedule Site Consultation
-              </h3>
-              <p className="text-xs sm:text-sm text-neutral-500 mt-1 mb-5 font-normal">
-                Fill in your project details for an itemized feasibility analysis and PMC scope review.
-              </p>
-
-              <form onSubmit={handleSubmit} className="space-y-3.5">
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                  <div>
-                    <label className="block text-xs font-bold text-neutral-800 mb-1">
-                      Your Full Name <span className="text-[#ff5500]">*</span>
-                    </label>
-                    <input 
-                      type="text" 
-                      required 
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="e.g. Dr. Lakshmi / Arvind Kumar"
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-neutral-900 text-xs sm:text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition bg-neutral-50/60 hover:bg-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-neutral-800 mb-1">
-                      Phone / WhatsApp Number <span className="text-[#ff5500]">*</span>
-                    </label>
-                    <input 
-                      type="tel" 
-                      required 
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      placeholder="e.g. +91 9845012345"
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-neutral-900 text-xs sm:text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition bg-neutral-50/60 hover:bg-white"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                  <div>
-                    <label className="block text-xs font-bold text-neutral-800 mb-1">
-                      Email Address
-                    </label>
-                    <input 
-                      type="email" 
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      placeholder="e.g. client@example.com"
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-neutral-900 text-xs sm:text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition bg-neutral-50/60 hover:bg-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-neutral-800 mb-1">
-                      Project Sector
-                    </label>
-                    <select 
-                      value={formData.sector}
-                      onChange={(e) => setFormData({ ...formData, sector: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-neutral-900 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition bg-neutral-50/60 hover:bg-white cursor-pointer"
-                    >
-                      <option value="Individual Luxury Villa">Individual Luxury Villa</option>
-                      <option value="Commercial Complex / Office">Commercial Complex / Office</option>
-                      <option value="Residential Apartment / Enclave">Residential Apartment / Enclave</option>
-                      <option value="Hospitality & Resort">Hospitality & Resort</option>
-                      <option value="Turnkey Interior / Renovation">Turnkey Interior / Renovation</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                  <div>
-                    <label className="block text-xs font-bold text-neutral-800 mb-1">
-                      Site Location (Bengaluru / Region)
-                    </label>
-                    <input 
-                      type="text" 
-                      value={formData.location}
-                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                      placeholder="e.g. Abbigere / Kanakapura Rd / Whitefield"
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-neutral-900 text-xs sm:text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition bg-neutral-50/60 hover:bg-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-neutral-800 mb-1">
-                      Approximate Area (Sq.Ft.)
-                    </label>
-                    <input 
-                      type="text" 
-                      value={formData.area}
-                      onChange={(e) => setFormData({ ...formData, area: e.target.value })}
-                      placeholder="e.g. 5,000 sq.ft."
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-neutral-900 text-xs sm:text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition bg-neutral-50/60 hover:bg-white"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-neutral-800 mb-1">
-                    Project Brief or Current Site Status
-                  </label>
-                  <textarea 
-                    rows={2.5} 
-                    value={formData.brief}
-                    onChange={(e) => setFormData({ ...formData, brief: e.target.value })}
-                    placeholder="Mention whether drawings are ready, contractor quotes being compared, or site excavation starting..."
-                    className="w-full px-3.5 py-2 rounded-lg border border-neutral-300 text-neutral-900 text-xs sm:text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#ff5500] focus:border-transparent transition resize-none bg-neutral-50/60 hover:bg-white"
+              {/* Center Focal Point: Brand Logo & Title on Image */}
+              <div className="relative z-10 my-auto py-8 flex flex-col items-center text-center">
+                <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-white/10 backdrop-blur-md p-3.5 border border-white/25 shadow-2xl mb-4 flex items-center justify-center hover:scale-105 transition-transform duration-300">
+                  <img
+                    src="/src/assets/images/cs_logo_transparent.png"
+                    alt="CS Associates Official Logo"
+                    className="w-full h-full object-contain filter drop-shadow-[0_4px_16px_rgba(0,0,0,0.5)]"
                   />
                 </div>
 
-                <button 
-                  type="submit" 
-                  className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-[#ff5500] to-[#ff6a00] hover:from-[#e04c00] hover:to-[#eb5900] text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-orange-500/30 transition-all transform active:scale-[0.99] cursor-pointer"
-                >
-                  <Send className="w-4 h-4" />
-                  <span>REQUEST CONSULTATION &amp; SITE AUDIT</span>
-                </button>
+                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white font-display uppercase tracking-tight">
+                  CS ASSOCIATES
+                </h3>
+                
+                <p className="text-xs sm:text-sm text-orange-400 font-mono tracking-widest uppercase mt-1 font-semibold">
+                  A Tradition of Trust · PMC
+                </p>
 
-                <div className="relative flex py-0.5 items-center">
-                  <div className="flex-grow border-t border-neutral-200" />
-                  <span className="flex-shrink mx-3 text-neutral-400 text-xs lowercase">or</span>
-                  <div className="flex-grow border-t border-neutral-200" />
+                <div className="w-14 h-0.5 bg-orange-500 my-3 rounded-full" />
+
+                <p className="text-xs sm:text-sm text-neutral-200 max-w-sm leading-relaxed font-sans">
+                  Comprehensive Project Management, Multi-Stage Civil Quality Audits & Contractor Bill Verification.
+                </p>
+
+                {/* Key Deliverables Pills */}
+                <div className="flex flex-wrap justify-center gap-2 mt-4">
+                  <span className="px-2.5 py-1 rounded-md bg-white/10 backdrop-blur-md border border-white/15 text-[10px] font-mono text-neutral-200">
+                    100% Quality Audits
+                  </span>
+                  <span className="px-2.5 py-1 rounded-md bg-white/10 backdrop-blur-md border border-white/15 text-[10px] font-mono text-neutral-200">
+                    8%–15% Cost Savings
+                  </span>
+                  <span className="px-2.5 py-1 rounded-md bg-white/10 backdrop-blur-md border border-white/15 text-[10px] font-mono text-neutral-200">
+                    Zero Snag Handover
+                  </span>
+                </div>
+              </div>
+
+              {/* Bottom Bar: Founder Avatar Badge */}
+              <div className="relative z-10 pt-4 border-t border-white/15 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-orange-500 shadow-lg shrink-0">
+                    <img
+                      src="/src/assets/images/kiran_dikshit_founder.jpg"
+                      alt="Mr. Kiran Dikshit L"
+                      className="w-full h-full object-cover object-top"
+                    />
+                  </div>
+                  <div>
+                    <div className="text-sm font-bold text-white font-display">
+                      Kiran Dikshit L
+                    </div>
+                    <div className="text-xs text-neutral-300 font-sans">
+                      Principal Consultant & Founder
+                    </div>
+                  </div>
                 </div>
 
-                <a 
-                  href="https://wa.me/918296266389?text=Hello%20CS%20Associates%2C%20I%20would%20like%20to%20schedule%20a%20site%20consultation." 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="w-full py-2.5 px-5 rounded-xl border border-emerald-300 bg-emerald-50/80 hover:bg-emerald-100 text-emerald-800 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition cursor-pointer"
-                >
-                  <MessageCircle className="w-4 h-4 fill-emerald-600 text-emerald-600" />
-                  <span>CHAT DIRECTLY ON WHATSAPP (+91 8296266389)</span>
-                </a>
-
-                <div className="pt-1 text-center flex items-center justify-center gap-1.5 text-[10px] sm:text-[11px] font-bold text-amber-700 tracking-wider uppercase font-mono">
-                  <Lock className="w-3.5 h-3.5 text-amber-600" />
-                  <span>STRICT CLIENT FIDUCIARY PRIVACY &bull; NO SUBCONTRACTOR LEAKS</span>
+                <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-neutral-300">
+                  <span>Bengaluru, KA</span>
                 </div>
-              </form>
-            </div>
+              </div>
+
+            </motion.div>
+
+            {/* ======================================================== */}
+            {/* RIGHT COLUMN: Consultation Form (ENTRANCE FROM RIGHT)    */}
+            {/* ======================================================== */}
+            <motion.div 
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, amount: 0.15 }}
+              transition={{ duration: 0.75, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+              className={`lg:col-span-6 p-6 sm:p-10 lg:p-12 flex flex-col justify-between transition-colors duration-300 ${
+                isDark 
+                  ? 'bg-neutral-900 border-t lg:border-t-0 lg:border-l border-neutral-800' 
+                  : 'bg-white'
+              }`}
+            >
+              
+              {/* Header with Mini Brand Tag */}
+              <div className={`flex items-center justify-between pb-4 border-b ${
+                isDark ? 'border-neutral-800' : 'border-neutral-100'
+              }`}>
+                <div className="flex items-center gap-2.5">
+                  <img
+                    src="/src/assets/images/cs_logo_transparent.png"
+                    alt="CS Associates"
+                    className="w-7 h-7 object-contain"
+                  />
+                  <span className={`font-extrabold font-display text-sm tracking-tight uppercase ${
+                    isDark ? 'text-white' : 'text-neutral-950'
+                  }`}>
+                    CS Associates PMC
+                  </span>
+                </div>
+
+                <span className={`text-[11px] font-mono ${
+                  isDark ? 'text-neutral-400' : 'text-neutral-500'
+                }`}>
+                  Mon – Sat · 9 AM – 7:30 PM
+                </span>
+              </div>
+
+              {/* Form Content / Submission State */}
+              <div className="py-6">
+                {submitted ? (
+                  <div className="py-8 text-center space-y-4">
+                    <div className={`w-16 h-16 rounded-full mx-auto flex items-center justify-center ${
+                      isDark 
+                        ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-500/30' 
+                        : 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+                    }`}>
+                      <CheckCircle2 className="w-8 h-8" />
+                    </div>
+
+                    <h3 className={`text-2xl font-black font-display ${
+                      isDark ? 'text-white' : 'text-neutral-950'
+                    }`}>
+                      Consultation Request Received
+                    </h3>
+
+                    <p className={`text-sm max-w-md mx-auto leading-relaxed font-sans ${
+                      isDark ? 'text-neutral-300' : 'text-neutral-600'
+                    }`}>
+                      Thank you, <strong className={isDark ? 'text-white' : 'text-neutral-950'}>{formData.name}</strong>. Mr. Kiran Dikshit L and our lead civil engineers will review your project parameters and contact you at <strong className={isDark ? 'text-white' : 'text-neutral-950'}>{formData.phone}</strong> within 4 business hours.
+                    </p>
+
+                    <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+                      <button
+                        onClick={handleSendToWhatsApp}
+                        className="w-full sm:w-auto px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider font-mono rounded-xl shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95"
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        <span>Forward Details to WhatsApp</span>
+                      </button>
+
+                      <button
+                        onClick={() => setSubmitted(false)}
+                        className={`w-full sm:w-auto px-6 py-3 rounded-xl text-xs font-semibold transition-colors cursor-pointer font-mono ${
+                          isDark 
+                            ? 'text-neutral-300 bg-neutral-800 hover:bg-neutral-700' 
+                            : 'text-neutral-700 bg-neutral-100 hover:bg-neutral-200'
+                        }`}
+                      >
+                        Submit Another Inquiry
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                      <h3 className={`text-2xl sm:text-3xl font-black font-display tracking-tight ${
+                        isDark ? 'text-white' : 'text-neutral-950'
+                      }`}>
+                        Schedule Site Consultation
+                      </h3>
+                      <p className={`text-xs sm:text-sm mt-1 font-sans ${
+                        isDark ? 'text-neutral-400' : 'text-neutral-600'
+                      }`}>
+                        Fill in your project details for an itemized feasibility analysis and PMC scope review.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
+                      <div>
+                        <label className={labelClass}>
+                          Your Full Name *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="e.g. Dr. Lakshmi / Arvind Kumar"
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          className={inputClass}
+                        />
+                      </div>
+
+                      <div>
+                        <label className={labelClass}>
+                          Phone / WhatsApp Number *
+                        </label>
+                        <input
+                          type="tel"
+                          required
+                          placeholder="e.g. +91 9845012345"
+                          value={formData.phone}
+                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                          className={inputClass}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                      <div>
+                        <label className={labelClass}>
+                          Email Address
+                        </label>
+                        <input
+                          type="email"
+                          placeholder="e.g. client@example.com"
+                          value={formData.email}
+                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          className={inputClass}
+                        />
+                      </div>
+
+                      <div>
+                        <label className={labelClass}>
+                          Project Sector
+                        </label>
+                        <select
+                          value={formData.projectType}
+                          onChange={(e) => setFormData({ ...formData, projectType: e.target.value })}
+                          className={`${inputClass} cursor-pointer`}
+                        >
+                          <option className={isDark ? "bg-neutral-900 text-neutral-100" : ""} value="Luxury Residential Villa">Individual Luxury Villa</option>
+                          <option className={isDark ? "bg-neutral-900 text-neutral-100" : ""} value="Independent Home">Independent Family Residence</option>
+                          <option className={isDark ? "bg-neutral-900 text-neutral-100" : ""} value="Commercial Complex">Commercial / Office Complex</option>
+                          <option className={isDark ? "bg-neutral-900 text-neutral-100" : ""} value="Healthcare Facility">Healthcare / Hospital Facility</option>
+                          <option className={isDark ? "bg-neutral-900 text-neutral-100" : ""} value="Joint Development">Joint Development Landowner PMC</option>
+                          <option className={isDark ? "bg-neutral-900 text-neutral-100" : ""} value="Interior PMC">Luxury Interior PMC & Finishing</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                      <div>
+                        <label className={labelClass}>
+                          Site Location (Bengaluru / Region)
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Abbigere / Kanakapura Rd / Whitefield"
+                          value={formData.location}
+                          onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                          className={inputClass}
+                        />
+                      </div>
+
+                      <div>
+                        <label className={labelClass}>
+                          Approximate Area (Sq.Ft.)
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. 5,000 sq.ft."
+                          value={formData.area}
+                          onChange={(e) => setFormData({ ...formData, area: e.target.value })}
+                          className={inputClass}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className={labelClass}>
+                        Project Brief or Current Site Status
+                      </label>
+                      <textarea
+                        rows={2}
+                        placeholder="Mention whether drawings are ready, contractor quotes being compared, or site excavation starting..."
+                        value={formData.message}
+                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                        className={inputClass}
+                      />
+                    </div>
+
+                    {/* Primary Orange Submit Button */}
+                    <div className="pt-2 space-y-2.5">
+                      <button
+                        type="submit"
+                        className="w-full py-3.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs uppercase tracking-wider font-mono shadow-lg shadow-orange-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
+                      >
+                        <Send className="w-3.5 h-3.5" />
+                        <span>Request Consultation & Site Audit</span>
+                      </button>
+
+                      {/* "or" divider */}
+                      <div className="flex items-center gap-3">
+                        <div className={`h-[1px] flex-1 ${isDark ? 'bg-neutral-800' : 'bg-neutral-200'}`} />
+                        <span className={`text-[11px] font-mono ${isDark ? 'text-neutral-500' : 'text-neutral-400'}`}>or</span>
+                        <div className={`h-[1px] flex-1 ${isDark ? 'bg-neutral-800' : 'bg-neutral-200'}`} />
+                      </div>
+
+                      {/* Direct WhatsApp Action Button */}
+                      <button
+                        type="button"
+                        onClick={handleSendToWhatsApp}
+                        className={`w-full py-3 rounded-xl font-bold text-xs uppercase tracking-wider font-mono transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99] ${
+                          isDark
+                            ? 'bg-emerald-950/40 hover:bg-emerald-900/50 border border-emerald-500/30 text-emerald-400'
+                            : 'bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800'
+                        }`}
+                      >
+                        <MessageCircle className={`w-4 h-4 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
+                        <span>Chat Directly on WhatsApp (+91 8296266389)</span>
+                      </button>
+                    </div>
+
+                    <div className={`text-[10px] text-center font-mono pt-1 ${
+                      isDark ? 'text-neutral-500' : 'text-neutral-400'
+                    }`}>
+                      🔒 STRICT CLIENT FIDUCIARY PRIVACY · NO SUBCONTRACTOR LEAKS
+                    </div>
+                  </form>
+                )}
+              </div>
+
+              {/* Bottom Quick Contact Bar & Socials (ENTRANCE FROM BOTTOM) */}
+              <motion.div 
+                initial={{ opacity: 0, y: 25 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.15 }}
+                className={`pt-4 border-t flex flex-col gap-3 text-xs ${
+                  isDark ? 'border-neutral-800 text-neutral-400' : 'border-neutral-100 text-neutral-600'
+                }`}
+              >
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex flex-wrap items-center gap-4">
+                    <a href="tel:8296266389" className={`transition-colors flex items-center gap-1 font-mono font-medium ${
+                      isDark ? 'text-neutral-300 hover:text-orange-400' : 'text-neutral-700 hover:text-orange-600'
+                    }`}>
+                      <Phone className="w-3.5 h-3.5 text-orange-500" />
+                      <span>+91 8296266389</span>
+                    </a>
+                    <a href="tel:8095823483" className={`transition-colors flex items-center gap-1 font-mono font-medium ${
+                      isDark ? 'text-neutral-300 hover:text-orange-400' : 'text-neutral-700 hover:text-orange-600'
+                    }`}>
+                      <Phone className="w-3.5 h-3.5 text-orange-500" />
+                      <span>+91 8095823483</span>
+                    </a>
+                    <a href="mailto:csassociates321@gmail.com" className={`transition-colors flex items-center gap-1 font-mono font-medium ${
+                      isDark ? 'text-neutral-300 hover:text-orange-400' : 'text-neutral-700 hover:text-orange-600'
+                    }`}>
+                      <Mail className="w-3.5 h-3.5 text-orange-500" />
+                      <span className="hidden sm:inline">csassociates321@gmail.com</span>
+                      <span className="sm:hidden">Email</span>
+                    </a>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <a
+                      href="https://www.instagram.com/csassociates_blr/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                        isDark 
+                          ? 'bg-neutral-800/80 hover:bg-neutral-700 text-neutral-300 hover:text-white border border-neutral-700/60' 
+                          : 'bg-neutral-100 hover:bg-neutral-200 text-neutral-700'
+                      }`}
+                      title="Instagram @csassociates_blr"
+                    >
+                      <Instagram className="w-3.5 h-3.5" />
+                    </a>
+                    <a
+                      href="https://www.facebook.com/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                        isDark 
+                          ? 'bg-neutral-800/80 hover:bg-neutral-700 text-neutral-300 hover:text-white border border-neutral-700/60' 
+                          : 'bg-neutral-100 hover:bg-neutral-200 text-neutral-700'
+                      }`}
+                      title="Facebook"
+                    >
+                      <Facebook className="w-3.5 h-3.5" />
+                    </a>
+                  </div>
+                </div>
+
+                <div className={`flex items-center justify-between gap-2 pt-2 border-t text-[11px] ${
+                  isDark ? 'border-neutral-800/80 text-neutral-400' : 'border-neutral-100 text-neutral-500'
+                }`}>
+                  <div className="flex items-center gap-1.5 truncate">
+                    <MapPin className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+                    <span className="truncate">1678, NISARGA 4th Cross 5th Stage First Phase, BEML Layout, Rajarajeshwarinagar, Bengaluru 560098</span>
+                  </div>
+                  <a
+                    href="https://www.google.com/maps/search/?api=1&query=1678+NISARGA+4th+Cross+5th+Stage+First+Phase+BEML+Layout+Rajarajeshwarinagar+Bengaluru+560098"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`font-mono font-semibold shrink-0 flex items-center gap-1 hover:underline ${
+                      isDark ? 'text-orange-400 hover:text-orange-300' : 'text-orange-600 hover:text-orange-700'
+                    }`}
+                  >
+                    <span>View Map</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </a>
+                </div>
+              </motion.div>
+
+            </motion.div>
+
           </div>
-
-        </div>
-
-        {/* Footer Contacts */}
-        <div className="mt-8 pt-6 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs sm:text-sm text-neutral-600 font-medium">
-          <a href="tel:+918296266389" className="flex items-center gap-2 hover:text-[#ff5500] transition-colors">
-            <Phone className="w-4 h-4 text-orange-500" />
-            <span>+91 8296266389</span>
-          </a>
-          <a href="tel:+918086823483" className="flex items-center gap-2 hover:text-[#ff5500] transition-colors">
-            <Phone className="w-4 h-4 text-orange-500" />
-            <span>+91 8086823483</span>
-          </a>
-          <a href="mailto:csassociates321@gmail.com" className="flex items-center gap-2 hover:text-[#ff5500] transition-colors">
-            <Mail className="w-4 h-4 text-orange-500" />
-            <span>csassociates321@gmail.com</span>
-          </a>
         </div>
 
       </div>
-
-      {/* Toast Confirmation */}
-      {showToast && (
-        <div className="fixed top-6 right-6 z-50 transition-all duration-300 pointer-events-none">
-          <div className="bg-neutral-900 border border-neutral-700 text-white px-5 py-4 rounded-xl shadow-2xl flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
-              <Check className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="font-bold text-sm">Consultation Request Received!</p>
-              <p className="text-xs text-neutral-400">Our civil engineering auditor will contact you shortly.</p>
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 };
