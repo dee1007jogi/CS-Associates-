@@ -159,37 +159,7 @@
     </div>
   </div>
 
-  <!-- Interactive Bottom Click & Scroll Action Hub -->
-  <div id="scroll-prompt" class="fixed bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-1.5 sm:gap-2 pointer-events-auto transition-all duration-300">
-    <!-- Click & Scroll Main Button -->
-    <button
-      id="btn-click-and-scroll"
-      class="group flex items-center gap-2 sm:gap-2.5 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full bg-gradient-to-r from-orange-600 via-orange-500 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold text-xs sm:text-sm tracking-wide shadow-[0_10px_30px_rgba(249,115,22,0.45)] border border-orange-400/40 hover:scale-105 active:scale-95 transition-all cursor-pointer backdrop-blur-xl"
-      title="Click to activate and scroll through construction phases"
-    >
-      <span class="w-2 h-2 rounded-full bg-white animate-ping shrink-0"></span>
-      <span id="click-scroll-label" class="whitespace-nowrap">Click &amp; Scroll to Inspect</span>
-      <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white group-hover:translate-y-0.5 transition-transform animate-bounce shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-      </svg>
-    </button>
 
-    <!-- Phase Quick Switcher Pills -->
-    <div class="flex items-center gap-1 sm:gap-1.5 p-1 rounded-2xl bg-slate-950/90 backdrop-blur-xl border border-orange-500/30 shadow-xl">
-      <button class="phase-pill px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-xl text-[9px] sm:text-xs font-semibold text-neutral-300 hover:text-white hover:bg-orange-500/20 transition-all cursor-pointer" data-target="0.0">
-        01 Substructure
-      </button>
-      <button class="phase-pill px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-xl text-[9px] sm:text-xs font-semibold text-neutral-300 hover:text-white hover:bg-orange-500/20 transition-all cursor-pointer" data-target="0.33">
-        02 Framing
-      </button>
-      <button class="phase-pill px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-xl text-[9px] sm:text-xs font-semibold text-neutral-300 hover:text-white hover:bg-orange-500/20 transition-all cursor-pointer" data-target="0.66">
-        03 MEP
-      </button>
-      <button class="phase-pill px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-xl text-[9px] sm:text-xs font-semibold text-neutral-300 hover:text-white hover:bg-orange-500/20 transition-all cursor-pointer" data-target="1.0">
-        04 Finish
-      </button>
-    </div>
-  </div>
 
   <!-- 
     ========================================================================
@@ -1479,98 +1449,6 @@
         if (hudRightDetail) hudRightDetail.textContent = "200-Point Quality Sign-Off · Keys Handover";
       }
 
-      // Update Click & Scroll Button label and active phase pill
-      const clickScrollLabel = document.getElementById('click-scroll-label');
-      const phasePills = document.querySelectorAll('.phase-pill');
-      let currentPhaseIdx = 0;
-      if (t < 0.22) {
-        currentPhaseIdx = 0;
-        if (clickScrollLabel) clickScrollLabel.textContent = "Click & Scroll: Phase 02 Framing ▾";
-      } else if (t < 0.48) {
-        currentPhaseIdx = 1;
-        if (clickScrollLabel) clickScrollLabel.textContent = "Click & Scroll: Phase 03 MEP ▾";
-      } else if (t < 0.74) {
-        currentPhaseIdx = 2;
-        if (clickScrollLabel) clickScrollLabel.textContent = "Click & Scroll: Phase 04 Finish ▾";
-      } else {
-        currentPhaseIdx = 3;
-        if (clickScrollLabel) clickScrollLabel.textContent = "Click & Scroll: Restart ↺";
-      }
-
-      phasePills.forEach((p, idx) => {
-        if (idx === currentPhaseIdx) {
-          p.className = "phase-pill px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-xl text-[9px] sm:text-xs font-bold bg-orange-500 text-white shadow-md transition-all cursor-pointer";
-        } else {
-          p.className = "phase-pill px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-xl text-[9px] sm:text-xs font-semibold text-neutral-300 hover:text-white hover:bg-orange-500/20 transition-all cursor-pointer";
-        }
-      });
-    }
-
-    // Calculate Scroll Progress based on window position within track
-    const scrollTrack = document.getElementById('scroll-track');
-    window.addEventListener('scroll', () => {
-      const trackRect = scrollTrack.getBoundingClientRect();
-      const trackHeight = scrollTrack.offsetHeight - window.innerHeight;
-      const scrolled = -trackRect.top;
-      targetScrollProgress = Math.max(0, Math.min(1, scrolled / trackHeight));
-
-      if (targetScrollProgress < 0.98) {
-        activeRoomCam = null;
-      }
-    });
-
-    // Click & Scroll Main Button Navigation
-    const btnClickScroll = document.getElementById('btn-click-and-scroll');
-    if (btnClickScroll) {
-      btnClickScroll.addEventListener('click', () => {
-        window.focus();
-        const trackHeight = scrollTrack.offsetHeight - window.innerHeight;
-        let nextTargetPct = 0.33;
-        if (targetScrollProgress < 0.25) {
-          nextTargetPct = 0.40;
-        } else if (targetScrollProgress < 0.55) {
-          nextTargetPct = 0.70;
-        } else if (targetScrollProgress < 0.85) {
-          nextTargetPct = 1.0;
-        } else {
-          nextTargetPct = 0.0;
-        }
-        window.scrollTo({ top: nextTargetPct * trackHeight, behavior: 'smooth' });
-      });
-    }
-
-    // Phase Pills click navigation
-    const phasePills = document.querySelectorAll('.phase-pill');
-    phasePills.forEach(btn => {
-      btn.addEventListener('click', () => {
-        window.focus();
-        const targetPct = parseFloat(btn.dataset.target);
-        const trackHeight = scrollTrack.offsetHeight - window.innerHeight;
-        const targetScrollY = targetPct * trackHeight;
-        window.scrollTo({ top: targetScrollY, behavior: 'smooth' });
-      });
-    });
-
-    // Chapter Dots click navigation
-    const chapterDots = document.querySelectorAll('.chapter-dot');
-    chapterDots.forEach(btn => {
-      btn.addEventListener('click', () => {
-        window.focus();
-        const targetPct = parseFloat(btn.dataset.target);
-        const trackHeight = scrollTrack.offsetHeight - window.innerHeight;
-        const targetScrollY = targetPct * trackHeight;
-        window.scrollTo({ top: targetScrollY, behavior: 'smooth' });
-      });
-    });
-
-    // Skip to interior button in top bar
-    const btnJumpInterior = document.getElementById('btn-jump-interior');
-    if (btnJumpInterior) {
-      btnJumpInterior.addEventListener('click', () => {
-        window.focus();
-        const trackHeight = scrollTrack.offsetHeight - window.innerHeight;
-        window.scrollTo({ top: trackHeight, behavior: 'smooth' });
-      });
     }
 
     // Window Resize Handling
@@ -1583,12 +1461,17 @@
     });
 
     let isSceneVisible = true;
+    let isAutoPlaying = true;
+    let holdCompletedTimer = 0;
 
     // IntersectionObserver to pause Three.js loop when off-screen
     if ('IntersectionObserver' in window) {
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           isSceneVisible = entry.isIntersecting;
+          if (entry.isIntersecting) {
+            isAutoPlaying = true;
+          }
         });
       }, { threshold: 0.01 });
       observer.observe(container);
@@ -1598,24 +1481,19 @@
       if (!event.data) return;
       if (event.data.type === 'SET_VISIBILITY') {
         isSceneVisible = Boolean(event.data.isVisible);
-      } else if (event.data.type === 'SCROLL_DELTA') {
-        const trackHeight = scrollTrack.offsetHeight - window.innerHeight;
-        const nextY = Math.max(0, Math.min(trackHeight, window.scrollY + event.data.deltaY));
-        window.scrollTo({ top: nextY, behavior: 'auto' });
-      } else if (event.data.type === 'STEP_PHASE') {
-        window.focus();
-        const trackHeight = scrollTrack.offsetHeight - window.innerHeight;
-        let nextTargetPct = 0.33;
-        if (targetScrollProgress < 0.25) {
-          nextTargetPct = 0.40;
-        } else if (targetScrollProgress < 0.55) {
-          nextTargetPct = 0.70;
-        } else if (targetScrollProgress < 0.85) {
-          nextTargetPct = 1.0;
-        } else {
-          nextTargetPct = 0.0;
+        if (event.data.isVisible) {
+          isAutoPlaying = true;
         }
-        window.scrollTo({ top: nextTargetPct * trackHeight, behavior: 'smooth' });
+      } else if (event.data.type === 'SET_PROGRESS') {
+        if (typeof event.data.progress === 'number') {
+          targetScrollProgress = Math.max(0, Math.min(1, event.data.progress));
+          isAutoPlaying = false;
+        }
+      } else if (event.data.type === 'AUTO_START') {
+        isAutoPlaying = true;
+      } else if (event.data.type === 'SCROLL_DELTA') {
+        isAutoPlaying = false;
+        targetScrollProgress = Math.max(0, Math.min(1, targetScrollProgress + event.data.deltaY * 0.0015));
       }
     });
 
@@ -1643,6 +1521,19 @@
 
       const delta = clock.getDelta();
       const elapsedTime = clock.getElapsedTime();
+
+      // Automatic architectural assembly progression when in view (no click needed!)
+      if (isSceneVisible && isAutoPlaying) {
+        if (targetScrollProgress < 1.0) {
+          targetScrollProgress = Math.min(1.0, targetScrollProgress + delta * 0.075);
+        } else {
+          holdCompletedTimer += delta;
+          if (holdCompletedTimer > 4.0) {
+            targetScrollProgress = 0.0;
+            holdCompletedTimer = 0;
+          }
+        }
+      }
 
       // Smooth damped interpolation towards target scroll progress
       currentScrollProgress += (targetScrollProgress - currentScrollProgress) * 0.08;
