@@ -35,8 +35,8 @@ export const FounderSection: React.FC<FounderSectionProps> = ({
         setTimeout(() => {
           setCylinderOpacity(0);
           setIsRolling(false);
-        }, 2800);
-      }, 120);
+        }, 3950);
+      }, 140);
     });
   }, [isRolling]);
 
@@ -54,8 +54,8 @@ export const FounderSection: React.FC<FounderSectionProps> = ({
         setTimeout(() => {
           setIsRolling(false);
           if (callback) callback();
-        }, 2600);
-      }, 80);
+        }, 3650);
+      }, 100);
     });
   }, [isRolling]);
 
@@ -190,9 +190,14 @@ export const FounderSection: React.FC<FounderSectionProps> = ({
                   opacity: cylinderOpacity
                 }}
               >
+                {/* Rotating surface sheen simulating rolling motion */}
+                <div className="roll-cylinder-surface" />
+                {/* Trailing Paper Curl Soft Shadow */}
+                <div className="roll-curl-shadow" />
+                {/* Architectural Turned Copper Caps */}
                 <div className="roll-cylinder-cap-left" />
                 <div className="roll-cylinder-cap-right" />
-                <div className="absolute inset-x-8 top-1/2 -translate-y-1/2 h-[2px] bg-white/40" />
+                <div className="absolute inset-x-8 top-1/2 -translate-y-1/2 h-[1.5px] bg-white/50" />
               </div>
 
               {/* Main Rolled Sheet Card */}
