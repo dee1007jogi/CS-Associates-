@@ -96,7 +96,11 @@ export const ConstructionHero3D: React.FC<ConstructionHero3DProps> = ({
         targetProgressRef.current = Math.min(1.0, targetProgressRef.current + deltaY * SCROLL_SENSITIVITY);
       } else {
         if (!preventDefaultFn) {
-          window.scrollBy({ top: deltaY, behavior: 'auto' });
+          if (window.__lenis) {
+            window.__lenis.scrollTo(window.scrollY + deltaY * 1.2, { immediate: false, duration: 0.6 });
+          } else {
+            window.scrollBy({ top: deltaY, behavior: 'smooth' });
+          }
         }
       }
     } else if (deltaY < 0) {
@@ -150,9 +154,9 @@ export const ConstructionHero3D: React.FC<ConstructionHero3DProps> = ({
           // Native smooth mobile scroll forwarded from 3D viewport without locking
           const dy = event.data.deltaY;
           if (window.__lenis) {
-            window.__lenis.scrollTo(window.scrollY + dy * 1.15, { immediate: true });
+            window.__lenis.scrollTo(window.scrollY + dy * 1.15, { immediate: false, duration: 0.5 });
           } else {
-            window.scrollBy({ top: dy * 1.15, behavior: 'auto' });
+            window.scrollBy({ top: dy * 1.15, behavior: 'smooth' });
           }
         } else if (event.data.type === 'RESET_VIEW') {
           targetProgressRef.current = 0;
