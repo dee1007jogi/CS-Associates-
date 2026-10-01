@@ -1,21 +1,13 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { ChevronDown, Phone, ArrowUpRight } from 'lucide-react';
+import { Phone, ArrowUpRight } from 'lucide-react';
 
 interface ConstructionHero3DProps {
   onOpenConsultation?: () => void;
   nextSectionId?: string;
 }
 
-const STAGES = [
-  { index: 0, label: '01 Axis', fullLabel: '01 Front Axis', p: 0.0 },
-  { index: 1, label: '02 West', fullLabel: '02 West Elevation', p: 0.33 },
-  { index: 2, label: '03 Skyline', fullLabel: '03 Rear Skyline', p: 0.66 },
-  { index: 3, label: '04 Crane', fullLabel: '04 Summit Crane', p: 1.0 },
-];
-
 export const ConstructionHero3D: React.FC<ConstructionHero3DProps> = ({
   onOpenConsultation,
-  nextSectionId = 'stats-overview'
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -26,60 +18,6 @@ export const ConstructionHero3D: React.FC<ConstructionHero3DProps> = ({
   const currentProgressRef = useRef(0);
   const lastSentProgressRef = useRef(-1);
   const animFrameRef = useRef<number | null>(null);
-
-  const scrollToNextSection = useCallback(() => {
-    if (window.__lenis) {
-      window.__lenis.scrollTo('#' + nextSectionId, { duration: 1.2, offset: -70 });
-      return;
-    }
-    const el = document.getElementById(nextSectionId);
-    if (el) {
-      const topOffset = el.getBoundingClientRect().top + window.scrollY - 70;
-      window.scrollTo({ top: topOffset, behavior: 'smooth' });
-    } else {
-      window.scrollTo({
-        top: window.innerHeight,
-        behavior: 'smooth'
-      });
-    }
-  }, [nextSectionId]);
-
-  const handleSelectStage = useCallback((index: number) => {
-    const stg = STAGES[index];
-    if (!stg) return;
-    targetProgressRef.current = stg.p;
-    setActiveStage(stg.index);
-    if (iframeRef.current && iframeRef.current.contentWindow) {
-      iframeRef.current.contentWindow.postMessage(
-        {
-          type: 'GOTO_STAGE',
-          index: stg.index,
-          duration: 1100
-        },
-        '*'
-      );
-    }
-  }, []);
-
-  // Step through the 3D stages, and once complete, smoothly scroll to Section 02
-  const handleExploreButtonClick = useCallback(() => {
-    if (isTourComplete || targetProgressRef.current >= 0.95) {
-      scrollToNextSection();
-      return;
-    }
-
-    const currentP = targetProgressRef.current;
-    let nextIdx = 1;
-    if (currentP < 0.28) {
-      nextIdx = 1;
-    } else if (currentP < 0.60) {
-      nextIdx = 2;
-    } else {
-      nextIdx = 3;
-    }
-
-    handleSelectStage(nextIdx);
-  }, [isTourComplete, scrollToNextSection, handleSelectStage]);
 
   // Smooth continuous lerp loop that streams progress to the 3D scene without stopping or discrete locks
   useEffect(() => {
@@ -288,33 +226,8 @@ export const ConstructionHero3D: React.FC<ConstructionHero3DProps> = ({
       {/* Top spacer for breathing room below sticky header */}
       <div className="h-10 pointer-events-none" />
 
-      {/* Bottom Action HUD: Stage Viewpoint Switcher & Explore Navigation */}
-      <div className="relative z-20 px-3.5 sm:px-6 pointer-events-none pb-6 sm:pb-8 flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-3">
-        {/* Architectural Viewpoint Switcher Pills - Hidden on mobile */}
-        <div className="pointer-events-auto hidden sm:flex items-center gap-1 sm:gap-1.5 p-1 rounded-2xl bg-neutral-900/85 backdrop-blur-xl border border-white/10 shadow-lg">
-          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-400 px-2 hidden lg:inline">
-            3D Angles:
-          </span>
-          {STAGES.map((stg) => {
-            const isActive = activeStage === stg.index;
-            return (
-              <button
-                key={stg.index}
-                onClick={() => handleSelectStage(stg.index)}
-                className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl text-[10px] sm:text-xs font-semibold transition-all cursor-pointer ${
-                  isActive
-                    ? 'bg-amber-500 text-neutral-950 font-bold shadow-md scale-[1.02]'
-                    : 'text-neutral-300 hover:text-white hover:bg-white/10'
-                }`}
-                title={`Fly to ${stg.fullLabel}`}
-              >
-                <span className="sm:hidden">{stg.label}</span>
-                <span className="hidden sm:inline">{stg.fullLabel}</span>
-              </button>
-            );
-          })}
-        </div>
-
+      {/* Bottom Action HUD: Mobile Call & Consult Buttons */}
+      <div className="relative z-20 px-3.5 sm:px-6 pointer-events-none pb-6 sm:pb-8 flex flex-col items-center justify-center">
         {/* Mobile Action Buttons: Call & Consult (Positioned higher above the trees) */}
         <div className="pointer-events-auto flex sm:hidden items-center justify-center gap-2.5 w-full max-w-xs mb-44 sm:mb-0">
           <a
@@ -334,18 +247,6 @@ export const ConstructionHero3D: React.FC<ConstructionHero3DProps> = ({
             <ArrowUpRight className="w-3.5 h-3.5" />
           </button>
         </div>
-
-        {/* Next Section / Explore CTA Button - Desktop & Tablet */}
-        <button
-          onClick={handleExploreButtonClick}
-          className="pointer-events-auto hidden sm:flex group bg-white/95 hover:bg-white px-4 py-2 sm:py-2.5 rounded-2xl items-center gap-2 text-xs font-bold text-neutral-900 hover:text-orange-600 border border-white/80 shadow-xl transition-all hover:scale-105 active:scale-95 cursor-pointer backdrop-blur-xl shrink-0"
-          title={isTourComplete ? 'Continue to specifications' : 'Click or scroll down to explore 3D viewpoints'}
-        >
-          <span>{isTourComplete ? 'Explore Specifications' : 'Scroll Down to Explore'}</span>
-          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-neutral-900 text-white flex items-center justify-center group-hover:bg-orange-500 transition-colors">
-            <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-y-0.5 transition-transform" />
-          </div>
-        </button>
       </div>
 
       {/* Frosted Bottom Blur Tile & Seamless Gradient Seam */}
