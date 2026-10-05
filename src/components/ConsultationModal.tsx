@@ -24,7 +24,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({ isOpen, on
 
   const handleWhatsAppDirect = () => {
     const text = `Hello CS Associates,%0A%0AMy Name: ${name}%0APhone: ${phone}%0AProject Sector: ${sector}%0AEstimated Area: ${area || 'Not specified'}%0AI would like to schedule a PMC feasibility consultation with Mr. Kiran Dikshit L.`;
-    window.open(`https://wa.me/918296266389?text=${text}`, '_blank');
+    window.open(`https://wa.me/918095823483?text=${text}`, '_blank');
   };
 
   return (
@@ -112,7 +112,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({ isOpen, on
                 <input
                   type="tel"
                   required
-                  placeholder="e.g. 8296266389"
+                  placeholder="e.g. 8095823483"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   className="w-full h-11 bg-neutral-950 border border-neutral-800 rounded-xl px-3.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-orange-500"

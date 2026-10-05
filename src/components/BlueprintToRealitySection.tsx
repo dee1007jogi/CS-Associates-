@@ -72,13 +72,26 @@ export const BlueprintToRealitySection: React.FC<BlueprintToRealitySectionProps>
       ScrollTrigger.refresh();
     };
 
+    const handleVisibility = () => {
+      if (document.hidden) {
+        postToIframe({ type: 'SET_VISIBILITY', isVisible: false });
+      } else {
+        if (trigger.isActive) {
+          postToIframe({ type: 'SET_VISIBILITY', isVisible: true });
+        }
+      }
+    };
+
     window.addEventListener('resize', handleResize);
+    document.addEventListener('visibilitychange', handleVisibility);
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      document.removeEventListener('visibilitychange', handleVisibility);
       if (lenis) {
         lenis.off('scroll', handleLenisScroll);
       }
+      postToIframe({ type: 'SET_VISIBILITY', isVisible: false });
       trigger.kill();
     };
   }, []);

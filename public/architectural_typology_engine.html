@@ -1307,10 +1307,22 @@
 
     const clock = new THREE.Clock();
 
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        clock.stop();
+      } else {
+        clock.start();
+      }
+    });
+
     function animate() {
       requestAnimationFrame(animate);
 
-      const delta = clock.getDelta();
+      if (document.hidden) return;
+
+      // Clamp delta to a max of 0.1s (100ms) to prevent simulation freeze/spikes
+      const rawDelta = clock.getDelta();
+      const delta = Math.min(rawDelta, 0.1);
 
       if (isAutoTour) {
         tourClock += delta * 0.28;

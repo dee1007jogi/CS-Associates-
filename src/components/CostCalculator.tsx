@@ -40,7 +40,7 @@ export const CostCalculator: React.FC<CostCalculatorProps> = ({
 
   const shareEstimateToWhatsApp = () => {
     const text = `Hello CS Associates, I calculated an estimate on your website:%0A- Project: ${projectType.toUpperCase()}%0A- Area: ${areaSqFt.toLocaleString()} sq.ft.%0A- Grade: ${specGrade}%0A- Est. Cost: ${formatLakhs(estimatedBuildCost)}%0A- Projected Savings: ${formatLakhs(projectedSavings)}%0AI would like to discuss my project.`;
-    window.open(`https://wa.me/918296266389?text=${text}`, '_blank');
+    window.open(`https://wa.me/918095823483?text=${text}`, '_blank');
   };
 
   return (

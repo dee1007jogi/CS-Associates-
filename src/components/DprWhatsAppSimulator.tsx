@@ -348,7 +348,7 @@ export const DprWhatsAppSimulator: React.FC = () => {
               {/* WhatsApp Quick Action CTA */}
               <div className="pt-2 flex flex-col sm:flex-row gap-3">
                 <a
-                  href={`https://wa.me/918296266389?text=Hello%20CS%20Associates%2C%20I%20reviewed%20the%20live%20WhatsApp%20DPR%20demo%20for%20${encodeURIComponent(currentDpr.project)}%20and%20want%20to%20know%20how%20this%20works%20for%20my%20plot.`}
+                  href={`https://wa.me/918095823483?text=Hello%20CS%20Associates%2C%20I%20reviewed%20the%20live%20WhatsApp%20DPR%20demo%20for%20${encodeURIComponent(currentDpr.project)}%20and%20want%20to%20know%20how%20this%20works%20for%20my%20plot.`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs sm:text-sm py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/50 transition-all cursor-pointer group"

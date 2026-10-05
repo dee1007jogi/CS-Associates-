@@ -146,6 +146,8 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onOpenConsultation }
         description="Have architectural blueprints ready or an active construction site requiring independent civil supervision? Talk directly with Mr. Kiran Dikshit L for an unvarnished audit of your bill of quantities (BOQ) and structural schedule."
         backgroundImage="/src/assets/images/pmc_site_inspection_engineer.jpg"
         breadcrumbLabel="Services"
+        focusTag="ON-SITE CIVIL AUDIT · PMC DESK"
+        focusSubtitle="Independent Field Supervision & BOQ Audits"
         primaryActionLabel="Schedule Discovery Call"
         onPrimaryAction={onOpenConsultation}
         stats={[
@@ -554,11 +556,11 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onOpenConsultation }
               </button>
 
               <a
-                href="tel:+918296266389"
+                href="tel:+918095823483"
                 className="px-5 py-3.5 rounded-xl border border-neutral-300 hover:border-orange-500 text-xs sm:text-sm font-semibold text-neutral-800 hover:text-orange-600 transition-all flex items-center gap-2 bg-neutral-50 hover:bg-neutral-100 shadow-sm"
               >
                 <Phone className="w-4 h-4 text-orange-500" />
-                <span>+91 82962 66389</span>
+                <span>+91 80958 23483</span>
               </a>
             </div>
           </div>

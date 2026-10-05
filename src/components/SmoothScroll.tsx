@@ -24,8 +24,13 @@ export const SmoothScroll: React.FC = () => {
     window.__lenis = lenis;
 
     let animId: number;
+    let isMounted = true;
+
     function raf(time: number) {
-      lenis.raf(time);
+      if (!isMounted) return;
+      if (!document.hidden) {
+        lenis.raf(time);
+      }
       animId = requestAnimationFrame(raf);
     }
 
@@ -51,6 +56,7 @@ export const SmoothScroll: React.FC = () => {
     document.addEventListener('click', handleAnchorClick);
 
     return () => {
+      isMounted = false;
       document.removeEventListener('click', handleAnchorClick);
       cancelAnimationFrame(animId);
       lenis.destroy();

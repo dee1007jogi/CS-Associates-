@@ -20,8 +20,8 @@ import {
 import { motion } from 'framer-motion';
 
 const fullAddress = '1678, NISARGA 4th Cross 5th Stage First Phase, BEML Layout, Rajarajeshwarinagar, Bengaluru 560098';
-const primaryPhone = '+91 8296266389';
-const secondaryPhone = '+91 8095823483';
+const primaryPhone = '+91 8095823483';
+const secondaryPhone = '+91 8296266389';
 const emailAddress = 'csassociates321@gmail.com';
 const googleMapsSearchUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
 const googleMapsEmbedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(fullAddress)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
@@ -42,7 +42,7 @@ export const ContactCards: React.FC = () => {
 
   const handleWhatsAppChat = () => {
     const text = 'Hello CS Associates, I would like to consult with Mr. Kiran Dikshit L regarding PMC and site management for my project.';
-    window.open(`https://wa.me/918296266389?text=${encodeURIComponent(text)}`, '_blank');
+    window.open(`https://wa.me/918095823483?text=${encodeURIComponent(text)}`, '_blank');
   };
 
   return (
@@ -81,14 +81,14 @@ export const ContactCards: React.FC = () => {
             <div className="pt-2 space-y-2">
               <div className="flex items-center justify-between p-2 rounded-xl bg-neutral-50 border border-neutral-200/80 hover:bg-neutral-100/70 transition-colors">
                 <a
-                  href="tel:8296266389"
+                  href="tel:8095823483"
                   className="text-xs sm:text-sm font-mono font-bold text-neutral-900 hover:text-orange-600 transition-colors"
                 >
                   {primaryPhone}
                 </a>
                 <button
                   type="button"
-                  onClick={() => copyToClipboard('8296266389', 'phone1')}
+                  onClick={() => copyToClipboard('8095823483', 'phone1')}
                   className="p-1.5 rounded-md hover:bg-neutral-200 text-neutral-400 hover:text-neutral-800 transition-colors cursor-pointer"
                   title="Copy Primary Number"
                 >
@@ -97,14 +97,14 @@ export const ContactCards: React.FC = () => {
               </div>
               <div className="flex items-center justify-between p-2 rounded-xl bg-neutral-50 border border-neutral-200/80 hover:bg-neutral-100/70 transition-colors">
                 <a
-                  href="tel:8095823483"
+                  href="tel:8296266389"
                   className="text-xs sm:text-sm font-mono font-bold text-neutral-800 hover:text-orange-600 transition-colors"
                 >
                   {secondaryPhone}
                 </a>
                 <button
                   type="button"
-                  onClick={() => copyToClipboard('8095823483', 'phone2')}
+                  onClick={() => copyToClipboard('8296266389', 'phone2')}
                   className="p-1.5 rounded-md hover:bg-neutral-200 text-neutral-400 hover:text-neutral-800 transition-colors cursor-pointer"
                   title="Copy Secondary Number"
                 >

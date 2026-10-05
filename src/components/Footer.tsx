@@ -96,8 +96,8 @@ export const Footer: React.FC = () => {
               1678, NISARGA 4th Cross 5th Stage First Phase, BEML Layout, Rajarajeshwarinagar, Bengaluru 560098
             </p>
             <div className="space-y-1 text-xs">
-              <div>Phone: <a href="tel:8296266389" className="text-white hover:text-orange-400">8296266389</a></div>
-              <div>Secondary: <a href="tel:8095823483" className="text-white hover:text-orange-400">8095823483</a></div>
+              <div>Phone: <a href="tel:8095823483" className="text-white hover:text-orange-400">8095823483</a></div>
+              <div>Secondary: <a href="tel:8296266389" className="text-white hover:text-orange-400">8296266389</a></div>
               <div>Email: <a href="mailto:csassociates321@gmail.com" className="text-white hover:text-orange-400">csassociates321@gmail.com</a></div>
             </div>
           </div>

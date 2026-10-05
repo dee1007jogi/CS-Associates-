@@ -156,7 +156,7 @@ export const FounderSection: React.FC<FounderSectionProps> = ({
               {/* Bottom-Left: Contact Dial Action Box */}
               <div className="relative z-10 pt-4 flex items-center gap-3.5 border-t border-orange-500/20">
                 <a
-                  href="tel:+918296266389"
+                  href="tel:+918095823483"
                   className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 text-white flex items-center justify-center shadow-lg shadow-orange-500/25 hover:scale-105 transition-transform cursor-pointer"
                   title="Direct Phone Call"
                 >
@@ -167,10 +167,10 @@ export const FounderSection: React.FC<FounderSectionProps> = ({
                     Direct Consultation Dial
                   </div>
                   <a
-                    href="tel:+918296266389"
+                    href="tel:+918095823483"
                     className="text-base sm:text-xl font-black tracking-tight text-white hover:text-orange-300 transition-colors font-mono"
                   >
-                    +91 8296266389
+                    +91 8095823483
                   </a>
                 </div>
               </div>
@@ -243,7 +243,7 @@ export const FounderSection: React.FC<FounderSectionProps> = ({
                       </a>
 
                       <a 
-                        href="tel:+918296266389"
+                        href="tel:+918095823483"
                         aria-label="Call Office"
                         title="Direct Call"
                         className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-orange-200 bg-white text-[#f25400] flex items-center justify-center hover:bg-orange-50 hover:border-[#f25400] hover:scale-105 active:scale-95 transition-all cursor-pointer"
@@ -320,7 +320,7 @@ export const FounderSection: React.FC<FounderSectionProps> = ({
                     </div>
 
                     <a 
-                      href="https://wa.me/918296266389?text=Hello%20CS%20Associates%2C%20I%20would%20like%20to%20consult%20for%20my%20construction%20project."
+                      href="https://wa.me/918095823483?text=Hello%20CS%20Associates%2C%20I%20would%20like%20to%20consult%20for%20my%20construction%20project."
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 px-3.5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold rounded-full shadow-lg transition-transform hover:scale-105 active:scale-95 cursor-pointer"

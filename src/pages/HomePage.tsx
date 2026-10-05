@@ -1,6 +1,5 @@
 import React from 'react';
 import { Hero } from '../components/Hero';
-import { ConstructionHero3D } from '../components/ConstructionHero3D';
 import { StatsBar } from '../components/StatsBar';
 import { ServicesGallerySection } from '../components/ServicesGallerySection';
 import { FounderSection } from '../components/FounderSection';
@@ -49,12 +48,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenConsultation }) => {
 
   return (
     <div className="space-y-0 overflow-x-clip font-sans">
-      {/* SECTION 01: Hero Section - 3D Architectural Metropolis Construction Simulation with Scroll Zoom */}
-      <div id="top" className="bg-neutral-950 relative">
-        <ConstructionHero3D onOpenConsultation={onOpenConsultation} nextSectionId="stats-overview" />
-        <div id="stats-overview" className="relative z-20 pt-4 pb-12">
-          <StatsBar theme="dark" />
-        </div>
+      {/* SECTION 01: Hero Section Spacer (Persistent 3D Architectural Simulation shines through from background) */}
+      <div id="top" className="relative w-full h-[88vh] sm:h-screen min-h-[580px] sm:min-h-[640px] max-h-[1050px] bg-transparent pointer-events-none" />
+      
+      {/* SECTION 01.5: Key Specs Stats Bar */}
+      <div id="stats-overview" className="relative z-20 pt-4 pb-12 bg-neutral-950">
+        <StatsBar theme="dark" />
       </div>
 
       {/* SECTION 02: Services Interactive Gallery - As cards scroll below, top showcase dynamically updates */}

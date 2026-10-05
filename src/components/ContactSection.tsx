@@ -42,7 +42,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }
 
   const handleSendToWhatsApp = () => {
     const text = `Hello CS Associates,%0A%0AMy Name: ${formData.name}%0APhone: ${formData.phone}%0AEmail: ${formData.email || 'N/A'}%0AProject Sector: ${formData.projectType}%0ALocation: ${formData.location || 'Bengaluru'}%0AApprox Area: ${formData.area || 'N/A'}%0AMessage: ${formData.message || 'I would like to schedule a PMC consultation.'}`;
-    window.open(`https://wa.me/918296266389?text=${text}`, '_blank');
+    window.open(`https://wa.me/918095823483?text=${text}`, '_blank');
   };
 
   const inputClass = isDark
@@ -463,7 +463,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }
                         }`}
                       >
                         <MessageCircle className={`w-4 h-4 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
-                        <span>Chat Directly on WhatsApp (+91 8296266389)</span>
+                        <span>Chat Directly on WhatsApp (+91 8095823483)</span>
                       </button>
                     </div>
 
@@ -488,17 +488,17 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex flex-wrap items-center gap-4">
-                    <a href="tel:8296266389" className={`transition-colors flex items-center gap-1 font-mono font-medium ${
-                      isDark ? 'text-neutral-300 hover:text-orange-400' : 'text-neutral-700 hover:text-orange-600'
-                    }`}>
-                      <Phone className="w-3.5 h-3.5 text-orange-500" />
-                      <span>+91 8296266389</span>
-                    </a>
                     <a href="tel:8095823483" className={`transition-colors flex items-center gap-1 font-mono font-medium ${
                       isDark ? 'text-neutral-300 hover:text-orange-400' : 'text-neutral-700 hover:text-orange-600'
                     }`}>
                       <Phone className="w-3.5 h-3.5 text-orange-500" />
                       <span>+91 8095823483</span>
+                    </a>
+                    <a href="tel:8296266389" className={`transition-colors flex items-center gap-1 font-mono font-medium ${
+                      isDark ? 'text-neutral-300 hover:text-orange-400' : 'text-neutral-700 hover:text-orange-600'
+                    }`}>
+                      <Phone className="w-3.5 h-3.5 text-orange-500" />
+                      <span>+91 8296266389</span>
                     </a>
                     <a href="mailto:csassociates321@gmail.com" className={`transition-colors flex items-center gap-1 font-mono font-medium ${
                       isDark ? 'text-neutral-300 hover:text-orange-400' : 'text-neutral-700 hover:text-orange-600'

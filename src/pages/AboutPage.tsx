@@ -136,6 +136,8 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenConsultation }) => {
         description="Bengaluru’s authoritative Project Management Consultancy — safeguarding capital, guaranteeing structural perfection, and delivering turnkey peace of mind for over 25 years under the direct stewardship of Mr. Kiran Dikshit L."
         backgroundImage="/src/assets/images/about_hero_leadership.jpg"
         breadcrumbLabel="About Us"
+        focusTag="DIRECTOR'S DESK · ENGINEERING LEADERSHIP"
+        focusSubtitle="25+ Years Safeguarding Bengaluru Capital"
         primaryActionLabel="Schedule Discovery Call"
         onPrimaryAction={onOpenConsultation}
         stats={[
@@ -282,7 +284,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenConsultation }) => {
               </button>
 
               <a
-                href="https://wa.me/918296266389?text=Hello%20CS%20Associates%2C%20I%20would%20like%20to%20consult%20on%20my%20construction%20project."
+                href="https://wa.me/918095823483?text=Hello%20CS%20Associates%2C%20I%20would%20like%20to%20consult%20on%20my%20construction%20project."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-5 py-3.5 rounded-xl border border-[#e5dbcb] hover:border-neutral-900 text-xs sm:text-sm font-semibold text-neutral-800 hover:text-neutral-950 transition-all flex items-center gap-2 bg-[#f7f4ee] hover:bg-[#ebe3d5]"
@@ -845,11 +847,11 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenConsultation }) => {
               </button>
 
               <a
-                href="tel:+918296266389"
+                href="tel:+918095823483"
                 className="px-5 py-3.5 rounded-xl border border-neutral-700 hover:border-orange-500 text-xs sm:text-sm font-semibold text-[#f7f4ee] hover:text-white transition-all flex items-center gap-2 bg-neutral-900/80"
               >
                 <Phone className="w-4 h-4 text-orange-400" />
-                <span>+91 82962 66389</span>
+                <span>+91 80958 23483</span>
               </a>
             </div>
 

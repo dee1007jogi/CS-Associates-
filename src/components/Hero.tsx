@@ -197,13 +197,13 @@ export const Hero: React.FC<HeroProps> = ({ onOpenConsultation }) => {
                     </button>
 
                     <a
-                      href="https://wa.me/918296266389?text=Hello%20CS%20Associates%2C%20I%20would%20like%20to%20discuss%20PMC%20for%20my%20construction%20project."
+                      href="https://wa.me/918095823483?text=Hello%20CS%20Associates%2C%20I%20would%20like%20to%20discuss%20PMC%20for%20my%20construction%20project."
                       target="_blank"
                       rel="noopener noreferrer"
                       className="min-h-[46px] px-4 py-3 glass-panel text-white hover:text-orange-400 border border-white/15 font-semibold text-xs sm:text-sm rounded-xl transition-all flex items-center justify-center gap-2 active:scale-95"
                     >
                       <PhoneCall className="w-3.5 h-3.5 text-emerald-400" />
-                      <span className="hidden sm:inline">Direct: 8296266389</span>
+                      <span className="hidden sm:inline">Direct: 8095823483</span>
                       <span className="sm:hidden">WhatsApp</span>
                     </a>
                   </div>

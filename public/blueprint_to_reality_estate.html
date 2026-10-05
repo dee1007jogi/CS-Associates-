@@ -1531,6 +1531,9 @@
         isSceneVisible = Boolean(event.data.isVisible);
         if (event.data.isVisible) {
           isAutoPlaying = true;
+          clock.start();
+        } else {
+          clock.stop();
         }
       } else if (event.data.type === 'SET_PROGRESS') {
         if (typeof event.data.progress === 'number') {
@@ -1550,6 +1553,10 @@
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
         isSceneVisible = false;
+        clock.stop();
+      } else {
+        isSceneVisible = true;
+        clock.start();
       }
     });
 
@@ -1565,11 +1572,12 @@
 
       // ONLY render Three.js if canvas is actually visible on screen
       if (!isSceneVisible || document.hidden) {
-        clock.getDelta(); // flush delta
         return;
       }
 
-      const delta = clock.getDelta();
+      // Clamp delta to a max of 0.1s (100ms) to prevent simulation freeze/spikes
+      const rawDelta = clock.getDelta();
+      const delta = Math.min(rawDelta, 0.1);
       const elapsedTime = clock.getElapsedTime();
 
       // Automatic architectural assembly progression when in view (no click needed!)

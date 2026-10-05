@@ -111,7 +111,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenConsultation }) => {
 
           {/* WhatsApp Direct Action (Native App Feel) */}
           <a
-            href="https://wa.me/918296266389?text=Hello%20CS%20Associates%2C%20I%20would%20like%20to%20inquire%20about%20your%20Project%20Management%20Consultancy%20services."
+            href="https://wa.me/918095823483?text=Hello%20CS%20Associates%2C%20I%20would%20like%20to%20inquire%20about%20your%20Project%20Management%20Consultancy%20services."
             target="_blank"
             rel="noopener noreferrer"
             className="hidden sm:flex items-center justify-center min-h-[44px] min-w-[44px] px-3.5 py-2 text-xs font-medium text-emerald-400 hover:text-emerald-300 border border-emerald-500/30 rounded-xl hover:bg-emerald-950/30 transition-colors glass-panel active:scale-95"
@@ -188,7 +188,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenConsultation }) => {
           <div className="pt-4 mt-3 border-t border-neutral-800/80 flex flex-col gap-2.5">
             <div className="grid grid-cols-2 gap-2">
               <a
-                href="https://wa.me/918296266389?text=Hello%20CS%20Associates%2C%20I%20would%20like%20to%20inquire%20about%20your%20Project%20Management%20Consultancy%20services."
+                href="https://wa.me/918095823483?text=Hello%20CS%20Associates%2C%20I%20would%20like%20to%20inquire%20about%20your%20Project%20Management%20Consultancy%20services."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 py-2.5 px-3 text-xs font-bold text-emerald-400 border border-emerald-500/30 bg-emerald-950/20 hover:bg-emerald-950/40 rounded-xl transition-colors"
@@ -197,7 +197,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenConsultation }) => {
                 <span>WhatsApp</span>
               </a>
               <a
-                href="tel:8296266389"
+                href="tel:8095823483"
                 className="flex items-center justify-center gap-2 py-2.5 px-3 text-xs font-bold text-neutral-200 border border-neutral-800 bg-neutral-900/80 hover:bg-neutral-800 rounded-xl transition-colors"
               >
                 <Phone className="w-4 h-4 text-orange-400" />

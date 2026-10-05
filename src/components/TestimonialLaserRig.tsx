@@ -106,7 +106,14 @@ export const TestimonialLaserRig: React.FC = () => {
       recalculateLaserGeometry();
     };
 
+    let isMounted = true;
+
     const renderLaserFrame = () => {
+      if (!isMounted || document.hidden) {
+        animFrameId = 0;
+        return;
+      }
+
       currentScroll += (targetScroll - currentScroll) * 0.10;
 
       const zone = document.getElementById('testimonials-contact-zone');
@@ -198,14 +205,31 @@ export const TestimonialLaserRig: React.FC = () => {
     window.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('resize', handleResize);
 
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (animFrameId) {
+          cancelAnimationFrame(animFrameId);
+          animFrameId = 0;
+        }
+      } else if (isMounted) {
+        if (!animFrameId) {
+          animFrameId = requestAnimationFrame(renderLaserFrame);
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     const initTimer = setTimeout(() => {
       recalculateLaserGeometry();
       animFrameId = requestAnimationFrame(renderLaserFrame);
     }, 150);
 
     return () => {
+      isMounted = false;
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleResize);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       clearTimeout(initTimer);
       if (animFrameId) cancelAnimationFrame(animFrameId);
     };

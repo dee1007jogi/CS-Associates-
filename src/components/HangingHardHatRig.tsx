@@ -47,8 +47,14 @@ export const HangingHardHatRig: React.FC<HangingHardHatRigProps> = ({
     let currentRotZ = 0;
     let currentX = 0;
     let currentY = 0;
+    let isMounted = true;
 
     const updatePhysics = () => {
+      if (!isMounted || document.hidden) {
+        animFrameIdRef.current = null;
+        return;
+      }
+
       const sec1El = document.getElementById(section1Id);
       const anchorEl = document.getElementById(anchorTargetId);
 
@@ -221,9 +227,27 @@ export const HangingHardHatRig: React.FC<HangingHardHatRigProps> = ({
 
     animFrameIdRef.current = requestAnimationFrame(updatePhysics);
 
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (animFrameIdRef.current) {
+          cancelAnimationFrame(animFrameIdRef.current);
+          animFrameIdRef.current = null;
+        }
+      } else if (isMounted) {
+        if (!animFrameIdRef.current) {
+          animFrameIdRef.current = requestAnimationFrame(updatePhysics);
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     return () => {
+      isMounted = false;
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (animFrameIdRef.current) {
         cancelAnimationFrame(animFrameIdRef.current);
+        animFrameIdRef.current = null;
       }
     };
   }, [section1Id, anchorTargetId, lerp, organicDecel]);

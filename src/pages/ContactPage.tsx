@@ -39,6 +39,8 @@ export const ContactPage: React.FC = () => {
         description="Visit our Rajarajeshwarinagar head office or request an on-site feasibility inspection. Speak directly with Principal Consultant Mr. Kiran Dikshit L."
         backgroundImage="/src/assets/images/contact_hero_consultation.jpg"
         breadcrumbLabel="Contact Us"
+        focusTag="PMC BOARDROOM · DIRECT CONSULTATION"
+        focusSubtitle="Principal Consultant Desk · BEML Layout HQ"
         primaryActionLabel="Schedule Site Visit"
         onPrimaryAction={scrollToContactForm}
         stats={[
