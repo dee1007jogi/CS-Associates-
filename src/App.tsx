@@ -115,7 +115,7 @@ export default function App() {
   return (
     <BrowserRouter>
       {/* Minimal Circle Logo Preloader */}
-      <MinimalPreloader minDuration={2000} />
+      <MinimalPreloader minDuration={2200} />
 
       {/* Lenis Smooth Virtual Scrolling Engine */}
       <SmoothScroll />

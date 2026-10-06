@@ -88,6 +88,50 @@ const STYLE_GALLERY_PROJECTS: StyleGalleryProject[] = [
     category: 'Commercial Infrastructure',
     specs: '24,000 sq.ft. · High-Load MEP · Structural Glazing',
     description: 'Corporate atrium and commercial complex featuring clash-free HVAC duct routing, seismic-tested structural glazing, and fast-track occupancy certification.'
+  },
+  {
+    id: 'dr-lakshmi-villa',
+    title: 'Dr. Lakshmi Residence',
+    tags: ['RESIDENTIAL', 'LUXURY VILLA'],
+    location: 'Abbigere, Bengaluru',
+    year: '2024',
+    image: '/src/assets/images/residence_abbigere_1790599648176.jpg',
+    category: 'Turnkey Luxury Villa',
+    specs: '7,400 sq.ft. · Teak Louvers · Courtyard Ventilation',
+    description: 'Bespoke multi-level residence with Italian Statuario marble dry-lays, custom teak louver screening, and zero-leak triple-coat structural waterproofing.'
+  },
+  {
+    id: 'chirag-global-health',
+    title: 'Chirag Diagnostic Center',
+    tags: ['HEALTHCARE', 'SPECIALTY'],
+    location: 'Indiranagar, Bengaluru',
+    year: '2023',
+    image: '/src/assets/images/healthcare_commercial_1790599676109.jpg',
+    category: 'Healthcare Facility',
+    specs: '16,500 sq.ft. · NABH Compliant · Cleanroom HVAC',
+    description: 'NABH and Fire Safety statutory compliant healthcare diagnostic hub with surgical-grade HEPA airflow and anti-bacterial seamless flooring.'
+  },
+  {
+    id: 'cantilever-pool-estate',
+    title: 'Site 12 Cantilever Estate',
+    tags: ['RESIDENTIAL', 'MODERN ESTATE'],
+    location: 'Kanakapura Road, Tataguni',
+    year: '2024',
+    image: '/src/assets/images/gallery_facade_fenestration_1790601203004.jpg',
+    category: 'Contemporary Villa Architecture',
+    specs: '11,200 sq.ft. · Cantilever Balconies · Lap Pool',
+    description: 'Dramatic cantilevered balconies with structural steel coordination, slimline thermal glazing, and zero-defect civil handover.'
+  },
+  {
+    id: 'structural-site-engineering',
+    title: 'Civil & Structural Deck',
+    tags: ['ENGINEERING', 'PMC AUDIT'],
+    location: 'Bengaluru Prime Belts',
+    year: '2025',
+    image: '/src/assets/images/gallery_site_engineering_1790601189950.jpg',
+    category: 'PMC Site Inspection & Audit',
+    specs: 'M25/M30 Concrete · Fe550D TMT · 100% Laser Plumb',
+    description: 'Independent PMC site audits ensuring rigorous contractor quality control, rebar spacing verification, cube strength testing, and contractor measurement audit.'
   }
 ];
 

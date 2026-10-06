@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import csLogo from '../assets/images/cs_logo_transparent.png';
 
@@ -9,45 +9,56 @@ interface MinimalPreloaderProps {
 
 export const MinimalPreloader: React.FC<MinimalPreloaderProps> = ({
   onComplete,
-  minDuration = 2000,
+  minDuration = 2200,
 }) => {
-  const [progress, setProgress] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
+  const percentRef = useRef<HTMLSpanElement>(null);
 
   // Circle dimensions
   const radius = 68;
-  const circumference = 2 * Math.PI * radius;
+  const circumference = 2 * Math.PI * radius; // ~427.26
+  const durationSec = (minDuration / 1000).toFixed(2);
 
   useEffect(() => {
     // Lock body scroll while preloader is active
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
-    let animationFrameId: number;
+    let animFrameId: number;
     let finishTimeoutId: ReturnType<typeof setTimeout>;
     const startTime = performance.now();
 
-    const animateLoop = (currentTime: number) => {
-      const elapsed = currentTime - startTime;
-      const currentProgress = Math.min(1, elapsed / minDuration);
-      setProgress(currentProgress);
+    // Direct DOM text update - zero React re-renders while counting
+    const updateCounter = (now: number) => {
+      const elapsed = now - startTime;
+      const progressRatio = Math.min(1, elapsed / minDuration);
+      // Easing curve closely tracking cubic-bezier(0.25, 1, 0.45, 1)
+      const easedRatio = 1 - Math.pow(1 - progressRatio, 2.8);
+      const currentPct = Math.min(100, Math.round(easedRatio * 100));
 
-      if (currentProgress < 1) {
-        animationFrameId = requestAnimationFrame(animateLoop);
+      if (percentRef.current) {
+        percentRef.current.textContent = `${currentPct}%`;
+      }
+
+      if (progressRatio < 1) {
+        animFrameId = requestAnimationFrame(updateCounter);
       } else {
-        // Complete loading with a brief hold for smooth transition
+        if (percentRef.current) {
+          percentRef.current.textContent = '100%';
+        }
+        // Brief settle at 100% for satisfying visual completion before cinematic exit
         finishTimeoutId = setTimeout(() => {
           setIsFinished(true);
           document.body.style.overflow = originalOverflow;
           if (onComplete) onComplete();
-        }, 300);
+        }, 220);
       }
     };
 
-    animationFrameId = requestAnimationFrame(animateLoop);
+    animFrameId = requestAnimationFrame(updateCounter);
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      cancelAnimationFrame(animFrameId);
       clearTimeout(finishTimeoutId);
       document.body.style.overflow = originalOverflow;
     };
@@ -59,12 +70,6 @@ export const MinimalPreloader: React.FC<MinimalPreloaderProps> = ({
     if (onComplete) onComplete();
   };
 
-  // Calculate tip marker position on the circle circumference
-  const angleDeg = -90 + progress * 360;
-  const angleRad = (angleDeg * Math.PI) / 180;
-  const tipX = 80 + radius * Math.cos(angleRad);
-  const tipY = 80 + radius * Math.sin(angleRad);
-
   return (
     <AnimatePresence>
       {!isFinished && (
@@ -74,13 +79,54 @@ export const MinimalPreloader: React.FC<MinimalPreloaderProps> = ({
           exit={{
             opacity: 0,
             scale: 1.04,
-            filter: 'blur(8px)',
-            transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+            filter: 'blur(10px)',
+            transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] },
           }}
           className="fixed inset-0 z-[9999] bg-[#07090e] text-neutral-100 flex flex-col justify-between p-6 sm:p-10 select-none cursor-pointer overflow-hidden"
           onClick={handleSkip}
           title="Click to enter immediately"
         >
+          {/* Hardware-accelerated GPU animations - 100% decoupled from JS main-thread load */}
+          <style>{`
+            @keyframes preloaderStrokeFill {
+              0% {
+                stroke-dashoffset: 427.26;
+              }
+              100% {
+                stroke-dashoffset: 0;
+              }
+            }
+            @keyframes preloaderBeaconSpin {
+              0% {
+                transform: rotate(0deg);
+              }
+              100% {
+                transform: rotate(360deg);
+              }
+            }
+            @keyframes preloaderOuterOrbit {
+              0% {
+                transform: rotate(0deg);
+              }
+              100% {
+                transform: rotate(360deg);
+              }
+            }
+            .animate-preloader-stroke {
+              animation: preloaderStrokeFill ${durationSec}s cubic-bezier(0.25, 1, 0.45, 1) forwards;
+              will-change: stroke-dashoffset;
+            }
+            .animate-preloader-beacon {
+              transform-origin: 80px 80px;
+              animation: preloaderBeaconSpin ${durationSec}s cubic-bezier(0.25, 1, 0.45, 1) forwards;
+              will-change: transform;
+            }
+            .animate-preloader-orbit {
+              animation: preloaderOuterOrbit 24s linear infinite;
+              will-change: transform;
+            }
+          `}</style>
+
           {/* Subtle Ambient Radial Backlight behind the logo */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] h-[380px] bg-orange-500/10 rounded-full blur-[120px] pointer-events-none" />
 
@@ -109,11 +155,9 @@ export const MinimalPreloader: React.FC<MinimalPreloaderProps> = ({
           <div className="relative z-10 my-auto flex flex-col items-center justify-center">
             {/* Circular Ring Container */}
             <div className="relative w-44 h-44 sm:w-52 sm:h-52 flex items-center justify-center">
-              {/* Animated Outer Orbit Accent (Slow Precision Rotation) */}
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-                className="absolute inset-0 rounded-full border border-dashed border-orange-500/20 pointer-events-none"
+              {/* Animated Outer Orbit Accent (Slow Precision Rotation via CSS) */}
+              <div
+                className="animate-preloader-orbit absolute inset-0 rounded-full border border-dashed border-orange-500/20 pointer-events-none"
               />
 
               {/* SVG Circular Progress Track */}
@@ -143,7 +187,7 @@ export const MinimalPreloader: React.FC<MinimalPreloaderProps> = ({
                   strokeWidth="2.5"
                 />
 
-                {/* Active Dynamic Progress Stroke */}
+                {/* Active Dynamic Progress Stroke - Compositor-driven pure CSS animation */}
                 <circle
                   cx="80"
                   cy="80"
@@ -153,23 +197,19 @@ export const MinimalPreloader: React.FC<MinimalPreloaderProps> = ({
                   strokeWidth="2.5"
                   strokeLinecap="round"
                   strokeDasharray={circumference}
-                  strokeDashoffset={circumference * (1 - progress)}
+                  strokeDashoffset={circumference}
                   transform="rotate(-90 80 80)"
                   filter="url(#orangeGlow)"
-                  className="transition-[stroke-dashoffset] duration-75"
+                  className="animate-preloader-stroke"
                 />
 
-                {/* Active Orbit Beacon Point */}
-                {progress > 0.01 && (
-                  <g
-                    transform={`translate(${tipX}, ${tipY})`}
-                    className="text-orange-400"
-                    style={{ filter: 'drop-shadow(0 0 6px #f97316)' }}
-                  >
+                {/* Active Orbit Beacon Point - GPU Compositor 360deg rotation synchronized with stroke */}
+                <g className="animate-preloader-beacon pointer-events-none">
+                  <g transform="translate(80, 12)" style={{ filter: 'drop-shadow(0 0 6px #f97316)' }}>
                     <circle cx="0" cy="0" r="4.5" fill="#f97316" className="animate-ping" opacity="0.6" />
                     <circle cx="0" cy="0" r="3" fill="#ffffff" stroke="#f97316" strokeWidth="1.5" />
                   </g>
-                )}
+                </g>
               </svg>
 
               {/* Logo Centered Within Circle */}
@@ -202,7 +242,7 @@ export const MinimalPreloader: React.FC<MinimalPreloaderProps> = ({
               </p>
               <div className="pt-2 flex items-center gap-2 font-mono text-[10px] text-neutral-400 tracking-wider">
                 <span className="w-1 h-1 rounded-full bg-orange-500 animate-pulse" />
-                <span>{Math.round(progress * 100)}%</span>
+                <span ref={percentRef}>0%</span>
               </div>
             </motion.div>
           </div>

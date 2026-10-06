@@ -16,11 +16,12 @@ import {
 } from 'lucide-react';
 
 interface ContactSectionProps {
-  theme?: 'dark' | 'white';
+  theme?: 'dark' | 'white' | 'cream';
 }
 
 export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }) => {
   const isDark = theme === 'dark';
+  const isCream = theme === 'cream';
 
   const [formData, setFormData] = useState({
     name: '',
@@ -47,11 +48,13 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }
 
   const inputClass = isDark
     ? "w-full rounded-xl px-4 py-2.5 text-xs bg-neutral-950 border border-neutral-800 focus:bg-neutral-950 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 text-neutral-100 placeholder:text-neutral-500 transition-all outline-none"
+    : isCream
+    ? "w-full rounded-xl px-4 py-2.5 text-xs bg-white border border-[#e5dbcb] focus:bg-white focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 text-neutral-900 placeholder:text-neutral-400 transition-all outline-none shadow-xs"
     : "w-full rounded-xl px-4 py-2.5 text-xs bg-neutral-50 border border-neutral-200 focus:bg-white focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 text-neutral-900 transition-all outline-none";
 
   const labelClass = isDark
     ? "block text-xs font-semibold text-neutral-300 mb-1 font-sans"
-    : "block text-xs font-semibold text-neutral-700 mb-1 font-sans";
+    : "block text-xs font-semibold text-neutral-800 mb-1 font-sans";
 
   return (
     <section 
@@ -59,6 +62,8 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }
       className={`py-16 sm:py-24 lg:py-28 relative overflow-hidden select-none transition-colors duration-300 ${
         isDark 
           ? 'bg-neutral-950 text-neutral-100 border-t border-neutral-850' 
+          : isCream
+          ? 'bg-[#f7f4ee] text-neutral-900 border-y border-[#e5dbcb]'
           : 'bg-white text-neutral-900 border-t border-neutral-200'
       }`}
     >
@@ -68,6 +73,8 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }
         className={`absolute inset-0 pointer-events-none [background-size:24px_24px] ${
           isDark 
             ? 'opacity-[0.04] bg-[radial-gradient(#ffffff_1px,transparent_1px)]' 
+            : isCream
+            ? 'opacity-[0.045] bg-[radial-gradient(#78350f_1px,transparent_1px)]'
             : 'opacity-[0.035] bg-[radial-gradient(#000000_1px,transparent_1px)]'
         }`} 
       />
@@ -76,6 +83,13 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }
         <div 
           aria-hidden="true" 
           className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-[radial-gradient(ellipse_at_top,rgba(249,115,22,0.08),transparent_70%)] pointer-events-none"
+        />
+      )}
+
+      {isCream && (
+        <div 
+          aria-hidden="true" 
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-[radial-gradient(ellipse_at_top,rgba(249,115,22,0.06),transparent_70%)] pointer-events-none"
         />
       )}
 
@@ -92,6 +106,8 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }
           <div className={`inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-[11px] font-mono font-bold uppercase tracking-widest shadow-sm ${
             isDark 
               ? 'bg-neutral-900/90 border border-neutral-800 text-orange-400' 
+              : isCream
+              ? 'bg-orange-500/10 border border-orange-500/30 text-orange-700'
               : 'bg-orange-500/10 border border-orange-500/25 text-orange-600'
           }`}>
             <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
@@ -105,7 +121,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }
           </h2>
 
           <p className={`mt-2 text-sm sm:text-base font-sans max-w-2xl mx-auto ${
-            isDark ? 'text-neutral-400' : 'text-neutral-600'
+            isDark ? 'text-neutral-400' : 'text-neutral-700'
           }`}>
             Discuss your site parameters directly with Principal Consultant Mr. Kiran Dikshit L and our senior civil engineering auditors.
           </p>
@@ -119,6 +135,8 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }
           className={`w-full rounded-[2.5rem] overflow-hidden transition-all duration-300 relative z-20 ${
           isDark 
             ? 'bg-neutral-900/95 shadow-[0_25px_70px_-15px_rgba(0,0,0,0.85)] border border-neutral-800' 
+            : isCream
+            ? 'bg-[#f7f4ee] shadow-[0_25px_70px_-15px_rgba(120,53,15,0.08)] border border-[#e5dbcb]'
             : 'bg-white shadow-[0_25px_70px_-15px_rgba(0,0,0,0.08)] border border-neutral-200'
         }`}>
           <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[640px]">
@@ -243,13 +261,15 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }
               className={`lg:col-span-6 p-6 sm:p-10 lg:p-12 flex flex-col justify-between transition-colors duration-300 ${
                 isDark 
                   ? 'bg-neutral-900 border-t lg:border-t-0 lg:border-l border-neutral-800' 
+                  : isCream
+                  ? 'bg-[#f7f4ee] border-t lg:border-t-0 lg:border-l border-[#e5dbcb]'
                   : 'bg-white'
               }`}
             >
               
               {/* Header with Mini Brand Tag */}
               <div className={`flex items-center justify-between pb-4 border-b ${
-                isDark ? 'border-neutral-800' : 'border-neutral-100'
+                isDark ? 'border-neutral-800' : isCream ? 'border-[#e5dbcb]' : 'border-neutral-100'
               }`}>
                 <div className="flex items-center gap-2.5">
                   <img
@@ -265,7 +285,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }
                 </div>
 
                 <span className={`text-[11px] font-mono ${
-                  isDark ? 'text-neutral-400' : 'text-neutral-500'
+                  isDark ? 'text-neutral-400' : isCream ? 'text-neutral-600' : 'text-neutral-500'
                 }`}>
                   Mon – Sat · 9 AM – 7:30 PM
                 </span>
@@ -278,6 +298,8 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }
                     <div className={`w-16 h-16 rounded-full mx-auto flex items-center justify-center ${
                       isDark 
                         ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-500/30' 
+                        : isCream
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-300'
                         : 'bg-emerald-50 text-emerald-600 border border-emerald-200'
                     }`}>
                       <CheckCircle2 className="w-8 h-8" />
@@ -309,6 +331,8 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }
                         className={`w-full sm:w-auto px-6 py-3 rounded-xl text-xs font-semibold transition-colors cursor-pointer font-mono ${
                           isDark 
                             ? 'text-neutral-300 bg-neutral-800 hover:bg-neutral-700' 
+                            : isCream
+                            ? 'text-neutral-800 bg-white hover:bg-neutral-100 border border-[#e5dbcb]'
                             : 'text-neutral-700 bg-neutral-100 hover:bg-neutral-200'
                         }`}
                       >
@@ -325,7 +349,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }
                         Schedule Site Consultation
                       </h3>
                       <p className={`text-xs sm:text-sm mt-1 font-sans ${
-                        isDark ? 'text-neutral-400' : 'text-neutral-600'
+                        isDark ? 'text-neutral-400' : isCream ? 'text-neutral-700' : 'text-neutral-600'
                       }`}>
                         Fill in your project details for an itemized feasibility analysis and PMC scope review.
                       </p>
@@ -384,12 +408,12 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }
                           onChange={(e) => setFormData({ ...formData, projectType: e.target.value })}
                           className={`${inputClass} cursor-pointer`}
                         >
-                          <option className={isDark ? "bg-neutral-900 text-neutral-100" : ""} value="Luxury Residential Villa">Individual Luxury Villa</option>
-                          <option className={isDark ? "bg-neutral-900 text-neutral-100" : ""} value="Independent Home">Independent Family Residence</option>
-                          <option className={isDark ? "bg-neutral-900 text-neutral-100" : ""} value="Commercial Complex">Commercial / Office Complex</option>
-                          <option className={isDark ? "bg-neutral-900 text-neutral-100" : ""} value="Healthcare Facility">Healthcare / Hospital Facility</option>
-                          <option className={isDark ? "bg-neutral-900 text-neutral-100" : ""} value="Joint Development">Joint Development Landowner PMC</option>
-                          <option className={isDark ? "bg-neutral-900 text-neutral-100" : ""} value="Interior PMC">Luxury Interior PMC & Finishing</option>
+                          <option className={isDark ? "bg-neutral-900 text-neutral-100" : isCream ? "bg-[#f7f4ee] text-neutral-900" : ""} value="Luxury Residential Villa">Individual Luxury Villa</option>
+                          <option className={isDark ? "bg-neutral-900 text-neutral-100" : isCream ? "bg-[#f7f4ee] text-neutral-900" : ""} value="Independent Home">Independent Family Residence</option>
+                          <option className={isDark ? "bg-neutral-900 text-neutral-100" : isCream ? "bg-[#f7f4ee] text-neutral-900" : ""} value="Commercial Complex">Commercial / Office Complex</option>
+                          <option className={isDark ? "bg-neutral-900 text-neutral-100" : isCream ? "bg-[#f7f4ee] text-neutral-900" : ""} value="Healthcare Facility">Healthcare / Hospital Facility</option>
+                          <option className={isDark ? "bg-neutral-900 text-neutral-100" : isCream ? "bg-[#f7f4ee] text-neutral-900" : ""} value="Joint Development">Joint Development Landowner PMC</option>
+                          <option className={isDark ? "bg-neutral-900 text-neutral-100" : isCream ? "bg-[#f7f4ee] text-neutral-900" : ""} value="Interior PMC">Luxury Interior PMC & Finishing</option>
                         </select>
                       </div>
                     </div>
@@ -447,9 +471,9 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }
 
                       {/* "or" divider */}
                       <div className="flex items-center gap-3">
-                        <div className={`h-[1px] flex-1 ${isDark ? 'bg-neutral-800' : 'bg-neutral-200'}`} />
-                        <span className={`text-[11px] font-mono ${isDark ? 'text-neutral-500' : 'text-neutral-400'}`}>or</span>
-                        <div className={`h-[1px] flex-1 ${isDark ? 'bg-neutral-800' : 'bg-neutral-200'}`} />
+                        <div className={`h-[1px] flex-1 ${isDark ? 'bg-neutral-800' : isCream ? 'bg-[#e5dbcb]' : 'bg-neutral-200'}`} />
+                        <span className={`text-[11px] font-mono ${isDark ? 'text-neutral-500' : isCream ? 'text-neutral-500' : 'text-neutral-400'}`}>or</span>
+                        <div className={`h-[1px] flex-1 ${isDark ? 'bg-neutral-800' : isCream ? 'bg-[#e5dbcb]' : 'bg-neutral-200'}`} />
                       </div>
 
                       {/* Direct WhatsApp Action Button */}
@@ -459,6 +483,8 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }
                         className={`w-full py-3 rounded-xl font-bold text-xs uppercase tracking-wider font-mono transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99] ${
                           isDark
                             ? 'bg-emerald-950/40 hover:bg-emerald-900/50 border border-emerald-500/30 text-emerald-400'
+                            : isCream
+                            ? 'bg-white hover:bg-emerald-50/80 border border-emerald-500/40 text-emerald-800 shadow-xs'
                             : 'bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800'
                         }`}
                       >
@@ -468,7 +494,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }
                     </div>
 
                     <div className={`text-[10px] text-center font-mono pt-1 ${
-                      isDark ? 'text-neutral-500' : 'text-neutral-400'
+                      isDark ? 'text-neutral-500' : isCream ? 'text-neutral-600' : 'text-neutral-400'
                     }`}>
                       🔒 STRICT CLIENT FIDUCIARY PRIVACY · NO SUBCONTRACTOR LEAKS
                     </div>
@@ -483,25 +509,25 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.15 }}
                 className={`pt-4 border-t flex flex-col gap-3 text-xs ${
-                  isDark ? 'border-neutral-800 text-neutral-400' : 'border-neutral-100 text-neutral-600'
+                  isDark ? 'border-neutral-800 text-neutral-400' : isCream ? 'border-[#e5dbcb] text-neutral-700' : 'border-neutral-100 text-neutral-600'
                 }`}
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex flex-wrap items-center gap-4">
                     <a href="tel:8095823483" className={`transition-colors flex items-center gap-1 font-mono font-medium ${
-                      isDark ? 'text-neutral-300 hover:text-orange-400' : 'text-neutral-700 hover:text-orange-600'
+                      isDark ? 'text-neutral-300 hover:text-orange-400' : isCream ? 'text-neutral-800 hover:text-orange-600' : 'text-neutral-700 hover:text-orange-600'
                     }`}>
                       <Phone className="w-3.5 h-3.5 text-orange-500" />
                       <span>+91 8095823483</span>
                     </a>
                     <a href="tel:8296266389" className={`transition-colors flex items-center gap-1 font-mono font-medium ${
-                      isDark ? 'text-neutral-300 hover:text-orange-400' : 'text-neutral-700 hover:text-orange-600'
+                      isDark ? 'text-neutral-300 hover:text-orange-400' : isCream ? 'text-neutral-800 hover:text-orange-600' : 'text-neutral-700 hover:text-orange-600'
                     }`}>
                       <Phone className="w-3.5 h-3.5 text-orange-500" />
                       <span>+91 8296266389</span>
                     </a>
                     <a href="mailto:csassociates321@gmail.com" className={`transition-colors flex items-center gap-1 font-mono font-medium ${
-                      isDark ? 'text-neutral-300 hover:text-orange-400' : 'text-neutral-700 hover:text-orange-600'
+                      isDark ? 'text-neutral-300 hover:text-orange-400' : isCream ? 'text-neutral-800 hover:text-orange-600' : 'text-neutral-700 hover:text-orange-600'
                     }`}>
                       <Mail className="w-3.5 h-3.5 text-orange-500" />
                       <span className="hidden sm:inline">csassociates321@gmail.com</span>
@@ -517,6 +543,8 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }
                       className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
                         isDark 
                           ? 'bg-neutral-800/80 hover:bg-neutral-700 text-neutral-300 hover:text-white border border-neutral-700/60' 
+                          : isCream
+                          ? 'bg-white hover:bg-[#ebe3d5] text-neutral-800 border border-[#e5dbcb]'
                           : 'bg-neutral-100 hover:bg-neutral-200 text-neutral-700'
                       }`}
                       title="Instagram @csassociates_blr"
@@ -530,6 +558,8 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }
                       className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
                         isDark 
                           ? 'bg-neutral-800/80 hover:bg-neutral-700 text-neutral-300 hover:text-white border border-neutral-700/60' 
+                          : isCream
+                          ? 'bg-white hover:bg-[#ebe3d5] text-neutral-800 border border-[#e5dbcb]'
                           : 'bg-neutral-100 hover:bg-neutral-200 text-neutral-700'
                       }`}
                       title="Facebook"
@@ -540,7 +570,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }
                 </div>
 
                 <div className={`flex items-center justify-between gap-2 pt-2 border-t text-[11px] ${
-                  isDark ? 'border-neutral-800/80 text-neutral-400' : 'border-neutral-100 text-neutral-500'
+                  isDark ? 'border-neutral-800/80 text-neutral-400' : isCream ? 'border-[#e5dbcb] text-neutral-700' : 'border-neutral-100 text-neutral-500'
                 }`}>
                   <div className="flex items-center gap-1.5 truncate">
                     <MapPin className="w-3.5 h-3.5 text-orange-500 shrink-0" />

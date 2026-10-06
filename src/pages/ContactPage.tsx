@@ -70,7 +70,7 @@ export const ContactPage: React.FC = () => {
         variants={sectionVariants}
         className="w-full"
       >
-        <ContactSection theme="dark" />
+        <ContactSection theme="cream" />
       </motion.div>
 
       {/* 4. Interactive Google Maps & Office Accessibility / Transit Hub */}

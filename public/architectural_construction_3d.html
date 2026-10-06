@@ -1797,7 +1797,7 @@
         dumpWheels.push(w);
       });
 
-      dumpTruck.position.set(22, 0, 16);
+      dumpTruck.position.set(20, 0, 16.5);
       dumpTruck.rotation.y = -Math.PI / 2;
       dumpTruck.scale.set(0.9, 0.9, 0.9);
       dumpTruck.userData = { type: 'dumpTruck', wheels: dumpWheels, bed: dumpBedGroup, baseX: 20, baseZ: 16.5 };
@@ -1863,16 +1863,13 @@
         mixerWheels.push(mw);
       });
 
-      mixerTruck.position.set(-18, 0, 21.8);
+      mixerTruck.position.set(-2, 0, 22.5);
       mixerTruck.rotation.y = Math.PI / 2;
       mixerTruck.scale.set(0.9, 0.9, 0.9);
       mixerTruck.userData = {
         type: 'mixerTruck',
         drum: drumGroup,
-        wheels: mixerWheels,
-        pathXStart: -35,
-        pathXEnd: 48,
-        speed: 4.8
+        wheels: mixerWheels
       };
       scene.add(mixerTruck);
       animatedVehicles.push(mixerTruck);
@@ -2481,42 +2478,7 @@
       }
       if (elDot) elDot.className = `w-1.5 h-1.5 rounded-full ${statusDotColor} animate-pulse`;
 
-      // Continuous kinematic simulation of site vehicles
-      for (let i = 0; i < animatedVehicles.length; i++) {
-        const v = animatedVehicles[i];
-        const u = v.userData;
-        if (!u) continue;
-
-        if (u.type === 'dumpTruck') {
-          const cycle = (elapsedTime * 0.35) % (Math.PI * 2);
-          const driveProgress = Math.sin(cycle);
-          v.position.x = u.baseX + driveProgress * 4.5;
-          u.wheels.forEach(w => { w.rotation.x += 0.05; });
-          if (Math.abs(driveProgress) > 0.82) {
-            u.bed.rotation.x = -((Math.abs(driveProgress) - 0.82) / 0.18) * 0.45;
-          } else {
-            u.bed.rotation.x = 0;
-          }
-        } else if (u.type === 'excavator') {
-          const slowTime = elapsedTime * 0.7;
-          u.turret.rotation.y = Math.sin(slowTime * 0.5) * 0.65;
-          u.boom.rotation.x = Math.sin(slowTime) * 0.18;
-          u.stick.rotation.x = Math.cos(slowTime) * 0.28;
-          u.bucket.rotation.x = Math.sin(slowTime + 0.8) * 0.45;
-        } else if (u.type === 'mixerTruck') {
-          // Front road cruising patrol along lane
-          const range = u.pathXEnd - u.pathXStart;
-          const cycleX = ((elapsedTime * u.speed) % range);
-          v.position.x = u.pathXStart + cycleX;
-
-          // Continuous drum rotation
-          u.drum.children[0].rotation.y += 0.05;
-          u.drum.children[1].rotation.z += 0.05;
-
-          // Rolling wheels
-          u.wheels.forEach(w => { w.rotation.x += 0.08; });
-        }
-      }
+      // Site vehicles remain stationary as static architectural assets (motion disabled)
 
       if (autoRotate && controls.state === -1) {
         controls.autoRotate = true;

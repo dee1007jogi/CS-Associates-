@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { motion, type Variants } from 'framer-motion';
 import { PROJECTS_DATA, type ProjectItem } from '../data/projectsData';
 import { PageHero } from '../components/PageHero';
+import { StyleGallerySection } from '../components/StyleGallerySection';
 import {
   MapPin, ShieldCheck, TrendingDown, Check, X, ArrowRight,
-  Building2, Home, Activity, Filter
+  Building2, Home, Activity, Filter, Sparkles, Image as ImageIcon
 } from 'lucide-react';
 
 interface ProjectsPageProps {
@@ -311,7 +312,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenConsultation }
                 </p>
               </div>
 
-              {/* Filter pills */}
+              {/* Filter pills & Gallery Jump Button */}
               <div className="flex flex-wrap items-center gap-2 self-start md:self-auto">
                 {FILTERS.map(({ key, label }) => (
                   <button
@@ -326,6 +327,13 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenConsultation }
                     {label}
                   </button>
                 ))}
+                <a
+                  href="#projects-gallery"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer border bg-orange-500/10 text-orange-700 border-orange-500/30 hover:bg-orange-500 hover:text-white hover:border-orange-500 flex items-center gap-1.5"
+                >
+                  <ImageIcon className="w-3.5 h-3.5" />
+                  <span>Visual Gallery ↓</span>
+                </a>
               </div>
             </div>
 
@@ -346,26 +354,52 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenConsultation }
                 <p className="text-sm">No projects in this category yet.</p>
               </div>
             )}
-
-            {/* Bottom CTA Card */}
-            <div className="mt-16 rounded-3xl bg-neutral-950 text-white border border-neutral-800 p-7 sm:p-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-80 h-80 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
-              <div className="relative z-10">
-                <h3 className="text-lg sm:text-2xl font-extrabold text-white font-display">Ready to Build Your Landmark?</h3>
-                <p className="text-sm text-neutral-300 mt-1.5 max-w-md font-sans">
-                  Get a free technical consultation and see how CS Associates can protect your investment from Day 1.
-                </p>
-              </div>
-              <button
-                onClick={onOpenConsultation}
-                className="relative z-10 inline-flex items-center gap-2 px-6 py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs uppercase tracking-wider font-mono rounded-xl shadow-lg shadow-orange-500/25 transition-all cursor-pointer active:scale-95 shrink-0"
-              >
-                <span>Book Free Consultation</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
           </div>
         </section>
+      </motion.div>
+
+      {/* ── 3. ARCHITECTURAL VISUAL GALLERY CAROUSEL ─────────────────── */}
+      <motion.div
+        id="projects-gallery"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.05, margin: '0px 0px -50px 0px' }}
+        variants={sectionVariants}
+        className="w-full"
+      >
+        <StyleGallerySection onOpenConsultation={onOpenConsultation} />
+      </motion.div>
+
+      {/* ── 4. CLOSING CONSULTATION CTA (Dark Cinematic Theme) ───────── */}
+      <motion.div
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.1, margin: '0px 0px -50px 0px' }}
+        variants={sectionVariants}
+        className="w-full bg-neutral-950 py-16 sm:py-20 border-t border-neutral-900"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="rounded-3xl bg-neutral-900 text-white border border-neutral-800 p-8 sm:p-12 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-80 h-80 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="relative z-10">
+              <div className="inline-flex items-center gap-2 text-xs font-mono font-semibold uppercase tracking-widest text-orange-400 mb-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
+                <span>START YOUR PROJECT RIGHT</span>
+              </div>
+              <h3 className="text-xl sm:text-3xl font-extrabold text-white font-display">Ready to Build Your Landmark?</h3>
+              <p className="text-sm sm:text-base text-neutral-300 mt-2 max-w-xl font-sans leading-relaxed">
+                Schedule an initial site inspection and feasibility session with Principal Consultant Mr. Kiran Dikshit L. Protect your investment from Day 1.
+              </p>
+            </div>
+            <button
+              onClick={onOpenConsultation}
+              className="relative z-10 inline-flex items-center gap-2 px-6 py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs uppercase tracking-wider font-mono rounded-xl shadow-lg shadow-orange-500/25 transition-all cursor-pointer active:scale-95 shrink-0"
+            >
+              <span>Book Free Consultation</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
       </motion.div>
 
       {/* ── MODAL ─────────────────────────────────────────────────── */}
