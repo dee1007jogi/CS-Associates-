@@ -18,6 +18,7 @@ import { ProcessPage } from './pages/ProcessPage';
 import { ProjectsPage } from './pages/ProjectsPage';
 import { CalculatorPage } from './pages/CalculatorPage';
 import { ContactPage } from './pages/ContactPage';
+import { DesignSuggestionsPage } from './pages/DesignSuggestionsPage';
 
 import { MessageCircle } from 'lucide-react';
 
@@ -71,6 +72,14 @@ function AppContent({
           <Route
             path="/calculator"
             element={<CalculatorPage onOpenConsultation={() => setIsConsultationOpen(true)} />}
+          />
+          <Route
+            path="/design-studio"
+            element={<DesignSuggestionsPage onOpenConsultation={() => setIsConsultationOpen(true)} />}
+          />
+          <Route
+            path="/suggestions"
+            element={<DesignSuggestionsPage onOpenConsultation={() => setIsConsultationOpen(true)} />}
           />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />

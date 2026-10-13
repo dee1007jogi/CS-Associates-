@@ -215,16 +215,19 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenConsultation }) => {
             
             {/* Small Eyebrow Tag with Orange Accent */}
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-orange-500/10 border border-orange-500/30 text-orange-700 text-xs font-mono font-bold tracking-wider uppercase">
-              Company About
+              Founder &amp; Fiduciary Leadership
             </div>
 
             {/* Display Headline in Dark Neutral / Black */}
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-neutral-950 tracking-tight font-display leading-tight">
-              Complete Construction Peace of Mind.
+              Founder of CS Associates
             </h2>
+            <div className="text-xl sm:text-2xl font-bold text-orange-600 font-display">
+              Mr. Kiran Dikshit L
+            </div>
 
             <p className="text-sm sm:text-base text-neutral-600 leading-relaxed font-sans">
-              CS Associates is an independent Project Management Consultancy (PMC) dedicated to safeguarding property owners, luxury homeowners, and commercial developers across Karnataka. We operate strictly as your fiduciary advocate — eliminating contractor shortcuts, inflated invoices, and structural discrepancies.
+              With over <strong>25+ years</strong> of hands-on civil &amp; architectural PMC leadership, Mr. Kiran Dikshit L is the driving force behind CS Associates. Operating strictly as your fiduciary advocate, he eliminates contractor shortcuts, inflated invoices, and structural discrepancies—protecting your money, time, and dream from blueprint to keys handover.
             </p>
 
             {/* Core Services Header */}

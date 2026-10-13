@@ -10,6 +10,7 @@ import { HangingHardHatRig } from '../components/HangingHardHatRig';
 import { Gallery3D } from '../components/Gallery3D';
 import { SevenStageProcess } from '../components/SevenStageProcess';
 import { ServicesSection } from '../components/ServicesSection';
+import { KeyholeInteriorSection } from '../components/KeyholeInteriorSection';
 import { ProjectsSection } from '../components/ProjectsSection';
 import { CostCalculator } from '../components/CostCalculator';
 import { TestimonialsSection } from '../components/TestimonialsSection';
@@ -111,21 +112,18 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenConsultation }) => {
         <WhiteThemeSection onOpenConsultation={onOpenConsultation} />
       </motion.div>
 
-      {/* SECTION 08: 7-Stage Process & WhatsApp DPR Command - DARK THEME POSTER */}
-      <motion.div 
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.1, margin: '0px 0px -50px 0px' }}
-        variants={sectionVariants}
-        className="bg-neutral-950 border-t border-neutral-800"
+      {/* SECTION 08: 7-Stage Process & WhatsApp DPR Command - LIGHT ORANGE & BLACK THEME */}
+      <div 
+        id="process-wheel-section"
+        className="w-full relative bg-[#FAF9F6] border-t border-neutral-200/80"
       >
         <SevenStageProcess 
           onOpenDprDemo={handleOpenDprDemo} 
           onOpenConsultation={onOpenConsultation} 
-          theme="dark"
+          theme="light"
           variant="minimal"
         />
-      </motion.div>
+      </div>
 
       {/* SECTION 09: Multi-Disciplinary Architecture & Engineering - WHITE THEME POSTER */}
       <motion.div 
@@ -137,15 +135,18 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenConsultation }) => {
         <ServicesSection onOpenConsultation={onOpenConsultation} theme="white" />
       </motion.div>
 
-      {/* SECTION 10: Curated Realized Portfolio - DARK THEME POSTER with 3D Tilt */}
+      {/* SECTION 09.5: Interior Consultation Keyhole 3D View & Nordic Living Residence Showcase */}
+      <KeyholeInteriorSection onOpenConsultation={onOpenConsultation} />
+
+      {/* SECTION 10: Curated Realized Portfolio - LIGHT BEIGE THEME (3 IMAGES PER VIEW) */}
       <motion.div 
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.1, margin: '0px 0px -50px 0px' }}
         variants={sectionVariants}
-        className="bg-neutral-950 border-t border-neutral-800"
+        className="bg-[#FAF7F2] border-t border-[#E5DACB]"
       >
-        <ProjectsSection onOpenConsultation={onOpenConsultation} variant="carousel" />
+        <ProjectsSection onOpenConsultation={onOpenConsultation} variant="carousel" theme="beige" />
       </motion.div>
 
       {/* SECTION 11: PMC Investment & Direct Savings Estimator - WHITE THEME POSTER */}

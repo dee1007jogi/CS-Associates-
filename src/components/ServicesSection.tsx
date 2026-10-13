@@ -9,7 +9,8 @@ import {
   Zap,
   Home,
   Handshake,
-  ArrowRight
+  ArrowRight,
+  Sofa
 } from 'lucide-react';
 
 interface ServicesSectionProps {
@@ -22,6 +23,7 @@ const SERVICE_ICONS: Record<string, React.FC<{ className?: string }>> = {
   'turnkey-pmc': Building,
   'pmc-consulting': ShieldCheck,
   'arch-interior': Layers,
+  'interiors': Sofa,
   'vaastu-consulting': Compass,
   'mep-electrical': Zap,
   'facade-fenestration': Home,
@@ -32,11 +34,12 @@ const SERVICE_ICONS: Record<string, React.FC<{ className?: string }>> = {
 const SHORT_NAMES: Record<string, { line1: string; line2: string }> = {
   'turnkey-pmc':          { line1: 'Turnkey Project', line2: 'Management' },
   'pmc-consulting':       { line1: 'Project Management', line2: 'Consultants' },
-  'arch-interior':        { line1: 'Architecture &', line2: 'Interior Design' },
+  'arch-interior':        { line1: 'Architecture &', line2: 'Design Planning' },
+  'interiors':            { line1: 'Interiors &', line2: 'Luxury Fitouts' },
   'vaastu-consulting':    { line1: 'Vaastu', line2: 'Consultants' },
   'mep-electrical':       { line1: 'Electrical &', line2: 'MEP Consultants' },
-  'facade-fenestration':  { line1: 'Luxury Homes', line2: '& Villas PMC' },
-  'joint-development':    { line1: 'Commercial &', line2: 'Healthcare PMC' },
+  'facade-fenestration':  { line1: 'Facade &', line2: 'Fenestration' },
+  'joint-development':    { line1: 'Joint Development', line2: 'Advisory' },
 };
 
 export const ServicesSection: React.FC<ServicesSectionProps> = ({

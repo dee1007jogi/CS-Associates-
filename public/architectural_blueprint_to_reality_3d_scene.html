@@ -136,7 +136,7 @@
     <!-- Quick Action -->
     <div class="flex items-center space-x-3">
       <button id="btn-jump-interior" class="glass-panel hover:bg-amber-400 hover:text-slate-950 text-amber-200 border-amber-400/40 px-3.5 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-all shadow-lg flex items-center gap-1.5">
-        <span>Enter Royal Salon</span>
+        <span>Enter Royal Living Suite</span>
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
       </button>
     </div>
@@ -196,7 +196,7 @@
         <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-yellow-100 font-bold">SOVEREIGN PALACE.</span>
       </h2>
       <p class="mt-3 text-sm text-amber-100/90 font-normal leading-relaxed drop-shadow max-w-md">
-        Spanning three monolithic tiers of Calacatta Gold marble, double-height reception salons, mid-level cantilevered suites, and a penthouse sky pavilion with golden pergolas.
+        Spanning three monolithic tiers of Calacatta Gold marble, double-height reception lounges, mid-level cantilevered suites, and a penthouse sky pavilion with golden pergolas.
       </p>
 
       <div class="mt-5 grid grid-cols-2 gap-3 max-w-sm pointer-events-auto">
@@ -249,7 +249,7 @@
         <span class="text-amber-300 font-bold">GILDED PORTAL THRESHOLD</span>
       </h2>
       <p class="mt-3 text-sm text-amber-100/90 font-normal leading-relaxed drop-shadow max-w-md">
-        Hovering above the estate, admire the cantilevered olive tree gardens and rooftop glass spa before gliding past the water blade directly through the grand sliding salon door.
+        Hovering above the estate, admire the cantilevered olive tree gardens and rooftop glass spa before gliding past the water blade directly through the grand sliding terrace portal.
       </p>
     </div>
 
@@ -304,7 +304,7 @@
 
           <div class="flex flex-wrap gap-2">
             <button class="room-cam-btn px-4 py-2 rounded-lg text-xs mono-font transition-all bg-gradient-to-r from-amber-400 to-amber-300 text-slate-950 font-bold shadow-md" data-cam="lounge">
-              01 Grand Royal Salon
+              01 Grand Royal Living Lounge
             </button>
             <button class="room-cam-btn px-4 py-2 rounded-lg text-xs mono-font transition-all glass-panel text-amber-200 hover:text-white hover:bg-amber-900/40" data-cam="waterfall">
               02 Waterfall & Onyx Core
@@ -383,7 +383,7 @@
             <h3 class="hud-font text-2xl sm:text-3xl font-bold text-white mt-1 mb-4">Tri-Level Spatial Program & Schedule</h3>
             <div class="space-y-3">
               <div class="flex justify-between items-center py-2.5 border-b border-sky-500/20 text-xs">
-                <span class="text-sky-200 font-medium">Level 01: Grand Social Salon, Open Kitchen & Terrace Moat</span>
+                <span class="text-sky-200 font-medium">Level 01: Grand Social Living Area, Open Kitchen & Terrace Moat</span>
                 <span class="mono-font text-sky-400 font-semibold">1,050 m²</span>
               </div>
               <div class="flex justify-between items-center py-2.5 border-b border-sky-500/20 text-xs">
@@ -1544,7 +1544,7 @@
       new THREE.Vector3(22, 0.05, -10), new THREE.Vector3(22, 0.05, 18),
       new THREE.Vector3(22, 0.05, 18), new THREE.Vector3(-18, 0.05, 18),
       new THREE.Vector3(-18, 0.05, 18), new THREE.Vector3(-18, 0.05, -10),
-      // Ground salon bounds
+      // Ground living bounds
       new THREE.Vector3(-4, 0.05, -7), new THREE.Vector3(12, 0.05, -7),
       new THREE.Vector3(12, 0.05, -7), new THREE.Vector3(12, 0.05, 5),
       new THREE.Vector3(12, 0.05, 5), new THREE.Vector3(-4, 0.05, 5),
@@ -1598,7 +1598,7 @@
       { t: 0.88, pos: new THREE.Vector3(8.5, 3.2, 9.5), target: new THREE.Vector3(4.6, 2.5, 2.0) }, // 07: Stepping stones & terrace approach
       { t: 0.94, pos: new THREE.Vector3(5.6, 2.5, 3.6), target: new THREE.Vector3(4.6, 2.5, -2.0) }, // 08: Door threshold
       { t: 0.98, pos: new THREE.Vector3(4.6, 2.4, 0.8), target: new THREE.Vector3(4.5, 2.4, -4.5) }, // 09: Gliding through open champagne door
-      { t: 1.00, pos: new THREE.Vector3(4.2, 2.2, -1.8), target: new THREE.Vector3(4.2, 2.2, -7.0) } // 10: Settled in Grand Royal Salon
+      { t: 1.00, pos: new THREE.Vector3(4.2, 2.2, -1.8), target: new THREE.Vector3(4.2, 2.2, -7.0) } // 10: Settled in Grand Royal Living Lounge
     ];
 
     function getInterpolatedCam(progress) {
@@ -1646,7 +1646,7 @@
       groupFoundation.position.y = 0;
       groupFoundation.scale.set(1, 1, 1);
 
-      // 2. Floor 1 Ground Salon
+      // 2. Floor 1 Ground Living Lounge
       groupGroundFloor.position.y = 0;
       groupGroundFloor.scale.set(1, 1, 1);
 

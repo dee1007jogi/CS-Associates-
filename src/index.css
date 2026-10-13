@@ -423,3 +423,43 @@
   border-radius: 0px !important;
   border: none !important;
 }
+
+/* Keyhole 3D Interior Styles */
+.font-serif {
+  font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+}
+
+.door-finish {
+  background-color: #0b0908;
+  background-image: 
+    radial-gradient(ellipse at 50% 50%, rgba(35, 26, 20, 0.6) 0%, rgba(7, 5, 4, 0.99) 100%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 4px),
+    repeating-linear-gradient(0deg, rgba(0,0,0,0.35) 0px, rgba(0,0,0,0.35) 2px, transparent 2px, transparent 6px);
+}
+
+.wax-seal {
+  background: radial-gradient(circle at 35% 32%, #fce9b3 0%, #caa148 42%, #876122 80%, #46310e 100%);
+  box-shadow: 
+    0 14px 28px rgba(0, 0, 0, 0.75),
+    0 0 24px rgba(202, 161, 72, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.8),
+    inset 0 -3px 5px rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 235, 175, 0.55);
+}
+
+.gpu-layer {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+}
+
+.writing-vertical {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+.fluid-title {
+  font-size: clamp(1.65rem, 3.2vw, 3.6rem);
+  line-height: 0.92;
+}
+

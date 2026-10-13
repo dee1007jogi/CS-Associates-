@@ -144,14 +144,26 @@ export const CORE_SERVICES: CoreServiceItem[] = [
   },
   {
     id: 'arch-interior',
-    name: 'Architecture & Interior Design Coordination',
+    name: 'Architecture & Design Planning',
     subtitle: 'Design Realization Without Compromise',
     description: 'Bridging the critical gap between conceptual drawings and site reality. We ensure architectural intent is executed millimeter-perfect with no dimension cuts or finishing compromises.',
     scopeList: [
       'Coordination between design architects and field contractors',
-      'Material curation (Italian marble, veneers, acoustic panels, glass)',
-      'Luxury finishing: shadow gaps, mitre joints, flush baseboards',
-      'Aesthetic lighting integration and false ceiling detailing'
+      'Constructability review of architectural elevations & layouts',
+      'Structural and aesthetic drawing fidelity audits',
+      'Material curation and facade specification vetting'
+    ]
+  },
+  {
+    id: 'interiors',
+    name: 'Interiors & Turnkey Fitouts',
+    subtitle: 'Luxury Millwork, Marble & Bespoke Finishes',
+    description: 'End-to-end luxury interior execution for residential villas and commercial spaces. Meticulous supervision of Italian marble dry-lays, custom joinery, acoustic ceilings, and ambient profile lighting.',
+    scopeList: [
+      'Bespoke modular kitchens, wardrobes & custom veneer millwork',
+      'Italian marble book-matching, diamond polishing & laser-level tile laying',
+      'Acoustic wall panelling, fluted louvers & shadow gap detailing',
+      'Designer false ceilings, architectural profile lighting & automation'
     ]
   },
   {

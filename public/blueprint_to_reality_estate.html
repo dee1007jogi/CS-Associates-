@@ -1287,7 +1287,7 @@
       new THREE.Vector3(22, 0.05, -10), new THREE.Vector3(22, 0.05, 18),
       new THREE.Vector3(22, 0.05, 18), new THREE.Vector3(-18, 0.05, 18),
       new THREE.Vector3(-18, 0.05, 18), new THREE.Vector3(-18, 0.05, -10),
-      // Ground salon bounds
+      // Ground living bounds
       new THREE.Vector3(-4, 0.05, -7), new THREE.Vector3(12, 0.05, -7),
       new THREE.Vector3(12, 0.05, -7), new THREE.Vector3(12, 0.05, 5),
       new THREE.Vector3(12, 0.05, 5), new THREE.Vector3(-4, 0.05, 5),
@@ -1341,7 +1341,7 @@
       { t: 0.88, pos: new THREE.Vector3(8.5, 3.2, 9.5), target: new THREE.Vector3(4.6, 2.5, 2.0) }, // 07: Stepping stones & terrace approach
       { t: 0.94, pos: new THREE.Vector3(5.6, 2.5, 3.6), target: new THREE.Vector3(4.6, 2.5, -2.0) }, // 08: Door threshold
       { t: 0.98, pos: new THREE.Vector3(4.6, 2.4, 0.8), target: new THREE.Vector3(4.5, 2.4, -4.5) }, // 09: Gliding through open champagne door
-      { t: 1.00, pos: new THREE.Vector3(4.2, 2.2, -1.8), target: new THREE.Vector3(4.2, 2.2, -7.0) } // 10: Settled in Grand Royal Salon
+      { t: 1.00, pos: new THREE.Vector3(4.2, 2.2, -1.8), target: new THREE.Vector3(4.2, 2.2, -7.0) } // 10: Settled in Grand Royal Living Lounge
     ];
 
     function getInterpolatedCam(progress) {
@@ -1372,7 +1372,7 @@
       const aspect = window.innerWidth / window.innerHeight;
       if (aspect < 1.35) {
         const pullFactor = Math.min(1.85, 1.0 + (1.35 - aspect) * 0.95);
-        // Blend pull factor out when camera enters the interior grand salon at the finish (p > 0.80)
+        // Blend pull factor out when camera enters the interior grand living lounge at the finish (p > 0.80)
         const overviewWeight = p < 0.78 ? 1.0 : Math.max(0, (0.92 - p) / 0.14);
         const effectiveMultiplier = 1.0 + (pullFactor - 1.0) * overviewWeight;
 
@@ -1422,7 +1422,7 @@
       groupFoundation.position.y = -6 * (1 - tA);
       groupFoundation.scale.y = Math.max(0.001, tA);
 
-      // 2. Stage B: Floor 1 Ground Salon (t: 0.14 -> 0.32)
+      // 2. Stage B: Floor 1 Ground Living Lounge (t: 0.14 -> 0.32)
       const tB = Math.max(0, Math.min(1, (t - 0.14) / 0.18));
       groupGroundFloor.position.y = -4 * (1 - tB);
       groupGroundFloor.scale.y = Math.max(0.001, tB);

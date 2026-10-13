@@ -60,13 +60,13 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onOpenConsultation }
       features: ['Turnkey Site Execution', 'Joint Measurement Audits', 'Zero Rebar Sagging']
     },
     {
-      id: 'renovation-remodeling',
-      title: 'Renovation & Luxury Fitout',
-      category: 'Interior & Millwork',
-      desc: 'Transform your existing residence with book-matched Italian marble, acoustic fluted panels, and precision concealed MEP routing.',
+      id: 'interiors-luxury-fitout',
+      title: 'Interiors & Turnkey Fitouts',
+      category: 'Interiors & Millwork',
+      desc: 'Bespoke residential and commercial interior execution: Italian marble dry-laying, custom veneer millwork, modular kitchens, acoustic panelling, and precision concealed MEP routing.',
       image: '/src/assets/images/gallery_luxury_interior_1790601175826.jpg',
       icon: Home,
-      features: ['Bespoke Millwork Standards', 'Acoustic Ceiling Alignment', 'Zero-Crack Detailing']
+      features: ['Italian Marble Book-Matching', 'Bespoke Millwork & Kitchens', 'Zero-Crack Detailing']
     },
     {
       id: 'project-management',

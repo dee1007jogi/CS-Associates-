@@ -256,18 +256,21 @@ export const FounderSection: React.FC<FounderSectionProps> = ({
                   {/* Main Title Group */}
                   <div className="space-y-3 my-auto py-2">
                     <div className="space-y-2">
-                      <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-neutral-900 leading-none">
-                        Civil &amp; PMC
-                      </h2>
                       <div className="inline-block">
-                        <span className="inline-flex items-center px-4 py-1.5 rounded-lg bg-[#f25400] text-white text-sm sm:text-base font-bold tracking-wider uppercase orange-badge-glow">
-                          EXPERT
+                        <span className="inline-flex items-center px-3.5 py-1.5 rounded-lg bg-[#f25400] text-white text-xs sm:text-sm font-bold tracking-wider uppercase orange-badge-glow">
+                          FOUNDER &amp; PROPRIETOR
                         </span>
+                      </div>
+                      <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-neutral-900 leading-tight">
+                        Founder of CS Associates
+                      </h2>
+                      <div className="text-xl sm:text-2xl font-bold text-[#f25400] tracking-tight font-display">
+                        Mr. Kiran Dikshit L
                       </div>
                     </div>
 
-                    <p className="text-stone-700 text-sm sm:text-base md:text-lg font-normal leading-relaxed max-w-2xl pt-2">
-                      Under the personal stewardship of <strong className="text-neutral-900 font-bold">Mr. Kiran Dikshit L</strong> with over <strong className="text-[#f25400] font-bold">25+ years</strong> of hands-on civil &amp; architectural PMC mastery across residential villas, commercial complexes, and healthcare projects.
+                    <p className="text-stone-700 text-sm sm:text-base md:text-lg font-normal leading-relaxed max-w-2xl pt-1">
+                      With over <strong className="text-[#f25400] font-bold">25+ years</strong> of hands-on civil &amp; architectural PMC leadership, <strong className="text-neutral-900 font-bold">Mr. Kiran Dikshit L</strong> is the driving force behind CS Associates—protecting client capital, enforcing uncompromising quality, and turning blueprints into reality on time, every time.
                     </p>
 
                     {/* Trust Metrics Grid */}
@@ -336,28 +339,28 @@ export const FounderSection: React.FC<FounderSectionProps> = ({
 
           </div>
 
-          {/* OVERLAPPING HORIZONTAL QUOTE & SIGNATURE BANNER (ENTRANCE FROM BOTTOM) */}
+          {/* HORIZONTAL QUOTE & SIGNATURE BANNER (CLEAN INTEGRATION BELOW GRID) */}
           <motion.div 
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 25 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.15 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="relative lg:absolute lg:bottom-12 lg:left-8 lg:right-8 z-30 px-4 sm:px-6 lg:px-0 py-3 lg:py-0"
+            transition={{ duration: 0.7, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+            className="relative z-20 w-full px-4 sm:px-6 lg:px-8 pb-6 sm:pb-8 pt-3 bg-white border-t border-neutral-100"
           >
-            <div className="bg-neutral-950/95 backdrop-blur-2xl rounded-2xl lg:rounded-r-full lg:rounded-l-2xl border-2 border-orange-500 shadow-[0_16px_50px_rgba(0,0,0,0.3)] p-4 sm:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-white">
+            <div className="bg-neutral-950 rounded-2xl lg:rounded-full border-2 border-orange-500 shadow-[0_16px_50px_rgba(0,0,0,0.25)] p-4 sm:p-5 lg:px-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-white">
               
               {/* Left Side: Cursive Signature & Title in Orange/Gold */}
               <div className="flex flex-col shrink-0 pr-4">
-                <span className="font-signature text-3xl sm:text-5xl bg-gradient-to-r from-orange-200 via-orange-400 to-orange-200 bg-clip-text text-transparent font-bold leading-none tracking-wide drop-shadow-sm">
+                <span className="font-signature text-3xl sm:text-4xl lg:text-5xl bg-gradient-to-r from-orange-200 via-orange-400 to-orange-200 bg-clip-text text-transparent font-bold leading-none tracking-wide drop-shadow-sm">
                   Kiran Dikshit L
                 </span>
                 <span className="text-[9px] uppercase tracking-widest text-orange-400 font-mono font-bold mt-1.5">
-                  FOUNDER & PMC PROPRIETOR
+                  FOUNDER &amp; PMC PROPRIETOR
                 </span>
               </div>
 
               {/* Center Divider Line */}
-              <div className="hidden md:block h-12 w-[2px] bg-orange-500/40 shrink-0" />
+              <div className="hidden md:block h-10 w-[2px] bg-orange-500/40 shrink-0" />
 
               {/* Right Side: Official Philosophy Quote from docx */}
               <div className="flex-1">

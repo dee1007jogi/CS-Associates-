@@ -15,6 +15,7 @@ interface PageHeroProps {
   onPrimaryAction?: () => void;
   focusTag?: string;
   focusSubtitle?: string;
+  children?: React.ReactNode;
 }
 
 export const PageHero: React.FC<PageHeroProps> = ({
@@ -28,7 +29,8 @@ export const PageHero: React.FC<PageHeroProps> = ({
   primaryActionLabel = 'Schedule Discovery Call',
   onPrimaryAction,
   focusTag,
-  focusSubtitle = 'Independent Quality & Audit Standards'
+  focusSubtitle = 'Independent Quality & Audit Standards',
+  children
 }) => {
   const activeFocusTag = focusTag || `${breadcrumbLabel.toUpperCase()} · FIELD FOCUS`;
 
@@ -53,7 +55,7 @@ export const PageHero: React.FC<PageHeroProps> = ({
         <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-neutral-950 via-neutral-950/50 to-transparent pointer-events-none" />
 
         {/* Mobile bottom readability tint */}
-        <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/90 via-neutral-950/40 to-transparent sm:hidden pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/85 to-neutral-950/35 sm:hidden pointer-events-none" />
       </div>
 
       {/* Subtle Warm Orange Ambient Backlight behind the focal area */}
@@ -64,20 +66,20 @@ export const PageHero: React.FC<PageHeroProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           
           {/* Left Column: Text & CTAs */}
-          <div className="lg:col-span-7 xl:col-span-7 space-y-6">
+          <div className="lg:col-span-7 xl:col-span-7 space-y-5 sm:space-y-6">
             
             {/* Eyebrow Badge & Breadcrumbs */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
-              className="flex flex-wrap items-center gap-3"
+              className="flex flex-wrap items-center gap-2 sm:gap-3"
             >
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-orange-500/20 border border-orange-500/40 text-orange-400 text-xs font-mono font-bold uppercase tracking-wider shadow-sm">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-orange-500/20 border border-orange-500/40 text-orange-400 text-[11px] sm:text-xs font-mono font-bold uppercase tracking-wider shadow-sm">
                 <span>{badge}</span>
               </div>
 
-              <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-neutral-900/80 backdrop-blur-md border border-white/10 text-xs font-mono text-neutral-300">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-neutral-900/80 backdrop-blur-md border border-white/10 text-[11px] sm:text-xs font-mono text-neutral-300">
                 <Link to="/" className="hover:text-orange-400 transition-colors">Home</Link>
                 <span className="text-neutral-600">/</span>
                 <span className="text-orange-400 font-bold">{breadcrumbLabel}</span>
@@ -89,7 +91,7 @@ export const PageHero: React.FC<PageHeroProps> = ({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.08] font-display text-balance"
+              className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.14] sm:leading-[1.08] font-display text-balance"
             >
               {title} {highlightedTitle && <span className="text-orange-500 underline decoration-orange-500/50 decoration-4 underline-offset-8">{highlightedTitle}</span>}
             </motion.h1>
@@ -99,7 +101,7 @@ export const PageHero: React.FC<PageHeroProps> = ({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-base sm:text-lg text-neutral-300 leading-relaxed font-sans max-w-2xl"
+              className="text-sm sm:text-base lg:text-lg text-neutral-300 leading-relaxed font-sans max-w-2xl"
             >
               {description}
             </motion.p>
@@ -109,12 +111,12 @@ export const PageHero: React.FC<PageHeroProps> = ({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="pt-2 flex flex-wrap items-center gap-4"
+              className="pt-2 flex flex-wrap items-stretch sm:items-center gap-2.5 sm:gap-4"
             >
               {onPrimaryAction ? (
                 <button
                   onClick={onPrimaryAction}
-                  className="px-7 py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-xl hover:shadow-orange-500/25 active:scale-95 flex items-center gap-2 cursor-pointer font-sans uppercase tracking-wider"
+                  className="w-full sm:w-auto justify-center px-6 sm:px-7 py-3 sm:py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-xl hover:shadow-orange-500/25 active:scale-95 flex items-center gap-2 cursor-pointer font-sans uppercase tracking-wider"
                 >
                   <span>{primaryActionLabel}</span>
                   <ArrowRight className="w-4 h-4" />
@@ -124,7 +126,7 @@ export const PageHero: React.FC<PageHeroProps> = ({
                   href="https://wa.me/918095823483?text=Hello%20CS%20Associates%2C%20I%20would%20like%20to%20consult%20on%20my%20construction%20project."
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-7 py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-xl hover:shadow-orange-500/25 active:scale-95 flex items-center gap-2 cursor-pointer font-sans uppercase tracking-wider"
+                  className="w-full sm:w-auto justify-center px-6 sm:px-7 py-3 sm:py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-xl hover:shadow-orange-500/25 active:scale-95 flex items-center gap-2 cursor-pointer font-sans uppercase tracking-wider"
                 >
                   <span>{primaryActionLabel}</span>
                   <ArrowRight className="w-4 h-4" />
@@ -133,25 +135,37 @@ export const PageHero: React.FC<PageHeroProps> = ({
 
               <a
                 href="tel:+918095823483"
-                className="px-5 py-3.5 rounded-xl border border-neutral-700/80 hover:border-orange-500/60 text-xs sm:text-sm font-semibold text-neutral-200 hover:text-white bg-neutral-900/90 backdrop-blur-md flex items-center gap-2 transition-colors font-mono"
+                className="w-full sm:w-auto justify-center px-4 sm:px-5 py-3 sm:py-3.5 rounded-xl border border-neutral-700/80 hover:border-orange-500/60 text-xs sm:text-sm font-semibold text-neutral-200 hover:text-white bg-neutral-900/90 backdrop-blur-md flex items-center gap-2 transition-colors font-mono"
               >
                 <Phone className="w-4 h-4 text-orange-400" />
                 <span>+91 80958 23483</span>
               </a>
 
-              {/* Optional Stats */}
+              {/* Stats - visible on mobile as clean responsive chip strip */}
               {stats && stats.length > 0 && (
-                <div className="hidden sm:flex items-center gap-4 bg-neutral-900/80 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/10">
+                <div className="flex flex-wrap sm:flex-nowrap items-center justify-between sm:justify-start gap-2.5 sm:gap-4 bg-neutral-900/90 backdrop-blur-md px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-white/10 w-full sm:w-auto">
                   {stats.map((s, idx) => (
-                    <div key={idx} className="flex items-center gap-2 text-xs">
+                    <div key={idx} className="flex items-center gap-1.5 sm:gap-2 text-xs">
                       {idx > 0 && <span className="text-neutral-700">·</span>}
-                      <span className="font-bold text-orange-400 font-mono">{s.value}</span>
-                      <span className="text-neutral-300">{s.label}</span>
+                      <span className="font-bold text-orange-400 font-mono text-[11px] sm:text-xs">{s.value}</span>
+                      <span className="text-neutral-300 text-[10px] sm:text-xs">{s.label}</span>
                     </div>
                   ))}
                 </div>
               )}
             </motion.div>
+
+            {/* Optional Custom Injected Actions / Links */}
+            {children && (
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.35 }}
+                className="pt-1"
+              >
+                {children}
+              </motion.div>
+            )}
 
           </div>
 

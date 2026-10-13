@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, Layers, CheckSquare, Building2, Calculator, MessageCircle, Phone } from 'lucide-react';
+import { Home, Layers, CheckSquare, Building2, Palette, MessageCircle, Phone } from 'lucide-react';
 
 interface MobileBottomNavProps {
   onOpenConsultation: () => void;
@@ -15,7 +15,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ onOpenConsulta
     { label: 'Services', path: '/services', icon: Layers },
     { label: '7-Stage', path: '/process', icon: CheckSquare },
     { label: 'Projects', path: '/projects', icon: Building2 },
-    { label: 'Estimator', path: '/calculator', icon: Calculator },
+    { label: 'Studio', path: '/design-studio', icon: Palette },
   ];
 
   const isActive = (path: string) => {

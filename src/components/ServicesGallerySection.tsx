@@ -89,14 +89,37 @@ export const SERVICES_GALLERY_DATA: ServiceGalleryItem[] = [
     scopeHighlight: 'Independent site supervision, material wastage control & running bill certification.'
   },
   {
-    id: 'architecture-interior-design',
+    id: 'architectural-design-planning',
     number: '03',
-    title: 'Architecture & Interior Design Consultants',
-    shortTitle: 'Architecture & Interior Design',
-    tagline: 'Design Realization Without Compromise',
+    title: 'Architectural Design & Planning',
+    shortTitle: 'Architecture & Planning',
+    tagline: 'Design Realization & Constructability Fidelity',
     heroHeadline: 'Bridging Drawing Board Vision with Flawless Site Reality',
-    description: 'We ensure architectural intent is executed millimeter-perfect with Italian marble dry-lays, seamless shadow gap detailing, fluted timber coordination, and acoustic isolation.',
-    longDescription: 'High-end luxury estates often suffer during interior fit-outs when subcontractors cut corners on joint alignments or shadow gaps. CS Associates acts as the technical bridge, executing sophisticated fenestration, recessed profile lighting, and custom millwork with zero aesthetic compromises.',
+    description: 'We ensure architectural intent is executed millimeter-perfect with constructability audits, elevation structural fidelity, and rigorous cross-discipline alignment.',
+    longDescription: 'High-end architectural drawings require rigorous on-site interpretation. CS Associates acts as the technical bridge between design architects, structural engineers, and site execution teams, ensuring cantilever spans, daylight orientations, and aesthetic details are built precisely to code.',
+    image: '/src/assets/images/team_architectural_meeting.jpg',
+    stats: {
+      value: '100%',
+      label: 'Drawing Plan Fidelity'
+    },
+    metrics: [
+      { icon: 'award', value: 'Bespoke', label: 'Elevation Detailing' },
+      { icon: 'star', value: '150+', label: 'Villas & Projects' },
+      { icon: 'shield', value: '100%', label: 'Design Fidelity' },
+      { icon: 'clock', value: 'Zero', label: 'Site Rework' }
+    ],
+    keyBenefits: ['Constructability Review & Drawing Audits', 'Architect-Contractor Technical Alignment', 'Statutory Norms & Sanction Support'],
+    scopeHighlight: 'Flawless translation of conceptual blueprints, structural drawings & facade elevations.'
+  },
+  {
+    id: 'interiors-luxury-fitouts',
+    number: '04',
+    title: 'Interiors & Turnkey Fitouts',
+    shortTitle: 'Interiors & Fitouts',
+    tagline: 'Bespoke Millwork, Marble & Flawless Execution',
+    heroHeadline: 'Crafting Bespoke Interiors with Millimeter Engineering Precision',
+    description: 'Turnkey execution of luxury residential and commercial interiors—bringing designer visions to reality with Italian marble book-matching, custom joinery, and concealed MEP.',
+    longDescription: 'High-end luxury estates often suffer during interior fit-outs when subcontractors cut corners on joint alignments or shadow gaps. CS Associates acts as your vigilant interior PMC, executing Italian marble dry-lays, recessed profile lighting, acoustic panelling, and custom millwork with zero compromises.',
     image: '/src/assets/images/gallery_luxury_interior_1790601175826.jpg',
     stats: {
       value: '0.0 mm',
@@ -104,16 +127,16 @@ export const SERVICES_GALLERY_DATA: ServiceGalleryItem[] = [
     },
     metrics: [
       { icon: 'award', value: 'Bespoke', label: 'Material Dry-Lays' },
-      { icon: 'star', value: '50+ Villas', label: 'Luxury Finishes' },
-      { icon: 'shield', value: '100%', label: 'Design Fidelity' },
+      { icon: 'star', value: 'Custom', label: 'Veneers & Millwork' },
+      { icon: 'shield', value: '100%', label: 'Zero-Crack Detailing' },
       { icon: 'clock', value: 'Precision', label: 'Laser Mitre Joints' }
     ],
-    keyBenefits: ['Warehouse Dry-Lay Italian Marble', 'Acoustic Soundproofing Integrity', 'Seamless MEP-Interior Coordination'],
-    scopeHighlight: 'Flawless execution of custom veneers, Statuario marble, acoustic ceilings & fenestration.'
+    keyBenefits: ['Warehouse Dry-Lay Italian Marble', 'Acoustic Soundproofing Integrity', 'Seamless MEP & Profile Lighting'],
+    scopeHighlight: 'Flawless execution of custom veneers, Statuario marble, acoustic ceilings & turnkey fitouts.'
   },
   {
     id: 'vaastu-consultants',
-    number: '04',
+    number: '05',
     title: 'Vaastu Consultants',
     shortTitle: 'Vaastu Consultants',
     tagline: 'Harmonious Energy & Scientific Alignment',
@@ -136,7 +159,7 @@ export const SERVICES_GALLERY_DATA: ServiceGalleryItem[] = [
   },
   {
     id: 'electrical-consultants',
-    number: '05',
+    number: '06',
     title: 'Electrical Consultants',
     shortTitle: 'Electrical & MEP Consultants',
     tagline: 'High-Load Infrastructure & Intelligent Automation',
@@ -159,7 +182,7 @@ export const SERVICES_GALLERY_DATA: ServiceGalleryItem[] = [
   },
   {
     id: 'facade-fenestration',
-    number: '06',
+    number: '07',
     title: 'Facade & Fenestration',
     shortTitle: 'Facade & Fenestration',
     tagline: 'Acoustic & Thermal High-Performance Envelopes',
@@ -182,7 +205,7 @@ export const SERVICES_GALLERY_DATA: ServiceGalleryItem[] = [
   },
   {
     id: 'joint-development',
-    number: '07',
+    number: '08',
     title: 'Joint Development',
     shortTitle: 'Joint Development Advisory',
     tagline: 'Landowner Legal, Technical & Equity Protection',

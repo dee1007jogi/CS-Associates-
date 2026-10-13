@@ -3,9 +3,11 @@ import { motion, type Variants } from 'framer-motion';
 import { PROJECTS_DATA, type ProjectItem } from '../data/projectsData';
 import { PageHero } from '../components/PageHero';
 import { StyleGallerySection } from '../components/StyleGallerySection';
+import { CostCalculator } from '../components/CostCalculator';
 import {
   MapPin, ShieldCheck, TrendingDown, Check, X, ArrowRight,
-  Building2, Home, Activity, Filter, Sparkles, Image as ImageIcon
+  Building2, Home, Activity, Filter, Sparkles, Image as ImageIcon,
+  CheckCircle2, Clock
 } from 'lucide-react';
 
 interface ProjectsPageProps {
@@ -37,6 +39,7 @@ const FILTERS = [
 ] as const;
 
 type FilterKey = 'all' | 'residential' | 'commercial' | 'healthcare';
+type StatusFilterKey = 'all' | 'finished' | 'upcoming';
 
 function ProjectCard({ 
   project, 
@@ -48,6 +51,7 @@ function ProjectCard({
   theme?: 'white' | 'dark';
 }) {
   const isDark = theme === 'dark';
+  const isUpcoming = project.status === 'Upcoming';
 
   return (
     <div
@@ -55,7 +59,7 @@ function ProjectCard({
       className={`group relative rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 flex flex-col ${
         isDark
           ? 'bg-neutral-900 border border-neutral-800 hover:border-orange-500/40 hover:shadow-[0_0_0_1px_rgba(249,115,22,0.15),0_20px_40px_-12px_rgba(0,0,0,0.6)]'
-          : 'bg-white border border-neutral-200/90 shadow-sm hover:border-orange-500/50 hover:shadow-xl'
+          : 'bg-white border border-[#E5DACB] shadow-sm hover:border-orange-500/50 hover:shadow-xl'
       }`}
     >
       {/* Image */}
@@ -75,12 +79,18 @@ function ProjectCard({
             {project.categoryLabel}
           </span>
           <span className={`px-2.5 py-1 rounded-md text-[11px] font-semibold border backdrop-blur-sm flex items-center gap-1 ${
-            project.status === 'Completed' || project.status === 'Handover Complete'
-              ? 'bg-emerald-950/80 text-emerald-400 border-emerald-500/30'
-              : 'bg-orange-950/80 text-orange-400 border-orange-500/30'
+            isUpcoming
+              ? 'bg-amber-950/80 text-amber-300 border-amber-500/30'
+              : project.status === 'Completed' || project.status === 'Handover Complete'
+                ? 'bg-emerald-950/80 text-emerald-400 border-emerald-500/30'
+                : 'bg-orange-950/80 text-orange-400 border-orange-500/30'
           }`}>
-            <ShieldCheck className="w-3 h-3" />
-            {project.status}
+            {isUpcoming ? (
+              <Sparkles className="w-3 h-3 text-amber-400" />
+            ) : (
+              <ShieldCheck className="w-3 h-3" />
+            )}
+            {isUpcoming ? 'Upcoming Site' : project.status}
           </span>
         </div>
 
@@ -117,8 +127,8 @@ function ProjectCard({
           ))}
         </div>
 
-        {/* Savings chip */}
-        {project.clientSavings && (
+        {/* Savings chip or Upcoming Timeline */}
+        {project.clientSavings ? (
           <div className="mt-auto pt-2">
             <div className={`flex items-center gap-2 px-3 py-2 rounded-xl text-[11px] font-medium ${
               isDark 
@@ -129,11 +139,24 @@ function ProjectCard({
               <span className="line-clamp-1">{project.clientSavings}</span>
             </div>
           </div>
-        )}
+        ) : isUpcoming ? (
+          <div className="mt-auto pt-2">
+            <div className={`flex items-center gap-2 px-3 py-2 rounded-xl text-[11px] font-medium ${
+              isDark 
+                ? 'bg-amber-950/30 border border-amber-500/20 text-amber-300'
+                : 'bg-amber-50 border border-amber-200 text-amber-800'
+            }`}>
+              <Clock className="w-3.5 h-3.5 shrink-0 text-amber-500" />
+              <span className="line-clamp-1">Target Handover: {project.completionYear}</span>
+            </div>
+          </div>
+        ) : null}
 
         {/* CTA row */}
         <div className="flex items-center justify-between pt-1">
-          <span className="text-[10px] text-neutral-500 font-mono">{project.completionYear}</span>
+          <span className="text-[10px] text-neutral-500 font-mono">
+            {isUpcoming ? `Target ${project.completionYear}` : project.completionYear}
+          </span>
           <span className={`text-[11px] font-semibold flex items-center gap-1 group-hover:gap-2 transition-all ${
             isDark ? 'text-orange-400' : 'text-orange-600'
           }`}>
@@ -146,6 +169,8 @@ function ProjectCard({
 }
 
 function ProjectModal({ project, onClose, onConsult }: { project: ProjectItem; onClose: () => void; onConsult: () => void }) {
+  const isUpcoming = project.status === 'Upcoming';
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md"
@@ -188,12 +213,19 @@ function ProjectModal({ project, onClose, onConsult }: { project: ProjectItem; o
             {[
               { label: 'Location', value: project.location },
               { label: 'Built-Up Area', value: project.builtUpArea, mono: true },
-              { label: 'Status', value: project.status, green: true },
-              { label: 'Handover', value: project.completionYear },
-            ].map(({ label, value, mono, green }) => (
+              { 
+                label: 'Status', 
+                value: isUpcoming ? 'Upcoming Site' : project.status, 
+                colorClass: isUpcoming ? 'text-amber-400' : 'text-emerald-400' 
+              },
+              { 
+                label: isUpcoming ? 'Target Handover' : 'Handover', 
+                value: project.completionYear 
+              },
+            ].map(({ label, value, mono, colorClass }) => (
               <div key={label} className="bg-neutral-950 border border-neutral-800 rounded-xl p-3">
                 <span className="text-[10px] text-neutral-500 uppercase tracking-wider block mb-1">{label}</span>
-                <span className={`text-xs font-semibold block ${green ? 'text-emerald-400' : 'text-white'} ${mono ? 'font-mono' : ''}`}>
+                <span className={`text-xs font-semibold block ${colorClass || 'text-white'} ${mono ? 'font-mono' : ''}`}>
                   {value}
                 </span>
               </div>
@@ -254,10 +286,29 @@ function ProjectModal({ project, onClose, onConsult }: { project: ProjectItem; o
 }
 
 export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenConsultation }) => {
-  const [filter, setFilter] = useState<FilterKey>('all');
+  const [statusFilter, setStatusFilter] = useState<StatusFilterKey>('all');
+  const [categoryFilter, setCategoryFilter] = useState<FilterKey>('all');
   const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
 
-  const filtered = filter === 'all' ? PROJECTS_DATA : PROJECTS_DATA.filter(p => p.category === filter);
+  const finishedCount = PROJECTS_DATA.filter(p => p.status === 'Completed' || p.status === 'Handover Complete').length;
+  const upcomingCount = PROJECTS_DATA.filter(p => p.status === 'Upcoming' || p.status === 'Ongoing').length;
+  const allCount = PROJECTS_DATA.length;
+
+  const filtered = PROJECTS_DATA.filter((project) => {
+    // Status filter
+    if (statusFilter === 'finished') {
+      if (project.status !== 'Completed' && project.status !== 'Handover Complete') return false;
+    } else if (statusFilter === 'upcoming') {
+      if (project.status !== 'Upcoming' && project.status !== 'Ongoing') return false;
+    }
+
+    // Category filter
+    if (categoryFilter !== 'all' && project.category !== categoryFilter) {
+      return false;
+    }
+
+    return true;
+  });
 
   return (
     <div className="min-h-screen bg-neutral-950 text-white font-sans">
@@ -281,59 +332,132 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenConsultation }
         ]}
       />
 
-      {/* ── 2. FEATURED PROJECTS GRID (White Theme) ────────────────── */}
+      {/* ── 2. FEATURED PROJECTS GRID (Light Beige Theme) ─────────── */}
       <motion.div
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.05, margin: '0px 0px -50px 0px' }}
         variants={sectionVariants}
       >
-        <section id="projects-grid" className="w-full bg-white text-neutral-900 border-b border-neutral-200 py-14 sm:py-20 relative select-none">
-          {/* Subtle grid pattern */}
+        <section id="projects-grid" className="w-full bg-[#FAF7F2] text-neutral-900 border-b border-[#E5DACB] py-14 sm:py-20 relative select-none">
+          {/* Subtle architectural drafting grid pattern */}
           <div
             aria-hidden="true"
-            className="absolute inset-0 opacity-[0.035] pointer-events-none bg-[radial-gradient(#000000_1px,transparent_1px)] [background-size:24px_24px]"
+            className="absolute inset-0 opacity-40 pointer-events-none"
+            style={{
+              backgroundImage: 'radial-gradient(#d4c7b8 1.2px, transparent 1.2px)',
+              backgroundSize: '24px 24px'
+            }}
           />
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
             {/* Section header + filters */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-              <div>
-                <div className="inline-flex items-center gap-2 text-xs font-mono font-semibold uppercase tracking-widest text-orange-600 mb-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
-                  <span>DELIVERED LANDMARKS · BENGALURU</span>
+            <div className="flex flex-col gap-6 mb-10">
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div>
+                  <div className="inline-flex items-center gap-2 text-xs font-mono font-semibold uppercase tracking-widest text-orange-600 mb-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
+                    <span>DELIVERED & UPCOMING LANDMARKS · BENGALURU</span>
+                  </div>
+                  <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-neutral-950 font-display tracking-tight uppercase">
+                    OUR <span className="text-orange-600">PROJECTS</span>
+                  </h2>
+                  <p className="text-sm sm:text-base text-neutral-600 font-sans mt-2 max-w-2xl leading-relaxed">
+                    Explore our completed architectural landmarks and upcoming flagship developments across Bengaluru. Click any project to inspect specifications, scope of work, and audited savings.
+                  </p>
                 </div>
-                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-neutral-950 font-display tracking-tight uppercase">
-                  FEATURED <span className="text-orange-600">PROJECTS</span>
-                </h2>
-                <p className="text-sm sm:text-base text-neutral-600 font-sans mt-2 max-w-xl leading-relaxed">
-                  Explore our realized luxury villas, commercial campuses, and healthcare infrastructure across Bengaluru. Click any project to view full specifications & audited savings.
-                </p>
-              </div>
 
-              {/* Filter pills & Gallery Jump Button */}
-              <div className="flex flex-wrap items-center gap-2 self-start md:self-auto">
-                {FILTERS.map(({ key, label }) => (
-                  <button
-                    key={key}
-                    onClick={() => setFilter(key as FilterKey)}
-                    className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer border ${
-                      filter === key
-                        ? 'bg-orange-500 text-white border-orange-500 shadow-md shadow-orange-500/20'
-                        : 'bg-neutral-100 text-neutral-700 border-neutral-200 hover:border-neutral-300 hover:text-neutral-950'
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
                 <a
                   href="#projects-gallery"
-                  className="px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer border bg-orange-500/10 text-orange-700 border-orange-500/30 hover:bg-orange-500 hover:text-white hover:border-orange-500 flex items-center gap-1.5"
+                  className="px-4 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer border bg-orange-500/10 text-orange-700 border-orange-500/30 hover:bg-orange-500 hover:text-white hover:border-orange-500 flex items-center gap-1.5 self-start md:self-auto shrink-0 shadow-xs"
                 >
                   <ImageIcon className="w-3.5 h-3.5" />
                   <span>Visual Gallery ↓</span>
                 </a>
+              </div>
+
+              {/* Status Filter Tabs (Finished Works / Upcoming Projects / All) */}
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pt-4 border-t border-[#E5DACB]">
+                {/* Primary: Finished vs Upcoming Tabs */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setStatusFilter('all')}
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95 ${
+                      statusFilter === 'all'
+                        ? 'bg-neutral-950 text-white shadow-md'
+                        : 'bg-white hover:bg-neutral-100 text-neutral-700 border border-neutral-300/80'
+                    }`}
+                  >
+                    <span>All Works</span>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold ${
+                      statusFilter === 'all'
+                        ? 'bg-orange-500 text-neutral-950'
+                        : 'bg-neutral-100 text-neutral-600'
+                    }`}>
+                      {allCount}
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setStatusFilter('finished')}
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95 ${
+                      statusFilter === 'finished'
+                        ? 'bg-neutral-950 text-white shadow-md'
+                        : 'bg-white hover:bg-neutral-100 text-neutral-700 border border-neutral-300/80'
+                    }`}
+                  >
+                    <CheckCircle2 className={`w-3.5 h-3.5 ${statusFilter === 'finished' ? 'text-orange-500' : 'text-emerald-500'}`} />
+                    <span>Finished Works</span>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold ${
+                      statusFilter === 'finished'
+                        ? 'bg-orange-500 text-neutral-950'
+                        : 'bg-neutral-100 text-neutral-600'
+                    }`}>
+                      {finishedCount}
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setStatusFilter('upcoming')}
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95 ${
+                      statusFilter === 'upcoming'
+                        ? 'bg-neutral-950 text-white shadow-md'
+                        : 'bg-white hover:bg-neutral-100 text-neutral-700 border border-neutral-300/80'
+                    }`}
+                  >
+                    <Sparkles className={`w-3.5 h-3.5 ${statusFilter === 'upcoming' ? 'text-orange-500' : 'text-amber-500'}`} />
+                    <span>Upcoming Projects</span>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold ${
+                      statusFilter === 'upcoming'
+                        ? 'bg-orange-500 text-neutral-950'
+                        : 'bg-neutral-100 text-neutral-600'
+                    }`}>
+                      {upcomingCount}
+                    </span>
+                  </button>
+                </div>
+
+                {/* Secondary: Category Filter Pills */}
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider mr-1 hidden sm:inline">Category:</span>
+                  {FILTERS.map(({ key, label }) => (
+                    <button
+                      key={key}
+                      onClick={() => setCategoryFilter(key as FilterKey)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer border ${
+                        categoryFilter === key
+                          ? 'bg-orange-500 text-white border-orange-500 shadow-xs'
+                          : 'bg-white text-neutral-600 border-neutral-200 hover:border-neutral-300 hover:text-neutral-950'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -370,7 +494,19 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenConsultation }
         <StyleGallerySection onOpenConsultation={onOpenConsultation} />
       </motion.div>
 
-      {/* ── 4. CLOSING CONSULTATION CTA (Dark Cinematic Theme) ───────── */}
+      {/* ── 4. PMC INVESTMENT & DIRECT SAVINGS ESTIMATOR ─────────────── */}
+      <motion.div
+        id="cost-estimator"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.08, margin: '0px 0px -50px 0px' }}
+        variants={sectionVariants}
+        className="w-full bg-[#FAF7F2] border-t border-[#E5DACB]"
+      >
+        <CostCalculator onOpenConsultation={onOpenConsultation} theme="white" />
+      </motion.div>
+
+      {/* ── 5. CLOSING CONSULTATION CTA (Dark Cinematic Theme) ───────── */}
       <motion.div
         initial="hidden"
         whileInView="visible"

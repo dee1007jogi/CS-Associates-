@@ -1,25 +1,107 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion';
 import { PMC_7_STAGES } from '../data/servicesData';
 import { 
+  HelpCircle,
+  Wrench,
+  HardHat,
+  ClipboardCheck,
+  Search,
+  Layers,
+  Rocket,
   CheckCircle2, 
   AlertTriangle, 
   ShieldCheck, 
   ArrowRight, 
+  ChevronLeft,
   ChevronRight,
-  Sparkles,
   Smartphone,
   Plus
 } from 'lucide-react';
 import { TiltCard3D } from './TiltCard3D';
-import { SectionTelemetryBadge } from './SectionTelemetryBadge';
 
 interface SevenStageProcessProps {
   onOpenDprDemo: () => void;
   onOpenConsultation: () => void;
-  theme?: 'dark' | 'white';
+  theme?: 'dark' | 'white' | 'beige';
   variant?: 'minimal' | 'full';
 }
+
+interface MinimalStageItem {
+  number: number;
+  title: string;
+  shortTag: string;
+  tagline: string;
+  description: string;
+  highlights: string[];
+  icon: React.ComponentType<{ className?: string }>;
+}
+
+const MINIMAL_STAGES: MinimalStageItem[] = [
+  {
+    number: 1,
+    title: 'Planning & Feasibility',
+    shortTag: 'Hypothesis & Planning',
+    tagline: 'Feasibility, Master Budgeting & Risk Review',
+    description: 'Master project budget breakdown, constructability review, and baseline milestone scheduling before breaking ground.',
+    highlights: ['Comprehensive Master Budget', 'Milestone Gantt Scheduling'],
+    icon: HelpCircle
+  },
+  {
+    number: 2,
+    title: 'Design & Vendor Vetting',
+    shortTag: 'Contractor Sourcing',
+    tagline: 'Consultant Synergy & Contractor Vetting',
+    description: 'Unbiased technical contractor comparative matrices, milestone-linked penalty SLAs, and material sample benchmarking.',
+    highlights: ['Comparative Contractor Matrices', 'Milestone-Linked Contracts'],
+    icon: Wrench
+  },
+  {
+    number: 3,
+    title: 'Daily Site Supervision',
+    shortTag: 'Site Oversight',
+    tagline: 'Daily Site Oversight & Transparent WhatsApp DPR',
+    description: 'Dedicated on-site qualified civil engineers with photo-verified Daily Progress Reports (DPR) sent directly to your phone.',
+    highlights: ['Dedicated On-Site Engineer', 'Daily WhatsApp DPR Updates'],
+    icon: HardHat
+  },
+  {
+    number: 4,
+    title: 'Zero-Defect Quality Control',
+    shortTag: 'Quality Assurance',
+    tagline: 'Multi-Tier Audits & Laboratory Testing',
+    description: 'Mandatory concrete slump tests, 72-hour ponding leak tests, and pre-pour structural inspection checklists.',
+    highlights: ['72-Hour Water Ponding Test', 'Laboratory Concrete Strength'],
+    icon: ClipboardCheck
+  },
+  {
+    number: 5,
+    title: 'Material & Billing Audit',
+    shortTag: 'Wastage & Cost Audit',
+    tagline: 'Wastage Control & Laser Bill Audits',
+    description: 'Joint laser distometer site measurements for every contractor bill, saving clients 8% to 15% on total build cost.',
+    highlights: ['Laser Joint Bill Audits', '8%–15% Verified Savings'],
+    icon: Search
+  },
+  {
+    number: 6,
+    title: 'MEP & Finishes Coordination',
+    shortTag: 'Designer Precision',
+    tagline: 'Clash-Free Services & Designer Precision',
+    description: 'Coordinated electrical, plumbing, HVAC, and interior detailing to ensure zero pipe clashes and flawless joint finishes.',
+    highlights: ['Zero Pipe & Duct Clashes', 'Designer Precision Detailing'],
+    icon: Layers
+  },
+  {
+    number: 7,
+    title: 'Snag Clearance & Handover',
+    shortTag: 'Zero-Defect Handover',
+    tagline: '200+ Point Inspection & Keys Delivery',
+    description: 'Exhaustive 200+ point snag list verification, complete as-built documentation dossier, and peaceful ceremonial keys handover.',
+    highlights: ['200+ Point Snag Audit', 'Ceremonial Keys Handover'],
+    icon: Rocket
+  }
+];
 
 export const SevenStageProcess: React.FC<SevenStageProcessProps> = ({ 
   onOpenDprDemo, 
@@ -27,212 +109,430 @@ export const SevenStageProcess: React.FC<SevenStageProcessProps> = ({
   theme = 'white',
   variant = 'full'
 }) => {
-  const [activeStageIndex, setActiveStageIndex] = useState(2); // Stage 3 by default
-  const activeStage = PMC_7_STAGES[activeStageIndex];
-  const isWhite = theme === 'white';
+  const [activeStageIndex, setActiveStageIndex] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
+  // Responsive Wheel Radius & Node Dimensions
+  const [wheelRadius, setWheelRadius] = useState(190);
+  const [nodeDimension, setNodeDimension] = useState(56);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (width < 640) {
+        setWheelRadius(115);
+        setNodeDimension(42);
+      } else if (width < 1024) {
+        setWheelRadius(155);
+        setNodeDimension(48);
+      } else {
+        setWheelRadius(195);
+        setNodeDimension(56);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Scroll Tracking for Rotating Wheel (Variant === 'minimal')
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start start', 'end end']
+  });
+
+  useMotionValueEvent(scrollYProgress, 'change', (progress) => {
+    if (variant === 'minimal') {
+      const step = Math.min(6, Math.max(0, Math.floor(progress * 7)));
+      if (step !== activeStageIndex) {
+        setActiveStageIndex(step);
+      }
+    }
+  });
+
+  const handleSelectStage = (index: number) => {
+    setActiveStageIndex(index);
+    if (containerRef.current) {
+      const container = containerRef.current;
+      const rect = container.getBoundingClientRect();
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const containerTop = scrollTop + rect.top;
+      const scrollableDistance = container.offsetHeight - window.innerHeight;
+      if (scrollableDistance > 0) {
+        const targetScroll = containerTop + (index / 6.5) * scrollableDistance;
+        window.scrollTo({ top: targetScroll, behavior: 'smooth' });
+      }
+    }
+  };
+
+  // =========================================================================
+  // =========================================================================
+  // MINIMAL ROTATING WHEEL VARIANT (HOME PAGE)
+  // Light clean background with signature Orange & Black Box styling
+  // =========================================================================
   if (variant === 'minimal') {
-    const shortNames = [
-      'Pre-Construction',
-      'Vendor Vetting',
-      'Site Oversight',
-      'Quality Control',
-      'Material & Billing',
-      'MEP & Finishes',
-      'Handover'
-    ];
+    const currentStage = MINIMAL_STAGES[activeStageIndex];
+    // Rotate so active stage aligns with the focal angle pointing to the right content card (0 deg)
+    const wheelRotation = -activeStageIndex * (360 / 7);
 
     return (
-      <section id="process" className="py-20 lg:py-24 relative overflow-hidden text-white">
-        {/* Background Image */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url(/construction_bg_dark.jpg)' }}
-        />
-        {/* Dark Overlay */}
-        <div aria-hidden="true" className="absolute inset-0 bg-neutral-950/85" />
-        {/* Subtle amber glow from bottom */}
-        <div aria-hidden="true" className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-orange-900/20 to-transparent pointer-events-none" />
+      <section 
+        id="process" 
+        ref={containerRef}
+        className="relative min-h-[340vh] bg-[#FAF9F6] text-neutral-900 select-none"
+      >
+        {/* Helmet landing anchor to preserve HangingHardHatRig physics */}
+        <div id="helmetRestAnchor" className="absolute top-12 right-12 w-20 h-20 pointer-events-none opacity-0" />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Sticky Presentation Viewport */}
+        <div className="sticky top-0 h-screen w-full flex flex-col justify-center overflow-hidden py-6 sm:py-10 px-4 sm:px-6 lg:px-12 bg-gradient-to-b from-[#FFFFFF] via-[#FAF9F6] to-[#F5F3EC]">
           
-          {/* Header - Minimal, Refined, Clean (ENTRANCE FROM TOP) */}
-          <motion.div 
-            initial={{ opacity: 0, y: -30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.15 }}
-            transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
-            className="max-w-3xl mb-10 sm:mb-12"
-          >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/10 backdrop-blur-sm border border-orange-500/20 text-orange-500 text-xs font-mono font-medium tracking-wider mb-4 uppercase">
-              <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
-              Methodology · 07 Stages
-            </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white font-display">
-              Our 7-Stage End-to-End PMC Process.
-            </h2>
-            <p className="mt-3 text-sm sm:text-base text-neutral-400 leading-relaxed max-w-2xl">
-              A structured, milestone-driven framework ensuring zero contractor shortcuts, audited billings, and total transparency from blueprint to handover.
-            </p>
-          </motion.div>
+          {/* Subtle Clean Dot Matrix Blueprint Grid */}
+          <div 
+            aria-hidden="true" 
+            className="absolute inset-0 opacity-40 pointer-events-none"
+            style={{
+              backgroundImage: 'radial-gradient(#d4d4d8 1.2px, transparent 1.2px)',
+              backgroundSize: '24px 24px'
+            }}
+          />
+          {/* Faint, airy warmth ambient glow */}
+          <div 
+            aria-hidden="true"
+            className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-orange-500/5 blur-3xl pointer-events-none"
+          />
+          <div 
+            aria-hidden="true"
+            className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-orange-500/5 blur-3xl pointer-events-none"
+          />
 
-          {/* Stepper Tabs - Glassmorphic horizontal rail (ENTRANCE FROM TOP) */}
-          <motion.div 
-            initial={{ opacity: 0, y: -15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.15 }}
-            transition={{ duration: 0.65, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-8 overflow-x-auto scrollbar-none pb-2 -mx-4 px-4 sm:mx-0 sm:px-0"
+          {/* Architectural White Building Skyline Overlay (Left Bottom Corner) */}
+          <div 
+            aria-hidden="true" 
+            className="absolute -bottom-4 -left-4 sm:bottom-0 sm:left-0 w-[55vw] max-w-[620px] h-[36vh] sm:h-[44vh] max-h-[460px] pointer-events-none select-none z-0 overflow-hidden"
           >
-            <div className="flex items-center gap-2 border-b border-white/10 pb-4 min-w-max">
-              {PMC_7_STAGES.map((stage, idx) => {
-                const isActive = idx === activeStageIndex;
-                return (
-                  <button
-                    key={stage.number}
-                    onClick={() => setActiveStageIndex(idx)}
-                    className={`group flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all cursor-pointer ${
-                      isActive
-                        ? 'bg-white/10 backdrop-blur-md text-white shadow-sm ring-1 ring-orange-500/50'
-                        : 'text-neutral-400 hover:text-neutral-200 hover:bg-white/5'
-                    }`}
-                  >
-                    <span className={`font-mono text-xs font-bold ${isActive ? 'text-orange-500' : 'text-neutral-500 group-hover:text-neutral-400'}`}>
-                      0{stage.number}
-                    </span>
-                    <span className="whitespace-nowrap">
-                      {shortNames[idx]}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </motion.div>
+            <img 
+              src="/white_building_skyline.jpg"
+              alt="Architectural Skyline Overlay"
+              className="w-full h-full object-cover object-left-bottom filter brightness-[1.06] contrast-[0.92] opacity-50 mix-blend-multiply"
+            />
+            {/* Soft gradient fades to blend seamlessly into light background */}
+            <div className="absolute inset-0 bg-gradient-to-t from-transparent via-[#FAF9F6]/30 to-[#FAF9F6]" />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#FAF9F6]/40 to-[#FAF9F6]" />
+          </div>
 
-          {/* Stage Details - Glassmorphism card (Landing Target for Hard Hat Rig) */}
-          <div id="process-stage-card" className="relative rounded-2xl bg-white/5 border border-white/10 p-6 sm:p-10 backdrop-blur-xl shadow-[0_24px_48px_-8px_rgba(0,0,0,0.5)]">
+          <div className="max-w-7xl mx-auto w-full relative z-10 flex flex-col justify-center h-full max-h-[920px]">
             
-            {/* Landing Target Anchor for Fallen Hard Hat in Top Right Corner */}
-            <div id="helmetRestAnchor" className="absolute -top-10 -right-2 sm:-top-14 sm:-right-4 w-28 sm:w-32 h-28 pointer-events-none z-30 flex items-center justify-center">
-              {/* Expanding Shockwave Pulse on Touchdown */}
-              <div id="landingImpactPulse" className="absolute inset-0 rounded-full border-2 border-orange-500 bg-orange-500/20 scale-0 transition-all duration-1000 ease-out pointer-events-none" />
+            {/* Header: Minimal, Clean, Light & Orange */}
+            <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-8 lg:mb-10">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-orange-500/10 border border-orange-500/25 text-orange-600 text-xs font-mono font-bold tracking-wider uppercase mb-2.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
+                METHODOLOGY · 7-STAGE PMC PROCESS
+              </div>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-neutral-950 font-display tracking-tight leading-tight">
+                Our 7-Stage End-to-End PMC Process
+              </h2>
+              <p className="mt-1.5 text-xs sm:text-sm text-neutral-600 max-w-xl mx-auto leading-relaxed">
+                Scroll to rotate through each milestone. Zero contractor shortcuts, audited billings, and daily WhatsApp transparency.
+              </p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+            {/* Interactive Stage Hub & Minimal Content Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center">
               
-              {/* Left Column: Stage Details & Deliverables (ENTRANCE FROM LEFT) */}
-              <motion.div 
-                initial={{ opacity: 0, x: -50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, amount: 0.15 }}
-                transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
-                className="lg:col-span-7 space-y-6"
-              >
-                <div>
-                  <div className="flex items-center gap-2.5 text-xs font-mono text-orange-500 font-semibold tracking-wider uppercase mb-2">
-                    <span>Stage 0{activeStage.number} of 07</span>
-                    <span className="text-white/20">·</span>
-                    <span className="text-neutral-300">{activeStage.tagline}</span>
+              {/* Left Column: Rotating Wheel with Orange Badges */}
+              <div className="lg:col-span-6 flex items-center justify-center relative">
+                
+                {/* Wheel Container */}
+                <div 
+                  className="relative flex items-center justify-center"
+                  style={{
+                    width: `${wheelRadius * 2 + nodeDimension + 40}px`,
+                    height: `${wheelRadius * 2 + nodeDimension + 40}px`
+                  }}
+                >
+                  
+                  {/* Dashed Circular Orbit Track */}
+                  <svg 
+                    className="absolute inset-0 w-full h-full pointer-events-none"
+                    viewBox="0 0 100 100"
+                  >
+                    {/* Outer Dashed Orbit Circle */}
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="40"
+                      fill="none"
+                      stroke="#d4d4d8"
+                      strokeWidth="0.8"
+                      strokeDasharray="2.5 2.5"
+                    />
+                    {/* Inner Architectural Ring */}
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="28"
+                      fill="none"
+                      stroke="#e4e4e7"
+                      strokeWidth="0.5"
+                    />
+                  </svg>
+
+                  {/* Center Hub: "CS Associates 7-Stage Process" */}
+                  <div className="absolute z-10 w-28 h-28 sm:w-36 sm:h-36 lg:w-44 lg:h-44 rounded-full bg-white border-2 border-neutral-200/90 shadow-[0_10px_25px_rgba(0,0,0,0.06)] flex flex-col items-center justify-center text-center p-3">
+                    <span className="text-[10px] sm:text-xs font-mono font-bold uppercase tracking-widest text-neutral-400 mb-0.5">
+                      CS ASSOCIATES
+                    </span>
+                    <span className="text-sm sm:text-base lg:text-lg font-extrabold text-neutral-900 font-display leading-tight">
+                      PMC Execution
+                    </span>
+                    <span className="text-sm sm:text-base lg:text-lg font-extrabold text-orange-500 font-display leading-tight">
+                      Process
+                    </span>
+                    <span className="mt-1 text-[10px] font-sans font-bold text-neutral-400 uppercase tracking-widest">
+                      07 STAGES
+                    </span>
                   </div>
-                  <h3 className="text-2xl sm:text-3xl font-bold text-white font-display">
-                    {activeStage.stageName}
-                  </h3>
-                  <p className="mt-3 text-sm sm:text-base text-neutral-300 leading-relaxed">
-                    {activeStage.description}
-                  </p>
+
+                  {/* Active Focal Guide Beam pointing towards right content card */}
+                  <div 
+                    aria-hidden="true"
+                    className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 w-14 h-0.5 bg-gradient-to-r from-orange-500 to-transparent pointer-events-none opacity-80"
+                  />
+
+                  {/* Rotating Wheel Group */}
+                  <motion.div
+                    animate={{ rotate: wheelRotation }}
+                    transition={{ type: 'spring', stiffness: 90, damping: 20 }}
+                    className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-auto"
+                  >
+                    {MINIMAL_STAGES.map((stage, idx) => {
+                      const isActive = idx === activeStageIndex;
+                      const Icon = stage.icon;
+                      
+                      // Calculate polar coordinates (Angle 0 is pointing East / Right)
+                      const angleDeg = idx * (360 / 7);
+                      const angleRad = (angleDeg * Math.PI) / 180;
+                      const x = Math.cos(angleRad) * wheelRadius;
+                      const y = Math.sin(angleRad) * wheelRadius;
+
+                      return (
+                        <div
+                          key={stage.number}
+                          style={{
+                            position: 'absolute',
+                            left: `calc(50% + ${x}px)`,
+                            top: `calc(50% + ${y}px)`,
+                            transform: 'translate(-50%, -50%)',
+                            width: `${nodeDimension}px`,
+                            height: `${nodeDimension}px`
+                          }}
+                          className="flex items-center justify-center"
+                        >
+                          {/* Node Icon Circle with Counter-Rotation to keep upright */}
+                          <motion.button
+                            type="button"
+                            onClick={() => handleSelectStage(idx)}
+                            animate={{ 
+                              rotate: -wheelRotation,
+                              scale: isActive ? 1.15 : 0.92
+                            }}
+                            transition={{ type: 'spring', stiffness: 100, damping: 18 }}
+                            className={`relative rounded-full flex items-center justify-center transition-shadow cursor-pointer select-none focus:outline-none ${
+                              isActive
+                                ? 'bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-[0_0_28px_rgba(242,84,0,0.6)] ring-4 ring-orange-500/35 z-30'
+                                : 'bg-white hover:bg-orange-50 text-neutral-700 hover:text-orange-600 border-2 border-neutral-200 hover:border-orange-400 shadow-sm z-20'
+                            }`}
+                            style={{
+                              width: `${nodeDimension}px`,
+                              height: `${nodeDimension}px`
+                            }}
+                            title={`Stage 0${stage.number}: ${stage.title}`}
+                          >
+                            <Icon className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.2]" />
+
+                            {/* Number Tag Pill */}
+                            <span 
+                              className={`absolute -top-1.5 -right-1.5 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full ${
+                                isActive 
+                                  ? 'bg-neutral-950 text-orange-400 ring-1 ring-orange-500' 
+                                  : 'bg-neutral-800 text-neutral-200'
+                              }`}
+                            >
+                              0{stage.number}
+                            </span>
+                          </motion.button>
+                        </div>
+                      );
+                    })}
+                  </motion.div>
+
                 </div>
 
-                {/* Key Deliverables - Clean unboxed list */}
-                <div className="space-y-3 pt-2">
-                  <h4 className="text-xs font-mono uppercase tracking-wider text-neutral-400">
-                    Key Deliverables & Rigor
-                  </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {activeStage.deliverables.map((item, dIdx) => (
-                      <div key={dIdx} className="flex items-start gap-2.5 text-neutral-200">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                        <span className="text-xs sm:text-sm leading-snug">{item}</span>
+              </div>
+
+              {/* Right Column: Sleek Black Box with Orange Accents */}
+              <div className="lg:col-span-6">
+                
+                <div className="relative rounded-3xl p-6 sm:p-8 lg:p-9 bg-neutral-950 text-white border border-neutral-800/90 shadow-[0_24px_60px_-15px_rgba(0,0,0,0.7)] overflow-hidden">
+                  
+                  {/* Vibrant orange decorative glow in corner */}
+                  <div 
+                    aria-hidden="true"
+                    className="absolute -top-10 -right-10 w-56 h-56 bg-orange-500/12 rounded-full blur-3xl pointer-events-none"
+                  />
+
+                  {/* Watermark Stage Number */}
+                  <div 
+                    aria-hidden="true"
+                    className="absolute -right-2 -bottom-6 text-[8rem] sm:text-[10rem] font-bold font-display text-white/[0.04] select-none pointer-events-none"
+                  >
+                    0{currentStage.number}
+                  </div>
+
+                  {/* Active Stage Content with Slide-Up Transition from downside */}
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={activeStageIndex}
+                      initial={{ opacity: 0, y: 36 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                      className="relative z-10 space-y-4 sm:space-y-5"
+                    >
+                      {/* Category & Stage Meta Tag */}
+                      <div className="flex items-center gap-2.5">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/15 border border-orange-500/30 text-orange-400 text-xs font-mono font-bold uppercase tracking-wider">
+                          <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
+                          STAGE 0{currentStage.number} OF 07
+                        </span>
+                        <span className="text-white/20">·</span>
+                        <span className="text-xs font-mono text-neutral-400 uppercase tracking-wider font-semibold">
+                          {currentStage.shortTag}
+                        </span>
                       </div>
-                    ))}
-                  </div>
-                </div>
 
-                {/* Navigation controls */}
-                <div className="flex items-center gap-4 pt-6 border-t border-white/10">
-                  <button
-                    disabled={activeStageIndex === 0}
-                    onClick={() => setActiveStageIndex(Math.max(0, activeStageIndex - 1))}
-                    className="text-xs font-medium text-neutral-400 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer py-1.5 px-3 rounded-lg hover:bg-white/10"
-                  >
-                    ← Previous Stage
-                  </button>
-                  <div className="h-4 w-px bg-white/10" />
-                  <button
-                    disabled={activeStageIndex === PMC_7_STAGES.length - 1}
-                    onClick={() => setActiveStageIndex(Math.min(PMC_7_STAGES.length - 1, activeStageIndex + 1))}
-                    className="flex items-center gap-1.5 text-xs font-semibold text-orange-500 hover:text-orange-400 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer py-1.5 px-3 rounded-lg hover:bg-white/10"
-                  >
-                    <span>Next: Stage 0{Math.min(7, activeStage.number + 1)}</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </motion.div>
+                      {/* Heading & Tagline */}
+                      <div>
+                        <h3 className="text-2xl sm:text-3xl font-extrabold text-white font-display tracking-tight leading-snug">
+                          {currentStage.title}
+                        </h3>
+                        <p className="mt-1 text-xs sm:text-sm text-orange-400 font-mono font-medium">
+                          {currentStage.tagline}
+                        </p>
+                      </div>
 
-              {/* Right Column: Glassmorphic Protection & Client Benefit Card (ENTRANCE FROM RIGHT) */}
-              <motion.div 
-                initial={{ opacity: 0, x: 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, amount: 0.15 }}
-                transition={{ duration: 0.75, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                className="lg:col-span-5"
-              >
-                <div className="p-6 sm:p-7 rounded-xl bg-black/30 backdrop-blur-md border border-white/10 space-y-5">
-                  <div>
-                    <div className="text-[11px] font-mono uppercase tracking-wider text-rose-400/90 font-semibold mb-1.5 flex items-center gap-1.5">
-                      <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
-                      <span>Risk Neutralized</span>
-                    </div>
-                    <p className="text-xs sm:text-sm text-neutral-200 leading-relaxed font-medium">
-                      {activeStage.keyRiskMitigated}
-                    </p>
-                  </div>
+                      {/* Minimal Content */}
+                      <p className="text-sm sm:text-base text-neutral-300 leading-relaxed max-w-xl">
+                        {currentStage.description}
+                      </p>
 
-                  <div className="border-t border-white/10 pt-4">
-                    <div className="text-[11px] font-mono uppercase tracking-wider text-orange-500 font-semibold mb-1.5 flex items-center gap-1.5">
-                      <ShieldCheck className="w-3.5 h-3.5 text-orange-500" />
-                      <span>The Client Advantage</span>
-                    </div>
-                    <p className="text-xs sm:text-sm text-neutral-200 leading-relaxed font-medium">
-                      {activeStage.clientBenefit}
-                    </p>
-                  </div>
+                      {/* Minimal Key Highlights */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                        {currentStage.highlights.map((item, hIdx) => (
+                          <div 
+                            key={hIdx}
+                            className="flex items-center gap-2.5 p-3 rounded-xl bg-neutral-900/90 border border-neutral-800 text-xs text-neutral-200"
+                          >
+                            <CheckCircle2 className="w-4 h-4 text-orange-500 shrink-0" />
+                            <span className="font-medium leading-snug">{item}</span>
+                          </div>
+                        ))}
+                      </div>
 
-                  <div className="pt-2 border-t border-white/10 space-y-2.5">
+                      {/* Action Buttons */}
+                      <div className="flex flex-wrap items-center gap-3 pt-3 sm:pt-4 border-t border-neutral-800">
+                        {currentStage.number === 3 && (
+                          <button
+                            type="button"
+                            onClick={onOpenDprDemo}
+                            className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-sm active:scale-95"
+                          >
+                            <Smartphone className="w-4 h-4" />
+                            <span>View Sample WhatsApp DPR</span>
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={onOpenDprDemo}
+                          className="px-4 py-2.5 bg-orange-500 hover:bg-orange-400 text-neutral-950 font-extrabold text-xs rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-md shadow-orange-500/20 active:scale-95 uppercase tracking-wider"
+                        >
+                          <span>Explore Full Process</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={onOpenConsultation}
+                          className="px-4 py-2.5 bg-neutral-900 hover:bg-neutral-800 text-neutral-200 hover:text-white font-medium text-xs rounded-xl transition-all border border-neutral-700/80 cursor-pointer"
+                        >
+                          Book Free Consultation
+                        </button>
+                      </div>
+
+                    </motion.div>
+                  </AnimatePresence>
+
+                  {/* Stage Step Controller Footer */}
+                  <div className="mt-6 sm:mt-8 pt-4 border-t border-neutral-800 flex items-center justify-between gap-4">
                     <button
-                      onClick={onOpenDprDemo}
-                      className="w-full py-2.5 px-4 bg-orange-500 hover:bg-orange-400 text-neutral-950 font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                      type="button"
+                      onClick={() => handleSelectStage(Math.max(0, activeStageIndex - 1))}
+                      disabled={activeStageIndex === 0}
+                      className="flex items-center gap-1.5 text-xs font-semibold text-neutral-400 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer py-1"
                     >
-                      <span>Explore Detailed Process Roadmap</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
+                      <ChevronLeft className="w-4 h-4" />
+                      <span>Prev Stage</span>
                     </button>
+
+                    {/* Step Dots */}
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      {MINIMAL_STAGES.map((s, sIdx) => (
+                        <button
+                          type="button"
+                          key={s.number}
+                          onClick={() => handleSelectStage(sIdx)}
+                          className={`h-2 rounded-full transition-all cursor-pointer ${
+                            sIdx === activeStageIndex
+                              ? 'w-7 bg-orange-500'
+                              : 'w-2 bg-neutral-800 hover:bg-neutral-600'
+                          }`}
+                          title={`Stage 0${s.number}: ${s.title}`}
+                        />
+                      ))}
+                    </div>
+
                     <button
-                      onClick={onOpenConsultation}
-                      className="w-full py-2.5 px-4 bg-white/8 hover:bg-white/12 text-neutral-200 hover:text-white font-medium text-xs rounded-xl transition-all border border-white/10 cursor-pointer backdrop-blur-sm"
+                      type="button"
+                      onClick={() => handleSelectStage(Math.min(MINIMAL_STAGES.length - 1, activeStageIndex + 1))}
+                      disabled={activeStageIndex === MINIMAL_STAGES.length - 1}
+                      className="flex items-center gap-1.5 text-xs font-bold text-orange-400 hover:text-orange-300 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer py-1"
                     >
-                      Book Free Technical Consultation
+                      <span>Next Stage</span>
+                      <ChevronRight className="w-4 h-4" />
                     </button>
                   </div>
+
                 </div>
-              </motion.div>
+
+              </div>
 
             </div>
+
           </div>
 
         </div>
+
       </section>
     );
   }
+
+  // =========================================================================
+  // FULL DETAILED PROCESS VARIANT (PROCESS PAGE)
+  // Comprehensive technical breakdown with BOQs, testing protocols, & risk audits
+  // =========================================================================
+  const activeStage = PMC_7_STAGES[activeStageIndex];
+  const isWhite = theme === 'white';
 
   return (
     <section 
@@ -288,6 +588,7 @@ export const SevenStageProcess: React.FC<SevenStageProcessProps> = ({
             const isActive = idx === activeStageIndex;
             return (
               <button
+                type="button"
                 key={stage.number}
                 onClick={() => setActiveStageIndex(idx)}
                 className={`min-w-[125px] sm:min-w-0 flex-shrink-0 p-3 sm:p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between h-20 sm:h-24 snap-start active:scale-95 ${
@@ -406,6 +707,7 @@ export const SevenStageProcess: React.FC<SevenStageProcessProps> = ({
                       </div>
                     </div>
                     <button
+                      type="button"
                       onClick={onOpenDprDemo}
                       className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition-all whitespace-nowrap cursor-pointer shadow-sm active:scale-95"
                     >
@@ -417,6 +719,7 @@ export const SevenStageProcess: React.FC<SevenStageProcessProps> = ({
                 {/* Navigation buttons */}
                 <div className={`flex items-center justify-between pt-4 border-t ${isWhite ? 'border-neutral-200' : 'border-neutral-800'}`}>
                   <button
+                    type="button"
                     disabled={activeStageIndex === 0}
                     onClick={() => setActiveStageIndex(Math.max(0, activeStageIndex - 1))}
                     className="text-xs font-semibold text-neutral-500 hover:text-neutral-900 disabled:opacity-30 transition-colors py-1 cursor-pointer"
@@ -425,6 +728,7 @@ export const SevenStageProcess: React.FC<SevenStageProcessProps> = ({
                   </button>
 
                   <button
+                    type="button"
                     disabled={activeStageIndex === PMC_7_STAGES.length - 1}
                     onClick={() => setActiveStageIndex(Math.min(PMC_7_STAGES.length - 1, activeStageIndex + 1))}
                     className="flex items-center gap-1.5 text-xs font-bold text-orange-700 hover:text-orange-800 transition-colors py-1 cursor-pointer"
@@ -492,6 +796,7 @@ export const SevenStageProcess: React.FC<SevenStageProcessProps> = ({
                   </div>
                   <div className="pt-2">
                     <button
+                      type="button"
                       onClick={onOpenConsultation}
                       className="w-full py-3 bg-orange-500 hover:bg-orange-400 text-neutral-950 font-bold text-xs rounded-xl transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
                     >

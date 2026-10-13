@@ -67,6 +67,7 @@ export const Footer: React.FC = () => {
               <li><Link to="/process" className="hover:text-orange-400 transition-colors">7-Stage PMC Framework</Link></li>
               <li><Link to="/services" className="hover:text-orange-400 transition-colors">Core Disciplines</Link></li>
               <li><Link to="/projects" className="hover:text-orange-400 transition-colors">Featured Projects & Sites</Link></li>
+              <li><Link to="/design-studio" className="hover:text-orange-400 transition-colors">Design & Color Studio</Link></li>
               <li><Link to="/calculator" className="hover:text-orange-400 transition-colors">Cost & Savings Calculator</Link></li>
               <li><Link to="/contact" className="hover:text-orange-400 transition-colors">Consultation Desk</Link></li>
             </ul>
