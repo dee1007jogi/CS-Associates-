@@ -109,22 +109,7 @@ export const TestimonialsSection: React.FC = () => {
         className="absolute inset-0 opacity-[0.04] pointer-events-none bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px]"
       />
 
-      {/* Amber ambient glow */}
-      <div 
-        aria-hidden="true"
-        className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-32 sm:w-44 md:w-56 bg-gradient-to-b from-orange-500/20 via-orange-500/10 to-transparent pointer-events-none blur-3xl opacity-60"
-      />
 
-      {/* Vertical Orange Accent Bar — decorative centerline */}
-      <div
-        aria-hidden="true"
-        className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-14 sm:w-16 pointer-events-none z-0"
-      >
-        {/* Top segment */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[6px] bg-gradient-to-b from-orange-500 via-orange-500 to-transparent" style={{ height: '45%' }} />
-        {/* Bottom segment */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[6px] bg-gradient-to-t from-orange-500 via-orange-500 to-transparent" style={{ height: '18%' }} />
-      </div>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-8 lg:px-12 relative z-10">
         
