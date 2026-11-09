@@ -30,7 +30,7 @@ export const Footer: React.FC = () => {
               </div>
             </Link>
             <p className="text-xs text-neutral-400 leading-relaxed max-w-sm">
-              Project Management Consultancy (PMC) for bespoke residential villas, commercial complexes, and healthcare infrastructure. Led by Mr. Kiran Dikshit L with 25+ years of verified on-site mastery.
+              Project Management Consultancy (PMC) for bespoke residential villas, commercial complexes, and healthcare infrastructure across Bengaluru, Mysore, Tumkur, Tamil Nadu (Chennai), Hyderabad, and Pan-India. Led by Mr. Kiran Dikshit L with 25+ years of verified on-site mastery.
             </p>
             <div className="text-xs text-[#f7f4ee]/90 italic">
               "A Tradition of Trust, Built with Quality."
@@ -70,6 +70,11 @@ export const Footer: React.FC = () => {
               <li><Link to="/design-studio" className="hover:text-orange-400 transition-colors">Design & Color Studio</Link></li>
               <li><Link to="/calculator" className="hover:text-orange-400 transition-colors">Cost & Savings Calculator</Link></li>
               <li><Link to="/contact" className="hover:text-orange-400 transition-colors">Consultation Desk</Link></li>
+              <li className="pt-2 border-t border-neutral-900/80 flex items-center gap-2 text-[11px] text-neutral-400 font-mono">
+                <Link to="/privacy-policy" className="hover:text-orange-400 transition-colors">Privacy Policy</Link>
+                <span className="text-neutral-700">·</span>
+                <Link to="/terms-and-conditions" className="hover:text-orange-400 transition-colors">Terms</Link>
+              </li>
             </ul>
           </div>
 
@@ -107,12 +112,19 @@ export const Footer: React.FC = () => {
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-neutral-900 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-500">
-          <div>
-            © {new Date().getFullYear()} CS Associates. All rights reserved. Registered PMC in Bengaluru, Karnataka.
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-6 text-center sm:text-left">
+            <div>
+              © {new Date().getFullYear()} CS Associates. All rights reserved. Registered PMC in Bengaluru · Serving Clients All Over India.
+            </div>
+            <div className="flex items-center gap-3 text-neutral-400 font-mono text-[11px]">
+              <Link to="/privacy-policy" className="hover:text-orange-400 transition-colors">Privacy Policy</Link>
+              <span className="text-neutral-700">·</span>
+              <Link to="/terms-and-conditions" className="hover:text-orange-400 transition-colors">Terms & Conditions</Link>
+            </div>
           </div>
           <button
             onClick={scrollToTop}
-            className="flex items-center gap-1.5 text-neutral-400 hover:text-orange-400 transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 text-neutral-400 hover:text-orange-400 transition-colors cursor-pointer shrink-0"
           >
             <span>Back to Top</span>
             <ArrowUp className="w-3.5 h-3.5 text-orange-500" />

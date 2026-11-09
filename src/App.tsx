@@ -19,6 +19,8 @@ import { ProjectsPage } from './pages/ProjectsPage';
 import { CalculatorPage } from './pages/CalculatorPage';
 import { ContactPage } from './pages/ContactPage';
 import { DesignSuggestionsPage } from './pages/DesignSuggestionsPage';
+import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
+import { TermsAndConditionsPage } from './pages/TermsAndConditionsPage';
 
 import { MessageCircle } from 'lucide-react';
 
@@ -82,6 +84,22 @@ function AppContent({
             element={<DesignSuggestionsPage onOpenConsultation={() => setIsConsultationOpen(true)} />}
           />
           <Route path="/contact" element={<ContactPage />} />
+          <Route
+            path="/privacy-policy"
+            element={<PrivacyPolicyPage onOpenConsultation={() => setIsConsultationOpen(true)} />}
+          />
+          <Route
+            path="/privacy"
+            element={<PrivacyPolicyPage onOpenConsultation={() => setIsConsultationOpen(true)} />}
+          />
+          <Route
+            path="/terms-and-conditions"
+            element={<TermsAndConditionsPage onOpenConsultation={() => setIsConsultationOpen(true)} />}
+          />
+          <Route
+            path="/terms"
+            element={<TermsAndConditionsPage onOpenConsultation={() => setIsConsultationOpen(true)} />}
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

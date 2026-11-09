@@ -44,11 +44,11 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenConsultation }) => {
   const [activeTab, setActiveTab] = useState<'mission' | 'vision' | 'goals' | 'fiduciary'>('mission');
   const [activePin, setActivePin] = useState<number | null>(1);
 
-  // Bengaluru landmark locations matching the PMC portfolio
+  // Landmark locations matching our Pan-India PMC portfolio
   const locations = [
     {
       id: 1,
-      name: 'Sadashivanagar',
+      name: 'Sadashivanagar, BLR',
       project: 'Double-Height Grand Villa',
       area: '7,400 sq.ft.',
       type: 'Luxury Residential',
@@ -57,39 +57,66 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenConsultation }) => {
     },
     {
       id: 2,
-      name: 'Kanakapura Road',
-      project: 'Site No 12 Opulence',
-      area: '11,200 sq.ft.',
-      type: 'Contemporary Architecture',
-      x: 38,
-      y: 68
+      name: 'Mysore (Mysuru)',
+      project: 'Heritage & Modern Villa Estate',
+      area: '9,800 sq.ft.',
+      type: 'Regional PMC Hub',
+      x: 34,
+      y: 72
     },
     {
       id: 3,
-      name: 'Indiranagar',
-      project: 'Multi-Specialty Center',
-      area: '18,500 sq.ft.',
-      type: 'Healthcare Infrastructure',
-      x: 62,
-      y: 44
+      name: 'Tumkur (Tumakuru)',
+      project: 'Industrial & High-End Residence',
+      area: '14,200 sq.ft.',
+      type: 'Civil & Structural PMC',
+      x: 28,
+      y: 30
     },
     {
       id: 4,
-      name: 'Abbigere',
-      project: 'Dr. Lakshmi Residence',
-      area: '6,200 sq.ft.',
-      type: 'Bespoke Private Villa',
-      x: 32,
-      y: 24
+      name: 'Chennai, TN',
+      project: 'Contemporary Coastal Villa',
+      area: '12,500 sq.ft.',
+      type: 'Inter-State PMC',
+      x: 82,
+      y: 58
     },
     {
       id: 5,
-      name: 'Whitefield',
+      name: 'Hyderabad, TS',
+      project: 'Ultra-Luxury Gated Villa',
+      area: '16,000 sq.ft.',
+      type: 'Commercial & High-End',
+      x: 64,
+      y: 20
+    },
+    {
+      id: 6,
+      name: 'Kanakapura Road, BLR',
+      project: 'Site No 12 Opulence',
+      area: '11,200 sq.ft.',
+      type: 'Contemporary Architecture',
+      x: 42,
+      y: 56
+    },
+    {
+      id: 7,
+      name: 'Indiranagar, BLR',
+      project: 'Multi-Specialty Center',
+      area: '18,500 sq.ft.',
+      type: 'Healthcare Infrastructure',
+      x: 58,
+      y: 44
+    },
+    {
+      id: 8,
+      name: 'Whitefield, BLR',
       project: 'Corporate Atrium Complex',
       area: '24,000 sq.ft.',
       type: 'Commercial PMC',
-      x: 78,
-      y: 52
+      x: 72,
+      y: 42
     }
   ];
 
@@ -614,11 +641,11 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenConsultation }) => {
               </div>
 
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-neutral-950 tracking-tight font-display leading-tight">
-                Over 300,000+ Sq.Ft. Managed Across Bengaluru’s Prime Belts
+                Over 300,000+ Sq.Ft. Managed Across Karnataka & All Over India
               </h2>
 
               <p className="text-sm text-neutral-700 leading-relaxed font-sans">
-                From high-density cantilevers in Kanakapura Road to heritage villa restoration in Sadashivanagar and multi-specialty healthcare centers in Indiranagar — our on-ground civil supervisors protect your sites everywhere.
+                From high-density cantilevers in Bengaluru to expansive estates in Mysore and Tumkur, coastal luxury villas in Chennai (Tamil Nadu), and gated developments in Hyderabad — our on-ground civil supervisors protect your sites everywhere.
               </p>
 
               {/* 3 Metric Summary Cards matching with Orange / Wood Accents */}
@@ -684,7 +711,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenConsultation }) => {
                   <line x1="50" y1="5" x2="50" y2="95" stroke="currentColor" strokeWidth="0.5" strokeDasharray="1,2" />
                   <line x1="5" y1="50" x2="95" y2="50" stroke="currentColor" strokeWidth="0.5" strokeDasharray="1,2" />
 
-                  <polyline points="48,35 62,44 78,52 38,68 32,24" fill="none" stroke="rgba(234, 88, 12, 0.45)" strokeWidth="1.2" />
+                  <polyline points="28,30 48,35 64,20 82,58 72,42 58,44 42,56 34,72" fill="none" stroke="rgba(234, 88, 12, 0.45)" strokeWidth="1.2" />
                 </svg>
 
                 {/* Location Interactive Glowing ORANGE Pins */}

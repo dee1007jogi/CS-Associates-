@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   Phone, 
@@ -421,11 +422,11 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                       <div>
                         <label className={labelClass}>
-                          Site Location (Bengaluru / Region)
+                          Site Location (Bengaluru / Mysore / Chennai / Hyderabad / Pan-India)
                         </label>
                         <input
                           type="text"
-                          placeholder="e.g. Abbigere / Kanakapura Rd / Whitefield"
+                          placeholder="e.g. Mysore, Tumkur, Chennai, Hyderabad, Bengaluru..."
                           value={formData.location}
                           onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                           className={inputClass}
@@ -493,10 +494,18 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ theme = 'dark' }
                       </button>
                     </div>
 
-                    <div className={`text-[10px] text-center font-mono pt-1 ${
+                    <div className={`text-[10px] text-center font-mono pt-1 space-x-1 ${
                       isDark ? 'text-neutral-500' : isCream ? 'text-neutral-600' : 'text-neutral-400'
                     }`}>
-                      🔒 STRICT CLIENT FIDUCIARY PRIVACY · NO SUBCONTRACTOR LEAKS
+                      <span>🔒 STRICT CLIENT FIDUCIARY PRIVACY</span>
+                      <span>·</span>
+                      <Link to="/privacy-policy" className="hover:text-orange-500 underline transition-colors">
+                        Privacy Policy
+                      </Link>
+                      <span>·</span>
+                      <Link to="/terms-and-conditions" className="hover:text-orange-500 underline transition-colors">
+                        Terms & Conditions
+                      </Link>
                     </div>
                   </form>
                 )}

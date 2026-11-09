@@ -33,18 +33,18 @@ export const ContactPage: React.FC = () => {
     <div className="w-full bg-[#f4f5f7] min-h-screen text-neutral-900 overflow-hidden select-none">
       {/* 1. Cinematic Page Hero with Studio Interior Backdrop */}
       <PageHero
-        badge="Bengaluru Headquarters & Site Desk"
+        badge="Bengaluru HQ & Pan-India PMC Desk"
         title="Connect With Our Civil"
         highlightedTitle="Engineering Advisory Desk"
-        description="Visit our Rajarajeshwarinagar head office or request an on-site feasibility inspection. Speak directly with Principal Consultant Mr. Kiran Dikshit L."
+        description="Visit our Rajarajeshwarinagar head office or request an on-site feasibility inspection anywhere in Bengaluru, Mysore, Tumkur, Tamil Nadu (Chennai), Hyderabad, and across India. Speak directly with Principal Consultant Mr. Kiran Dikshit L."
         backgroundImage="/src/assets/images/contact_hero_consultation.jpg"
         breadcrumbLabel="Contact Us"
-        focusTag="PMC BOARDROOM · DIRECT CONSULTATION"
+        focusTag="PAN-INDIA PMC · DIRECT CONSULTATION"
         focusSubtitle="Principal Consultant Desk · BEML Layout HQ"
         primaryActionLabel="Schedule Site Visit"
         onPrimaryAction={scrollToContactForm}
         stats={[
-          { value: 'Bengaluru', label: 'BEML Layout' },
+          { value: 'Pan-India', label: 'All Over India' },
           { value: '6 Days/Wk', label: 'Site Desk Open' },
           { value: 'WhatsApp', label: 'Instant Connect' }
         ]}

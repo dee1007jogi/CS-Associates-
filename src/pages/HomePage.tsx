@@ -120,7 +120,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenConsultation }) => {
         <SevenStageProcess 
           onOpenDprDemo={handleOpenDprDemo} 
           onOpenConsultation={onOpenConsultation} 
-          theme="light"
+          theme="white"
           variant="minimal"
         />
       </div>

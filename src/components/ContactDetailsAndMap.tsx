@@ -15,7 +15,11 @@ import {
   ShieldCheck,
   Building2,
   Sparkles,
-  ArrowUpRight
+  ArrowUpRight,
+  Globe,
+  Plane,
+  CheckCircle2,
+  CheckSquare
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -268,11 +272,84 @@ export const ContactCards: React.FC = () => {
   );
 };
 
+interface LocationPin {
+  name: string;
+  region: 'karnataka' | 'tamilnadu' | 'telangana' | 'bengaluru' | 'pan-india';
+  state: string;
+  badge?: string;
+  featured?: boolean;
+}
+
+const REGION_TABS = [
+  { id: 'all', label: 'All India (40+ Locations)' },
+  { id: 'karnataka', label: 'Karnataka (Mysore, Tumkur...)' },
+  { id: 'tamilnadu', label: 'Tamil Nadu (Chennai, Coimbatore...)' },
+  { id: 'telangana', label: 'Telangana & AP (Hyderabad...)' },
+  { id: 'bengaluru', label: 'Bengaluru Core (HQ)' },
+  { id: 'pan-india', label: 'Pan-India Metros' },
+] as const;
+
+type RegionFilter = typeof REGION_TABS[number]['id'];
+
+const PAN_INDIA_LOCATIONS: LocationPin[] = [
+  // Karnataka Regional Hubs (Mysore, Tumkur...)
+  { name: 'Mysore (Mysuru)', region: 'karnataka', state: 'Karnataka', badge: 'Active PMC Sites', featured: true },
+  { name: 'Tumkur (Tumakuru)', region: 'karnataka', state: 'Karnataka', badge: 'Active Projects', featured: true },
+  { name: 'Mangalore (Mangaluru)', region: 'karnataka', state: 'Karnataka', badge: 'Coastal PMC' },
+  { name: 'Hubli-Dharwad', region: 'karnataka', state: 'Karnataka' },
+  { name: 'Belgaum (Belagavi)', region: 'karnataka', state: 'Karnataka' },
+  { name: 'Shimoga (Shivamogga)', region: 'karnataka', state: 'Karnataka' },
+  { name: 'Hassan', region: 'karnataka', state: 'Karnataka' },
+  { name: 'Mandya', region: 'karnataka', state: 'Karnataka' },
+  { name: 'Udupi & Manipal', region: 'karnataka', state: 'Karnataka' },
+
+  // Tamil Nadu (Chennai, Coimbatore, Hosur...)
+  { name: 'Chennai', region: 'tamilnadu', state: 'Tamil Nadu', badge: 'Major Metro Hub', featured: true },
+  { name: 'Coimbatore', region: 'tamilnadu', state: 'Tamil Nadu', badge: 'Commercial & Villas', featured: true },
+  { name: 'Hosur', region: 'tamilnadu', state: 'Tamil Nadu', badge: 'Border Corridor' },
+  { name: 'Madurai', region: 'tamilnadu', state: 'Tamil Nadu' },
+  { name: 'Salem', region: 'tamilnadu', state: 'Tamil Nadu' },
+  { name: 'Tiruchirappalli (Trichy)', region: 'tamilnadu', state: 'Tamil Nadu' },
+  { name: 'Vellore', region: 'tamilnadu', state: 'Tamil Nadu' },
+
+  // Telangana & Andhra Pradesh (Hyderabad...)
+  { name: 'Hyderabad', region: 'telangana', state: 'Telangana', badge: 'Major PMC Hub', featured: true },
+  { name: 'Cyberabad & HITEC City', region: 'telangana', state: 'Telangana', badge: 'High-Rise & Luxury' },
+  { name: 'Gachibowli & Financial District', region: 'telangana', state: 'Telangana' },
+  { name: 'Secunderabad', region: 'telangana', state: 'Telangana' },
+  { name: 'Warangal', region: 'telangana', state: 'Telangana' },
+  { name: 'Visakhapatnam (Vizag)', region: 'telangana', state: 'Andhra Pradesh', badge: 'Coastal Infrastructure' },
+  { name: 'Vijayawada', region: 'telangana', state: 'Andhra Pradesh' },
+
+  // Bengaluru Core (Headquarters)
+  { name: 'Rajarajeshwarinagar', region: 'bengaluru', state: 'Bengaluru HQ', badge: 'Head Office', featured: true },
+  { name: 'Kanakapura Road', region: 'bengaluru', state: 'Bengaluru', badge: 'Luxury Villas' },
+  { name: 'Sadashivanagar', region: 'bengaluru', state: 'Bengaluru', badge: 'Ultra-Luxury' },
+  { name: 'Indiranagar', region: 'bengaluru', state: 'Bengaluru' },
+  { name: 'Whitefield', region: 'bengaluru', state: 'Bengaluru' },
+  { name: 'Sarjapur Road', region: 'bengaluru', state: 'Bengaluru' },
+  { name: 'JP Nagar & Jayanagar', region: 'bengaluru', state: 'Bengaluru' },
+  { name: 'Banashankari', region: 'bengaluru', state: 'Bengaluru' },
+  { name: 'Koramangala', region: 'bengaluru', state: 'Bengaluru' },
+  { name: 'Hebbal & Yelahanka', region: 'bengaluru', state: 'Bengaluru' },
+  { name: 'Electronic City & HSR Layout', region: 'bengaluru', state: 'Bengaluru' },
+  { name: 'Devanahalli Airport Corridor', region: 'bengaluru', state: 'Bengaluru' },
+
+  // Pan-India Metros
+  { name: 'Mumbai & MMR', region: 'pan-india', state: 'Maharashtra', badge: 'NRI Estates' },
+  { name: 'Pune', region: 'pan-india', state: 'Maharashtra' },
+  { name: 'Delhi NCR & Gurugram', region: 'pan-india', state: 'Delhi NCR' },
+  { name: 'Kochi & Trivandrum', region: 'pan-india', state: 'Kerala' },
+  { name: 'Goa', region: 'pan-india', state: 'Goa', badge: 'Holiday Luxury Villas' },
+  { name: 'Pan-India On-Demand Dispatch', region: 'pan-india', state: 'All Over India', badge: 'Anywhere in India', featured: true },
+];
+
 // ========================================================
 // 2. GOOGLE MAPS & ACCESSIBILITY COMPONENT (WHITE THEME)
 // ========================================================
 export const ContactGoogleMaps: React.FC = () => {
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [selectedRegion, setSelectedRegion] = useState<RegionFilter>('all');
 
   const copyToClipboard = (text: string, fieldKey: string) => {
     navigator.clipboard.writeText(text);
@@ -455,38 +532,127 @@ export const ContactGoogleMaps: React.FC = () => {
       </motion.div>
 
       {/* ======================================================== */}
-      {/* CITY-WIDE BENGALURU COVERAGE BANNER                      */}
+      {/* PAN-INDIA & ALL OVER INDIA PMC COVERAGE HUB              */}
       {/* ======================================================== */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
-        className="p-6 sm:p-8 rounded-2xl bg-white border border-neutral-200/90 shadow-sm text-center"
+        className="p-6 sm:p-10 rounded-3xl bg-white border border-neutral-200/90 shadow-[0_15px_40px_-10px_rgba(0,0,0,0.06)] text-center relative overflow-hidden"
       >
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-200/80 text-orange-700 text-[10px] font-mono font-bold uppercase tracking-wider mb-3">
-          <span>Pan-Bengaluru On-Site Feasibility Inspections</span>
+        {/* Subtle orange accent glow behind */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-28 bg-orange-500/10 blur-3xl pointer-events-none" />
+
+        {/* Badge */}
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-50 border border-orange-200 text-orange-700 text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider mb-3 shadow-xs">
+          <Globe className="w-3.5 h-3.5 text-orange-600 animate-pulse" />
+          <span>Working All Over India · Pan-India On-Site Feasibility Inspections</span>
         </div>
-        <h3 className="text-lg sm:text-xl font-bold text-neutral-950 font-display">
-          Can't Make It To Our Office? We Visit Your Project Site.
+
+        {/* Headline */}
+        <h3 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-neutral-950 font-display tracking-tight">
+          Can't Make It To Our Office? We Visit Your Project Site Anywhere in India.
         </h3>
-        <p className="text-xs sm:text-sm text-neutral-600 max-w-2xl mx-auto mt-1 leading-relaxed">
-          Our senior civil engineers and Principal Consultant conduct on-site inspections across all zones of Bengaluru within 24–48 hours of your request.
+
+        {/* Subtitle */}
+        <p className="text-xs sm:text-sm text-neutral-600 max-w-3xl mx-auto mt-2 leading-relaxed">
+          Headquartered in Bengaluru with rapid deployment across all of India. Our senior civil engineers and Principal Consultant <strong className="text-neutral-900 font-semibold">Mr. Kiran Dikshit L</strong> conduct on-site inspections, PMC audits, and quality governance across <strong className="text-orange-600 font-semibold">Mysore, Tumkur, Tamil Nadu (Chennai), Hyderabad</strong>, and all premier regions nationwide within 24–48 hours.
         </p>
-        <div className="flex flex-wrap justify-center gap-2 sm:gap-2.5 mt-4 max-w-4xl mx-auto">
-          {[
-            'Rajarajeshwarinagar', 'Kanakapura Road', 'JP Nagar', 'Jayanagar',
-            'Banashankari', 'Whitefield', 'Sarjapur Road', 'Indiranagar',
-            'Koramangala', 'Hebbal', 'Yelahanka', 'Electronic City',
-            'HSR Layout', 'Sadashivanagar', 'Devenahalli Corridor'
-          ].map((area) => (
-            <span
-              key={area}
-              className="px-2.5 py-1 rounded-lg bg-neutral-50 border border-neutral-200/80 text-[11px] font-mono text-neutral-700 hover:text-neutral-950 hover:border-orange-500/40 transition-colors"
-            >
-              📍 {area}
-            </span>
-          ))}
+
+        {/* Interactive Region Filter Tabs */}
+        <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mt-6 p-1.5 bg-neutral-100/80 border border-neutral-200/90 rounded-2xl max-w-3xl mx-auto">
+          {REGION_TABS.map((tab) => {
+            const isActive = selectedRegion === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setSelectedRegion(tab.id)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
+                  isActive
+                    ? 'bg-neutral-950 text-white shadow-md'
+                    : 'text-neutral-600 hover:text-neutral-950 hover:bg-white/80'
+                }`}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Filtered Location Pins Grid */}
+        <div className="flex flex-wrap justify-center gap-2 sm:gap-2.5 mt-6 max-w-5xl mx-auto min-h-[140px] items-center">
+          {PAN_INDIA_LOCATIONS
+            .filter((loc) => selectedRegion === 'all' || loc.region === selectedRegion)
+            .map((loc) => (
+              <div
+                key={loc.name}
+                className={`group px-3 py-1.5 rounded-xl border text-xs font-mono transition-all flex items-center gap-1.5 ${
+                  loc.featured
+                    ? 'bg-orange-50/70 border-orange-300/80 text-neutral-900 shadow-xs hover:border-orange-500 hover:bg-orange-50'
+                    : 'bg-neutral-50 border-neutral-200/80 text-neutral-700 hover:text-neutral-950 hover:border-orange-500/40 hover:bg-white'
+                }`}
+              >
+                <MapPin className={`w-3.5 h-3.5 shrink-0 ${loc.featured ? 'text-orange-600' : 'text-neutral-400 group-hover:text-orange-500'}`} />
+                <span className="font-semibold">{loc.name}</span>
+                {loc.badge && (
+                  <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-bold uppercase ${
+                    loc.featured
+                      ? 'bg-orange-500 text-white'
+                      : 'bg-neutral-200 text-neutral-700'
+                  }`}>
+                    {loc.badge}
+                  </span>
+                )}
+              </div>
+            ))}
+        </div>
+
+        {/* 3 Nationwide Service Highlights */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 mt-8 pt-6 border-t border-neutral-200/80 text-left">
+          <div className="p-4 rounded-xl bg-neutral-50 border border-neutral-200/70 space-y-1">
+            <div className="flex items-center gap-2 text-neutral-950 font-bold text-xs font-display">
+              <Car className="w-4 h-4 text-orange-500 shrink-0" />
+              <span>Karnataka Hubs (Mysore, Tumkur)</span>
+            </div>
+            <p className="text-[11px] text-neutral-600 leading-relaxed font-sans">
+              Same-day & 24h rapid on-site civil engineer dispatch. We conduct physical site audits, soil tests, and contractor bill measurements across Karnataka.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-neutral-50 border border-neutral-200/70 space-y-1">
+            <div className="flex items-center gap-2 text-neutral-950 font-bold text-xs font-display">
+              <Plane className="w-4 h-4 text-orange-500 shrink-0" />
+              <span>Inter-State PMC (Chennai, Hyderabad)</span>
+            </div>
+            <p className="text-[11px] text-neutral-600 leading-relaxed font-sans">
+              Dedicated PMC audit teams deployed for luxury villa layouts, multi-specialty hospitals, and commercial developments across Tamil Nadu, Telangana, and Pan-India.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-neutral-50 border border-neutral-200/70 space-y-1">
+            <div className="flex items-center gap-2 text-neutral-950 font-bold text-xs font-display">
+              <CheckSquare className="w-4 h-4 text-orange-500 shrink-0" />
+              <span>Remote NRI & Out-of-State Governance</span>
+            </div>
+            <p className="text-[11px] text-neutral-600 leading-relaxed font-sans">
+              WhatsApp Daily Progress Reports (DPR), high-res photo/video logs, and laser bill reconciliation—ideal for NRI owners and out-of-state developers.
+            </p>
+          </div>
+        </div>
+
+        {/* WhatsApp Quick Dispatch Action */}
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <a
+            href="https://wa.me/918095823483?text=Hello%20CS%20Associates%2C%20I%20am%20planning%20a%20project%20and%20need%20an%20on-site%20PMC%20feasibility%20inspection."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-mono font-bold text-xs uppercase tracking-wider transition-all shadow-md shadow-emerald-600/20 active:scale-95 cursor-pointer"
+          >
+            <MessageCircle className="w-4 h-4" />
+            <span>Request On-Site Inspection Anywhere in India</span>
+          </a>
         </div>
       </motion.div>
     </section>

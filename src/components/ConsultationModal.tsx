@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { X, Send, CheckCircle2, MessageCircle, ShieldCheck } from 'lucide-react';
 
 interface ConsultationModalProps {
@@ -12,6 +13,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({ isOpen, on
   const [email, setEmail] = useState('');
   const [sector, setSector] = useState('Luxury Villa');
   const [area, setArea] = useState('');
+  const [location, setLocation] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
   if (!isOpen) return null;
@@ -23,7 +25,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({ isOpen, on
   };
 
   const handleWhatsAppDirect = () => {
-    const text = `Hello CS Associates,%0A%0AMy Name: ${name}%0APhone: ${phone}%0AProject Sector: ${sector}%0AEstimated Area: ${area || 'Not specified'}%0AI would like to schedule a PMC feasibility consultation with Mr. Kiran Dikshit L.`;
+    const text = `Hello CS Associates,%0A%0AMy Name: ${name}%0APhone: ${phone}%0AProject Location: ${location || 'Pan-India'}%0AProject Sector: ${sector}%0AEstimated Area: ${area || 'Not specified'}%0AI would like to schedule a PMC feasibility consultation with Mr. Kiran Dikshit L.`;
     window.open(`https://wa.me/918095823483?text=${text}`, '_blank');
   };
 
@@ -165,6 +167,19 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({ isOpen, on
               </div>
             </div>
 
+            <div>
+              <label className="block text-xs font-semibold text-neutral-300 mb-1">
+                Project Location (Bengaluru, Mysore, Tumkur, Chennai, Hyderabad, etc.)
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. Mysore, Tumkur, Chennai, Hyderabad, Bengaluru..."
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="w-full h-11 bg-neutral-950 border border-neutral-800 rounded-xl px-3.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-orange-500"
+              />
+            </div>
+
             <div className="pt-2 flex flex-col gap-2.5 pb-safe">
               <button
                 type="submit"
@@ -182,6 +197,17 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({ isOpen, on
                 <MessageCircle className="w-4 h-4" />
                 <span>Connect on WhatsApp Instantly</span>
               </button>
+
+              <div className="text-[10px] text-center text-neutral-500 font-mono pt-1">
+                Protected by Fiduciary Privacy · By submitting, you accept our{' '}
+                <Link to="/privacy-policy" onClick={onClose} className="text-orange-400 hover:underline">
+                  Privacy Policy
+                </Link>{' '}
+                &{' '}
+                <Link to="/terms-and-conditions" onClick={onClose} className="text-orange-400 hover:underline">
+                  Terms
+                </Link>
+              </div>
             </div>
           </form>
         )}

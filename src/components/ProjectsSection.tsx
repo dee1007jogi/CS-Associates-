@@ -28,6 +28,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
   theme = 'beige'
 }) => {
   const [statusTab, setStatusTab] = useState<'finished' | 'upcoming' | 'all'>('finished');
+  const [filter, setFilter] = useState<'all' | 'residential' | 'healthcare'>('all');
   const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [cardsPerView, setCardsPerView] = useState(3);
@@ -54,6 +55,11 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
   const allCount = PROJECTS_DATA.length;
 
   const filteredProjects = PROJECTS_DATA.filter((p) => {
+    if (variant === 'grid') {
+      if (filter === 'residential') return p.category === 'residential';
+      if (filter === 'healthcare') return p.category === 'healthcare' || p.category === 'commercial';
+      return true;
+    }
     if (statusTab === 'finished') {
       return p.status === 'Completed' || p.status === 'Handover Complete';
     }
@@ -525,7 +531,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
               Featured Projects & Realized Milestones
             </h2>
             <p className="mt-3 text-sm sm:text-base text-neutral-300">
-              A portfolio of meticulous execution across Bengaluru’s premier locales — Abbigere, Kanakapura Road, Indiranagar, and Sadashivanagar.
+              A portfolio of meticulous civil execution across Bengaluru, Mysore, Tumkur, Tamil Nadu (Chennai), Hyderabad, and premier locations all over India.
             </p>
           </div>
 
